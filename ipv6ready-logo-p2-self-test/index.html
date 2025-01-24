@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <title>IPv6 Ready Logo Phaze-2 测试指南 - Yoruka's Blog</title>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="HandheldFriendly" content="True" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta name="generator" content="Hexo" />
+<link rel="icon" href="/images/favicon.ico" />
+<link rel="apple-touch-icon-precomposed" href="/images/apple-icon-precomposed.png">
+  <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="Yoruka's Blog">
+  <meta name="keywords" content="IPv6," />
+
+<meta name="description" content="IPv6 Ready Logo IPv6 Ready Logo是一项国际认证计划，提供一个全球通用的规范，验证IPv6产品的可部署和应用性，为遵守这些规范的厂商颁发IPv6 Ready Logo证书，为企业采购硬件设备提供参考。 IPv6 Ready Logo共有5个分类：Core Protocols、CE Router、DHCPv6、IPSecv6、SNMP。其中Core Protocols是最">
+<meta property="og:type" content="article">
+<meta property="og:title" content="IPv6 Ready Logo Phaze-2 测试指南">
+<meta property="og:url" content="https://yecl.net/ipv6ready-logo-p2-self-test/index.html">
+<meta property="og:site_name" content="Yoruka&#39;s Blog">
+<meta property="og:description" content="IPv6 Ready Logo IPv6 Ready Logo是一项国际认证计划，提供一个全球通用的规范，验证IPv6产品的可部署和应用性，为遵守这些规范的厂商颁发IPv6 Ready Logo证书，为企业采购硬件设备提供参考。 IPv6 Ready Logo共有5个分类：Core Protocols、CE Router、DHCPv6、IPSecv6、SNMP。其中Core Protocols是最">
+<meta property="og:locale">
+<meta property="og:image" content="https://static.schale.jp/image-20241007222633850.jpg">
+<meta property="og:image" content="https://static.schale.jp/image-20241007231146308.jpg">
+<meta property="og:image" content="https://static.schale.jp/image-20241007231327256.jpg">
+<meta property="og:image" content="https://static.schale.jp/image-20241007231453622.jpg">
+<meta property="og:image" content="https://static.schale.jp/image-20241007231833664.jpg">
+<meta property="og:image" content="https://static.schale.jp/image-20241007231918420.jpg">
+<meta property="article:published_time" content="2024-10-07T12:44:27.000Z">
+<meta property="article:modified_time" content="2024-10-07T12:44:27.000Z">
+<meta property="article:author" content="Yoruka">
+<meta property="article:tag" content="IPv6">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://static.schale.jp/image-20241007222633850.jpg">
+
+<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/han-css@3.3.0/dist/han.min.css">
+<link rel="stylesheet" href="https://fonts.loli.net/css?family=Fira+Mono|Roboto+Slab:400,600|Noto+Serif+SC:600&display=swap">
+<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@highlightjs/cdn-assets@10.6.0/styles/atom-one-dark.min.css" media="screen and (prefers-color-scheme: dark)">
+<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@highlightjs/cdn-assets@10.6.0/styles/atom-one-light.min.css" media="screen and (prefers-color-scheme: light)">
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/node-tikzjax@latest/css/fonts.css" /><style>.tikzjax { display: block; text-align: center; user-select: none; }</style></head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="site-name">
+      <a class="logo" href="/">Yoruka's Blog</a>
+      <span class="description">我们决不倒下，让刽子手显得高大，好阻挡那自由的风。</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    <div class="row">
+      <section class="content col-md-8 col-12">
+        
+  <article>
+    <h1 class="post-title">
+      <a href="/ipv6ready-logo-p2-self-test/">IPv6 Ready Logo Phaze-2 测试指南</a>
+    </h1>
+    <div class="post-meta">
+      <span class="post-meta-item post-meta-date">
+  <time datetime="2024-10-07T20:44:27+08:00">2024-10-07</time>
+</span>
+
+<span class="post-meta-item post-meta-categories">
+  <span class="post-meta-item-indicator">Category:</span>
+  
+    <a class="category-link" href="/categories/IPv6/">IPv6</a>
+  
+</span>
+
+<span class="post-meta-item post-meta-tags">
+  
+    <a class="tag--link" href="/tags/IPv6/" rel="tag">IPv6</a>
+  
+</span>
+
+
+<span class="post-meta-item post-meta-views">
+  <span class="pv-counter">loading</span> views
+</span>
+
+
+    </div>
+
+    
+      <script src="https://fastly.jsdelivr.net/npm/dayjs@1.10.4/dayjs.min.js"></script>
+<script>
+  var post_updated = dayjs("2024-10-07T12:44:27.000Z");
+  var days_diff_now = dayjs().diff(post_updated, 'days');
+
+  if (days_diff_now > 365) {
+    document.write(
+      '<div class="post-warning">'+
+        '本文最后修订于 '+days_diff_now+' 天前（'+post_updated.format('YYYY-MM-DD')+'），'+
+        '其中的信息可能已经有所发展或者不再适用于现阶段。'+
+      '</div>'
+    );
+  }
+</script>
+
+    
+
+    
+      <div class="post-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#ipv6-ready-logo"><span class="toc-text">IPv6 Ready Logo</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E8%87%B4%E6%80%A7conformance"><span class="toc-text">一致性（Conformance）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E6%AD%A5%E9%AA%A4"><span class="toc-text">测试步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8B%93%E6%89%91"><span class="toc-text">1.拓扑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%84%E9%85%8D%E7%BD%AE"><span class="toc-text">2.预配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E8%84%9A%E6%9C%AC%E7%BC%96%E5%86%99%E6%89%8B%E5%8A%A8%E6%B5%8B%E8%AF%95%E5%8F%AF%E8%B7%B3%E8%BF%87"><span class="toc-text">3.测试脚本编写（手动测试可跳过）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#self_test%E8%BD%AF%E4%BB%B6%E8%AF%B4%E6%98%8E"><span class="toc-text">4.Self_Test软件说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E6%9E%9C%E5%88%86%E6%9E%90"><span class="toc-text">5.结果分析</span></a></li></ol></li></ol></div>
+    
+
+    <div class="post-content"><h2 id="ipv6-ready-logo"><a href="#ipv6-ready-logo" class="headerlink" title="IPv6 Ready Logo"></a>IPv6 Ready Logo</h2>
+<p><a target="_blank" rel="noopener" href="https://www.ipv6ready.org">IPv6 Ready Logo</a>是一项国际认证计划，提供一个全球通用的规范，验证IPv6产品的可部署和应用性，为遵守这些规范的厂商颁发IPv6 Ready Logo证书，为企业采购硬件设备提供参考。</p>
+<p>IPv6 Ready Logo共有5个分类：Core Protocols、CE Router、DHCPv6、IPSecv6、SNMP。其中Core Protocols是最通用的认证，所有厂商都会申请。</p>
+<span id="more"></span>
+<p>Core Protocols分为6个部分：</p>
+<ol type="1">
+<li>IPV6基础协议(Internet Protocol Version 6(IPv6)Specification)<br />
+</li>
+<li>IPv6邻居发现协议(Neighbor Discoveryfor IP version 6(IPv6))<br />
+</li>
+<li>IPv6无状态地址自动配置协议(IPv6 Stateless Address Autoconfiguration)<br />
+</li>
+<li>IPv6路径MTU发现协议(Path MTU Discovery for IP version 6)<br />
+</li>
+<li>ICMPv6协议(Internet Control Message Protocol(ICMPv6)for the Internet Protocol)<br />
+</li>
+<li>IPv6互通(lPv6 Interoperability)</li>
+</ol>
+<p>其中，前5项被称为一致性（Conformance），考察不同厂商的产品对IPv6核心协议的应用是否一致。考察通过的设备，在和其他厂商进行IPv6通信时才不会出错。考察的标准根据RFC制定，所以是非常权威的。</p>
+<p>Phaze指的是IPv6 Ready Logo委员会的Phaze，最初成立的时候（Phaze 1）没有那么复杂的认证内容，在2011年11月后，才建立并完善了现在的认证内容（Phaze 2）。直至现在，该认证的版本也在不断更新，最新的是2024年6月的5.1.3。</p>
+<p>在中国大陆的认证工作由<a target="_blank" rel="noopener" href="https://www.biigroup.com">天地互连信息技术有限公司</a>负责。</p>
+<blockquote>
+<p>认证标准文档下载：<a target="_blank" rel="noopener" href="https://www.ipv6ready.org/docs/Core_Conformance.pdf">Core_Conformance.pdf</a>，<a target="_blank" rel="noopener" href="https://www.ipv6ready.org/docs/Core_Interoperability.pdf">Core_Interoperability.pdf</a></p>
+</blockquote>
+<h3 id="一致性conformance"><a href="#一致性conformance" class="headerlink" title="一致性（Conformance）"></a>一致性（Conformance）</h3>
+<p>由于IPv6比IPv4多了巨量的特性，且许多特性的规定并不严格，会导致报文在不同厂商的设备之间传递时出现偏差，比如忽略了不该忽略的报文、不该发送报文却发送了报文、发送的报文里某一字段的值不正确等。一致性测试的目的就是消除各厂商的差距，让它们更好地协同工作。</p>
+<p>接下来介绍测试环境与方法。</p>
+<h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2>
+<p>硬件需要一台有3个网口的PC或服务器，直接安装或者虚拟机安装freebsd 8，虚拟机要将3个网口直通/桥接，开混杂模式。</p>
+<p>测试基于v6eval这个测试工具，测试脚本基于perl，由于freebsd 8没有pkg包管理，常用工具命令都需要编译/usr/ports里的软件（而且还不全），所以跟着<a target="_blank" rel="noopener" href="https://www.ipv6ready.org.cn/home/views/default/resource/logo/phase2-core/index.htm">官方教程</a>手动安装是很折磨的。本文提供一个整合好的镜像下载，下载后导入最新版的Self Test工具就可以测试。</p>
+<blockquote>
+<p>下载链接：<a target="_blank" rel="noopener" href="https://drive.google.com/file/d/1a1wldA9MJqXySh4A0SQgG9UIwGy95N3g">Google Drive</a>，freebsd用户名：root 密码：123456</p>
+</blockquote>
+<h2 id="测试步骤"><a href="#测试步骤" class="headerlink" title="测试步骤"></a>测试步骤</h2>
+<h3 id="拓扑"><a href="#拓扑" class="headerlink" title="1.拓扑"></a>1.拓扑</h3>
+<p><img src="https://static.schale.jp/image-20241007222633850.jpg" srcset="/images/loading.jpg" data-srcset="https://static.schale.jp/image-20241007222633850.jpg" alt="image-20241007222633850" /></p>
+<p>TN为测试设备，NUT为被测设备。TN和NUT通过2个网口互连。TN可选使用console连接NUT来实现自动输入命令。</p>
+<p>从<a target="_blank" rel="noopener" href="https://www.ipv6ready.org.cn/home/views/default/resource/logo/phase2-core/index.htm">官方教程</a>中下载最新的Self_Test_5-?-?.tar.gz，解压到/usr/local/ipv6ready/ 目录下。</p>
+<h3 id="预配置"><a href="#预配置" class="headerlink" title="2.预配置"></a>2.预配置</h3>
+<p>有3个文件需要预先配置好：</p>
+<blockquote>
+<p>/usr/local/v6eval/etc/nut.def<br />
+/usr/local/v6eval/etc/tn.def<br />
+/usr/local/ipv6ready/Self_Test_5-?-?/config.pl</p>
+</blockquote>
+<p><strong>nut.def:</strong></p>
+<pre>
+ipv6# cat nut.def.sample
+#
+# nut.def
+#
+# Information about the Node Under Test (NUT)
+#
+# System type
+System cisco-system #----若手动测试此项修改为 manual
+# System information
+TargetName Cisco1812 #----被测设备
+# Name
+HostName cisco #-----被测厂家
+# Type
+# host, router, special
+Type router #-----被测设备类型，如果 NUT 为 host 类需修改为 host
+# Super user name and it's password
+# if you select manual as "System", you don't care "User" and "Password"
+#
+User root
+Password v6eval
+#linkname   interface    The EXACT ether source address     link-local address     global address
+Link0 fxp0 00:00:92:a7:6d:f5 fe80::7508:aaa8:e1d0:a425 3ffe:501:ffff:100:b003:5ce2:e51:aab #被测设备第一个接口，需填写地址
+#Link1 fxp1 00:00:92:a7:6d:f6 fe80::7508:aaa8:e1d0:a425 3ffe:501:ffff:100:b003:5ce2:e51:aac #被测设备第二个接口，需填写地址
+#Link2 de0 00:c0:f6:b0:aa:ef fe80::7508:aaa8:e1d0:a425 3ffe:501:ffff:100:b003:5ce2:e51:aac
+#Link3 de1 00:00:92:a7:6d:f8 fe80::7508:aaa8:e1d0:a425 3ffe:501:ffff:100:b003:5ce2:e51:aac
+#Link4 de2 00:90:27:14:ce:e3 fe80::7508:aaa8:e1d0:a425 3ffe:501:ffff:100:b003:5ce2:e51:aac
+</pre>
+<p>举例：link0 那一行的 fxp0 是设备的接口名，00:00:92:a7:6d:f5是link0的MAC地址，fe80::7508:aaa8:e1d0:a42是link-local address，3ffe:501:ffff:100:b003:5ce2:e51:aab是global unicast address。这几项需要修改为NUT的真实地址。link1同理。</p>
+<strong>tn.def</strong>
+<pre>
+#
+# tn.def
+#
+# Information about the Tester Node (TN)
+#
+#
+# Remote Controal Configuration
+#
+RemoteDevice cuad0
+RemoteDebug 0
+RemoteIntDebug 0
+RemoteLog 1
+RemoteSpeed 0
+RemoteLogout 0
+RemoteMethod serial
+#filter ipv6
+#linkname interface BOGUS ether source address
+# name of the Tester Interface
+Link0 vr1 00:00:00:00:01:00
+Link1 vr2 00:00:00:00:01:01
+#Link2 de2 00:00:00:00:01:02
+#Link3 de4 00:00:00:00:01:03
+</pre>
+<p>link0 那一行的 vr1是tn的网口名（用ifconfig -a可以看到），MAC可以不改，但建议改为真实MAC，有些安全设备会检查MAC真实性。</p>
+<p>tn.def 与nut.def里的link0要互相连接，link1同理。</p>
+<strong>config.pl</strong>
+<pre>
+ipv6ready# vi /usr/local/ipv6ready/Self_Test_5-?-?/config.pl
+########################################################################
+#----------------------------------------------------------------------#
+# #
+# Configure the advanced functionalities support #
+# #
+#----------------------------------------------------------------------#
+#
+# The support of transmitting Echo Requests and configuring packet size
+# v6LC.2.2.25, v6LC.4.1.10, v6LC.4.1.11, v6LC.5.1.1
+# zero - NUT does not support
+# non-zero - NUT supports
+#
+TRANSMITTING_EREQ =1 # 1 表示被测设备支持发送 Echo
+Request
+# 0 表示不支持
+#
+# The support of multicast routing
+# v6LC.1.1.10 H, I, J, K
+# v6LC.1.2.7 G, H
+# v6LC.5.1.4 B
+# zero - NUT does not support
+# non-zero - NUT supports
+#
+MULTICAST_ROUTING =1 #被测设备支持多播路由
+# 0 表示不支持
+#
+# The support of link MTU configuration
+# v6LC.5.1.4, v6LC.5.1.11 B, v6LC.5.1.12 B, v6LC.5.1.13 B
+# zero - NUT does not support
+# non-zero - NUT supports
+#
+MTU_CONFIGURATION =1 #被测设备支持 MTU 配置
+# 0 表示不支持
+#
+# The support of Hop-by-hop option process
+# v6LC.1.2.7
+# zero - NUT does not support
+# non-zero - NUT supports
+#
+$PROCESS_HBH = 1; #被测设备支持处理 hop-by-hop 选项
+#
+# The support of sending more than three RSs
+# v6LC.2.2.1
+# zero - NUT does not support
+# non-zero - NUT supports
+#
+$SENDING_MORE_RSs = 1;
+#
+# The support of sending only one RS
+# v6LC.2.2.2
+# zero - NUT does not support
+# non-zero - NUT supports
+#
+$SENDING_ONE_RS = 0;
+#
+# The support of Type C host
+# v6LC.2.2.23
+# zero - NUT does not support
+# non-zero - NUT supports
+#
+$TYPE_C_HOST = 1; #被测设备支持 RFC4191
+#
+# support to process Beyond Scope of Source Address
+# v6LC.5.1.3.E
+# zero - NUT does not support
+# non-zero - NUT supports
+#
+$BEYOND_SCOPE_SADDR = 1;
+#----------------------------------------------------------------------#
+# #
+# Configure target environment #
+# #
+#----------------------------------------------------------------------#
+#
+# The support of multiple physical network interfaces
+# zero - one physical interface router
+# non-zero - generic router which has multiple interfaces
+#
+$HAS_MULTIPLE_INTERFACES = 1;
+</pre>
+<p>本配置文件需要根据被测产品本身的功能进行配置，如 NUT 不支持 MTU 配置，需要将MTU_CONFIGURATION 置 0，否则测试到 V6LC.5.1.4 等 cases 时会failed。</p>
+<h3 id="测试脚本编写手动测试可跳过"><a href="#测试脚本编写手动测试可跳过" class="headerlink" title="3.测试脚本编写（手动测试可跳过）"></a>3.测试脚本编写（手动测试可跳过）</h3>
+<p>需要修改的脚本和配置如下：</p>
+<p>/usr/local/lib/perl5/site_perl/5.10.1/V6evalRemote.pm<br />
+/usr/local/v6eval/bin/XXX/route.rmt 及其他*.rmt</p>
+<p>因为在/usr/local/v6eval/bin/XXX/route.rmt …中都会用到 use V6evalRemote, 用户需要将V6evalRemote.pm 中的参数修改过来。若为手动测试，只需在 nut.def 文件中将 system 项修改为 manual 即可.</p>
+<h3 id="self_test软件说明"><a href="#self_test软件说明" class="headerlink" title="4.Self_Test软件说明"></a>4.Self_Test软件说明</h3>
+<p>Self_Test_5-0-4 软件中包含 Makefile 文件，用户可以在上述配置完成之后直接在此目录下输入 make ipv6ready_p2_host 或者 make ipv6ready_p2_router(根据被测产品的测试类型选择)。</p>
+<p>软件中也包含每个 RFC 测试目录，如 RFC8200 的测试目录 spec.p2, RFC4861 的测试目录nd.p2, RFC4862 的测试目录 addr.p2, RFC8201 的测试目录 pmtu.p2, RFC4443 的测试目录icmp.p2, 用户也可以在相对应的目录下测试如</p>
+<p><code>ipv6ready # cd spec.p2/</code><br />
+<code>ipv6ready # make ipv6ready_p2_host(router)</code></p>
+<p>若用户仅测试某个或某些测试用例的话，可以</p>
+<p><code>ipv6ready # cd spec.p2/</code><br />
+<code>ipv6ready # make ipv6ready_p2_host(router) AROPT="-s 1 -e 10"</code></p>
+<p>注：-s: start，开始项；-e: end，结束项</p>
+<p>Self_Test工具里的小项，对应标准文档<a target="_blank" rel="noopener" href="https://www.ipv6ready.org/docs/Core_Conformance.pdf">Core_Conformance.pdf</a>里大项的某一Part，直接看看不出来它们的对应关系，在运行某个具体小项的时候，Log会显示该小项对应哪个大项的哪个Part。</p>
+<p>如果是手动测试，要在途中按照脚本指示操作设备。比如提示Set AdvSendAdvertisements Flag to True，就需要操作设备的接口，变为可发送RA的接口。</p>
+<h3 id="结果分析"><a href="#结果分析" class="headerlink" title="5.结果分析"></a>5.结果分析</h3>
+<p>打开Self_Test_5-?-?/index.html可以看到测试结果的总览。</p>
+<p><img src="https://static.schale.jp/image-20241007231146308.jpg" srcset="/images/loading.jpg" data-srcset="https://static.schale.jp/image-20241007231146308.jpg" alt="image-20241007231146308" /></p>
+<p>点击某个section进入测试项页面。测试结果以 html 格式显示，也可打开单独的测试结果，如 16.html，如下图所示</p>
+<p><img src="https://static.schale.jp/image-20241007231327256.jpg" srcset="/images/loading.jpg" data-srcset="https://static.schale.jp/image-20241007231327256.jpg" alt="image-20241007231327256" /></p>
+<p>每个测试结果单元中包含 7 列，分别是 No.、Title、Result、Log、Script、Packet、Dump(bin)。</p>
+<p>title 列中有具体的测试项名称，点击测试项名称进入详细的测试例用例。<br />
+Result 列为该测试项测试结果，一般黑色为通过，红色字体为测试结果有问题，需要修改；<br />
+Log 列为测试过程，点击“X”就可以进入测试 Log 页；<br />
+Script 列和 Packet 列为测试例设计的脚本和报文格式。<br />
+Dump(bin)列为测试过程中链路上的抓包，使用 wireshark 等软件打开。</p>
+<p><img src="https://static.schale.jp/image-20241007231453622.jpg" srcset="/images/loading.jpg" data-srcset="https://static.schale.jp/image-20241007231453622.jpg" alt="image-20241007231453622" /></p>
+<p>点击Log下面的X可以查看项目的日志，用于排错。</p>
+<p><img src="https://static.schale.jp/image-20241007231833664.jpg" srcset="/images/loading.jpg" data-srcset="https://static.schale.jp/image-20241007231833664.jpg" alt="image-20241007231833664" /></p>
+<p>也有交互的报文的详细展示。</p>
+<p><img src="https://static.schale.jp/image-20241007231918420.jpg" srcset="/images/loading.jpg" data-srcset="https://static.schale.jp/image-20241007231918420.jpg" alt="image-20241007231918420" /></p>
+<p>出现<span style="color:red">NG</span>字样代表失败，需要对照Log来检查哪一步出错了，本应收到却未收到、本不应收到却收到、收到的包内容错误等问题都会详细记录下来。</p>
+</div>
+    <br />
+  </article>
+
+  
+    <nav class="post-nav">
+      
+      
+      <div class="post-nav-item post-nav-next">下一篇：
+        <a href="/merry-chiristmas-frost-nova/">冬逝</a>
+      </div>
+      
+    </nav>
+  
+
+  
+    
+
+
+<script src="https://giscus.app/client.js"
+  data-repo="yecl/schalejp-comments"
+  data-repo-id="R_kgDOLpzXkw"
+  data-category="Announcements"
+  data-category-id="DIC_kwDOLpzXk84Ceczg"
+  data-mapping="title"
+  data-strict="0"
+  data-reactions-enabled="0"
+  data-emit-metadata="0"
+  data-input-position="top"
+  data-theme="preferred_color_scheme"
+  data-lang="zh-CN"
+  data-loading="lazy"
+  crossorigin="anonymous"
+  async>
+</script>
+
+
+  
+
+      </section>
+      <aside class="sidebar col-md-3 offset-md-1 col-12">
+        
+  
+  <section class="widget widget-toc">
+    <h3 class="widget-title">文章目录</h3>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#ipv6-ready-logo"><span class="toc-text">IPv6 Ready Logo</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E8%87%B4%E6%80%A7conformance"><span class="toc-text">一致性（Conformance）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E6%AD%A5%E9%AA%A4"><span class="toc-text">测试步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8B%93%E6%89%91"><span class="toc-text">1.拓扑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%84%E9%85%8D%E7%BD%AE"><span class="toc-text">2.预配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E8%84%9A%E6%9C%AC%E7%BC%96%E5%86%99%E6%89%8B%E5%8A%A8%E6%B5%8B%E8%AF%95%E5%8F%AF%E8%B7%B3%E8%BF%87"><span class="toc-text">3.测试脚本编写（手动测试可跳过）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#self_test%E8%BD%AF%E4%BB%B6%E8%AF%B4%E6%98%8E"><span class="toc-text">4.Self_Test软件说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E6%9E%9C%E5%88%86%E6%9E%90"><span class="toc-text">5.结果分析</span></a></li></ol></li></ol>
+  </section>
+  
+
+        
+
+
+<section class="widget" id="widget-categories">
+  <h3 class="widget-title">分类</h3>
+  
+  
+    <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/IPv6/">IPv6</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/minecraft/">minecraft</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/others/">其他</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/essay/">随笔</a></li></ul>
+  
+</section>
+
+
+
+<section class="widget" id="widget-pages">
+  <h3 class="widget-title">页面</h3>
+  <ul class="menu">
+    
+      
+      <li class="menu-item menu-item-archives">
+        <a href="/archives" title="">归档</a>
+      </li>
+    
+      
+      <li class="menu-item menu-item-about">
+        <a href="/about" title="">关于</a>
+      </li>
+    
+      
+      <li class="menu-item menu-item-friends">
+        <a href="/friends" title="">朋友们</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+<section class="widget" id="widget-links">
+  <h3 class="widget-title">链接</h3>
+  <ul class="menu">
+    
+      
+      <li class="menu-item menu-item-github">
+        <a href="https://github.com/yecl" title="" target="_blank">GitHub</a>
+      </li>
+    
+      
+      <li class="menu-item menu-item-rss">
+        <a href="/atom.xml" title="" target="_blank">RSS Feed</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+      </aside>
+    </div>
+  </div>
+</main>
+
+<footer>
+  
+  <div class="container">
+    <p>
+    
+      <span style='display: inline-block; text-align: right; margin: 0px; -moz-transform: scaleX(-1); -o-transform: scaleX(-1); -webkit-transform: scaleX(-1); transform: scaleX(-1); filter: FlipH; -ms-filter: “FlipH”;'>&copy;</span>
+    
+       2025 <a href="https://yecl.net">Yoruka's Blog</a>. Proudly published with
+      <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/printempw/hexo-theme-murasaki/" target="_blank">Murasaki</a> & <a href="https://www.sakura.ad.jp" target="_blank">SakuraInternet</a>.
+    </p>
+  </div>
+</footer>
+
+<script src="https://fastly.jsdelivr.net/npm/han-css@3.3.0/dist/han.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/@highlightjs/cdn-assets@10.6.0/highlight.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/vanilla-lazyload@17.3.1/dist/lazyload.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+  Han(document.querySelector('section.content')).setRoutine([
+    'initCond', 'renderElem', 'renderJiya', 'correctBasicBD', 'substCombLigaWithPUA'
+    // 'renderHanging', 'renderHWS'
+  ]).render();
+  new LazyLoad({
+    elements_selector: '.post-content img',
+    callback_loaded: function (el) {
+      el.parentNode.nodeName.toLowerCase() === 'a' || mediumZoom(el, { margin: 24 });
+    }
+  });
+</script>
+
+</body>
+</html>

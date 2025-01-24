@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Yoruka&#39;s Blog</title>
+  
+  <subtitle>我们决不倒下，让刽子手显得高大，好阻挡那自由的风。</subtitle>
+  <link href="https://yecl.net/atom.xml" rel="self"/>
+  
+  <link href="https://yecl.net/"/>
+  <updated>2024-10-07T12:44:27.000Z</updated>
+  <id>https://yecl.net/</id>
+  
+  <author>
+    <name>Yoruka</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>IPv6 Ready Logo Phaze-2 测试指南</title>
+    <link href="https://yecl.net/ipv6ready-logo-p2-self-test/"/>
+    <id>https://yecl.net/ipv6ready-logo-p2-self-test/</id>
+    <published>2024-10-07T12:44:27.000Z</published>
+    <updated>2024-10-07T12:44:27.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="ipv6-ready-logo"><a href="#ipv6-ready-logo" class="headerlink" title="IPv6 Ready Logo"></a>IPv6 Ready Logo</h2><p><a href="https://www.ipv6ready.org">IPv6 Ready Logo</a>是一项国际认证计划，提供一个全球通用的规范，验证IPv6产品的可部署和应用性，为遵守这些规范的厂商颁发IPv6 Ready Logo证书，为企业采购硬件设备提供参考。</p><p>IPv6 Ready Logo共有5个分类：Core Protocols、CE Router、DHCPv6、IPSecv6、SNMP。其中Core Protocols是最通用的认证，所有厂商都会申请。</p><span id="more"></span><p>Core Protocols分为6个部分：</p><ol type="1"><li>IPV6基础协议(Internet Protocol Version 6(IPv6)Specification)<br /></li><li>IPv6邻居发现协议(Neighbor Discoveryfor IP version 6(IPv6))<br /></li><li>IPv6无状态地址自动配置协议(IPv6 Stateless Address Autoconfiguration)<br /></li><li>IPv6路径MTU发现协议(Path MTU Discovery for IP version 6)<br /></li><li>ICMPv6协议(Internet Control Message Protocol(ICMPv6)for the Internet Protocol)<br /></li><li>IPv6互通(lPv6 Interoperability)</li></ol><p>其中，前5项被称为一致性（Conformance），考察不同厂商的产品对IPv6核心协议的应用是否一致。考察通过的设备，在和其他厂商进行IPv6通信时才不会出错。考察的标准根据RFC制定，所以是非常权威的。</p><p>Phaze指的是IPv6 Ready Logo委员会的Phaze，最初成立的时候（Phaze 1）没有那么复杂的认证内容，在2011年11月后，才建立并完善了现在的认证内容（Phaze 2）。直至现在，该认证的版本也在不断更新，最新的是2024年6月的5.1.3。</p><p>在中国大陆的认证工作由<a href="https://www.biigroup.com">天地互连信息技术有限公司</a>负责。</p><blockquote><p>认证标准文档下载：<a href="https://www.ipv6ready.org/docs/Core_Conformance.pdf">Core_Conformance.pdf</a>，<a href="https://www.ipv6ready.org/docs/Core_Interoperability.pdf">Core_Interoperability.pdf</a></p></blockquote><h3 id="一致性conformance"><a href="#一致性conformance" class="headerlink" title="一致性（Conformance）"></a>一致性（Conformance）</h3><p>由于IPv6比IPv4多了巨量的特性，且许多特性的规定并不严格，会导致报文在不同厂商的设备之间传递时出现偏差，比如忽略了不该忽略的报文、不该发送报文却发送了报文、发送的报文里某一字段的值不正确等。一致性测试的目的就是消除各厂商的差距，让它们更好地协同工作。</p><p>接下来介绍测试环境与方法。</p><h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><p>硬件需要一台有3个网口的PC或服务器，直接安装或者虚拟机安装freebsd 8，虚拟机要将3个网口直通/桥接，开混杂模式。</p><p>测试基于v6eval这个测试工具，测试脚本基于perl，由于freebsd 8没有pkg包管理，常用工具命令都需要编译/usr/ports里的软件（而且还不全），所以跟着<a href="https://www.ipv6ready.org.cn/home/views/default/resource/logo/phase2-core/index.htm">官方教程</a>手动安装是很折磨的。本文提供一个整合好的镜像下载，下载后导入最新版的Self Test工具就可以测试。</p><blockquote><p>下载链接：<a href="https://drive.google.com/file/d/1a1wldA9MJqXySh4A0SQgG9UIwGy95N3g">Google Drive</a>，freebsd用户名：root 密码：123456</p></blockquote><h2 id="测试步骤"><a href="#测试步骤" class="headerlink" title="测试步骤"></a>测试步骤</h2><h3 id="拓扑"><a href="#拓扑" class="headerlink" title="1.拓扑"></a>1.拓扑</h3><p><img src="https://static.schale.jp/image-20241007222633850.jpg" alt="image-20241007222633850" /></p><p>TN为测试设备，NUT为被测设备。TN和NUT通过2个网口互连。TN可选使用console连接NUT来实现自动输入命令。</p><p>从<a href="https://www.ipv6ready.org.cn/home/views/default/resource/logo/phase2-core/index.htm">官方教程</a>中下载最新的Self_Test_5-?-?.tar.gz，解压到/usr/local/ipv6ready/ 目录下。</p><h3 id="预配置"><a href="#预配置" class="headerlink" title="2.预配置"></a>2.预配置</h3><p>有3个文件需要预先配置好：</p><blockquote><p>/usr/local/v6eval/etc/nut.def<br />/usr/local/v6eval/etc/tn.def<br />/usr/local/ipv6ready/Self_Test_5-?-?/config.pl</p></blockquote><p><strong>nut.def:</strong></p><pre>ipv6# cat nut.def.sample## nut.def## Information about the Node Under Test (NUT)## System typeSystem cisco-system #----若手动测试此项修改为 manual# System informationTargetName Cisco1812 #----被测设备# NameHostName cisco #-----被测厂家# Type# host, router, specialType router #-----被测设备类型，如果 NUT 为 host 类需修改为 host# Super user name and it's password# if you select manual as "System", you don't care "User" and "Password"#User rootPassword v6eval#linkname   interface    The EXACT ether source address     link-local address     global addressLink0 fxp0 00:00:92:a7:6d:f5 fe80::7508:aaa8:e1d0:a425 3ffe:501:ffff:100:b003:5ce2:e51:aab #被测设备第一个接口，需填写地址#Link1 fxp1 00:00:92:a7:6d:f6 fe80::7508:aaa8:e1d0:a425 3ffe:501:ffff:100:b003:5ce2:e51:aac #被测设备第二个接口，需填写地址#Link2 de0 00:c0:f6:b0:aa:ef fe80::7508:aaa8:e1d0:a425 3ffe:501:ffff:100:b003:5ce2:e51:aac#Link3 de1 00:00:92:a7:6d:f8 fe80::7508:aaa8:e1d0:a425 3ffe:501:ffff:100:b003:5ce2:e51:aac#Link4 de2 00:90:27:14:ce:e3 fe80::7508:aaa8:e1d0:a425 3ffe:501:ffff:100:b003:5ce2:e51:aac</pre><p>举例：link0 那一行的 fxp0 是设备的接口名，00:00:92:a7:6d:f5是link0的MAC地址，fe80::7508:aaa8:e1d0:a42是link-local address，3ffe:501:ffff:100:b003:5ce2:e51:aab是global unicast address。这几项需要修改为NUT的真实地址。link1同理。</p><strong>tn.def</strong><pre>## tn.def## Information about the Tester Node (TN)### Remote Controal Configuration#RemoteDevice cuad0RemoteDebug 0RemoteIntDebug 0RemoteLog 1RemoteSpeed 0RemoteLogout 0RemoteMethod serial#filter ipv6#linkname interface BOGUS ether source address# name of the Tester InterfaceLink0 vr1 00:00:00:00:01:00Link1 vr2 00:00:00:00:01:01#Link2 de2 00:00:00:00:01:02#Link3 de4 00:00:00:00:01:03</pre><p>link0 那一行的 vr1是tn的网口名（用ifconfig -a可以看到），MAC可以不改，但建议改为真实MAC，有些安全设备会检查MAC真实性。</p><p>tn.def 与nut.def里的link0要互相连接，link1同理。</p><strong>config.pl</strong><pre>ipv6ready# vi /usr/local/ipv6ready/Self_Test_5-?-?/config.pl#########################################################################----------------------------------------------------------------------## ## Configure the advanced functionalities support ## ##----------------------------------------------------------------------### The support of transmitting Echo Requests and configuring packet size# v6LC.2.2.25, v6LC.4.1.10, v6LC.4.1.11, v6LC.5.1.1# zero - NUT does not support# non-zero - NUT supports#TRANSMITTING_EREQ =1 # 1 表示被测设备支持发送 EchoRequest# 0 表示不支持## The support of multicast routing# v6LC.1.1.10 H, I, J, K# v6LC.1.2.7 G, H# v6LC.5.1.4 B# zero - NUT does not support# non-zero - NUT supports#MULTICAST_ROUTING =1 #被测设备支持多播路由# 0 表示不支持## The support of link MTU configuration# v6LC.5.1.4, v6LC.5.1.11 B, v6LC.5.1.12 B, v6LC.5.1.13 B# zero - NUT does not support# non-zero - NUT supports#MTU_CONFIGURATION =1 #被测设备支持 MTU 配置# 0 表示不支持## The support of Hop-by-hop option process# v6LC.1.2.7# zero - NUT does not support# non-zero - NUT supports#$PROCESS_HBH = 1; #被测设备支持处理 hop-by-hop 选项## The support of sending more than three RSs# v6LC.2.2.1# zero - NUT does not support# non-zero - NUT supports#$SENDING_MORE_RSs = 1;## The support of sending only one RS# v6LC.2.2.2# zero - NUT does not support# non-zero - NUT supports#$SENDING_ONE_RS = 0;## The support of Type C host# v6LC.2.2.23# zero - NUT does not support# non-zero - NUT supports#$TYPE_C_HOST = 1; #被测设备支持 RFC4191## support to process Beyond Scope of Source Address# v6LC.5.1.3.E# zero - NUT does not support# non-zero - NUT supports#$BEYOND_SCOPE_SADDR = 1;#----------------------------------------------------------------------## ## Configure target environment ## ##----------------------------------------------------------------------### The support of multiple physical network interfaces# zero - one physical interface router# non-zero - generic router which has multiple interfaces#$HAS_MULTIPLE_INTERFACES = 1;</pre><p>本配置文件需要根据被测产品本身的功能进行配置，如 NUT 不支持 MTU 配置，需要将MTU_CONFIGURATION 置 0，否则测试到 V6LC.5.1.4 等 cases 时会failed。</p><h3 id="测试脚本编写手动测试可跳过"><a href="#测试脚本编写手动测试可跳过" class="headerlink" title="3.测试脚本编写（手动测试可跳过）"></a>3.测试脚本编写（手动测试可跳过）</h3><p>需要修改的脚本和配置如下：</p><p>/usr/local/lib/perl5/site_perl/5.10.1/V6evalRemote.pm<br />/usr/local/v6eval/bin/XXX/route.rmt 及其他*.rmt</p><p>因为在/usr/local/v6eval/bin/XXX/route.rmt …中都会用到 use V6evalRemote, 用户需要将V6evalRemote.pm 中的参数修改过来。若为手动测试，只需在 nut.def 文件中将 system 项修改为 manual 即可.</p><h3 id="self_test软件说明"><a href="#self_test软件说明" class="headerlink" title="4.Self_Test软件说明"></a>4.Self_Test软件说明</h3><p>Self_Test_5-0-4 软件中包含 Makefile 文件，用户可以在上述配置完成之后直接在此目录下输入 make ipv6ready_p2_host 或者 make ipv6ready_p2_router(根据被测产品的测试类型选择)。</p><p>软件中也包含每个 RFC 测试目录，如 RFC8200 的测试目录 spec.p2, RFC4861 的测试目录nd.p2, RFC4862 的测试目录 addr.p2, RFC8201 的测试目录 pmtu.p2, RFC4443 的测试目录icmp.p2, 用户也可以在相对应的目录下测试如</p><p><code>ipv6ready # cd spec.p2/</code><br /><code>ipv6ready # make ipv6ready_p2_host(router)</code></p><p>若用户仅测试某个或某些测试用例的话，可以</p><p><code>ipv6ready # cd spec.p2/</code><br /><code>ipv6ready # make ipv6ready_p2_host(router) AROPT="-s 1 -e 10"</code></p><p>注：-s: start，开始项；-e: end，结束项</p><p>Self_Test工具里的小项，对应标准文档<a href="https://www.ipv6ready.org/docs/Core_Conformance.pdf">Core_Conformance.pdf</a>里大项的某一Part，直接看看不出来它们的对应关系，在运行某个具体小项的时候，Log会显示该小项对应哪个大项的哪个Part。</p><p>如果是手动测试，要在途中按照脚本指示操作设备。比如提示Set AdvSendAdvertisements Flag to True，就需要操作设备的接口，变为可发送RA的接口。</p><h3 id="结果分析"><a href="#结果分析" class="headerlink" title="5.结果分析"></a>5.结果分析</h3><p>打开Self_Test_5-?-?/index.html可以看到测试结果的总览。</p><p><img src="https://static.schale.jp/image-20241007231146308.jpg" alt="image-20241007231146308" /></p><p>点击某个section进入测试项页面。测试结果以 html 格式显示，也可打开单独的测试结果，如 16.html，如下图所示</p><p><img src="https://static.schale.jp/image-20241007231327256.jpg" alt="image-20241007231327256" /></p><p>每个测试结果单元中包含 7 列，分别是 No.、Title、Result、Log、Script、Packet、Dump(bin)。</p><p>title 列中有具体的测试项名称，点击测试项名称进入详细的测试例用例。<br />Result 列为该测试项测试结果，一般黑色为通过，红色字体为测试结果有问题，需要修改；<br />Log 列为测试过程，点击“X”就可以进入测试 Log 页；<br />Script 列和 Packet 列为测试例设计的脚本和报文格式。<br />Dump(bin)列为测试过程中链路上的抓包，使用 wireshark 等软件打开。</p><p><img src="https://static.schale.jp/image-20241007231453622.jpg" alt="image-20241007231453622" /></p><p>点击Log下面的X可以查看项目的日志，用于排错。</p><p><img src="https://static.schale.jp/image-20241007231833664.jpg" alt="image-20241007231833664" /></p><p>也有交互的报文的详细展示。</p><p><img src="https://static.schale.jp/image-20241007231918420.jpg" alt="image-20241007231918420" /></p><p>出现<span style="color:red">NG</span>字样代表失败，需要对照Log来检查哪一步出错了，本应收到却未收到、本不应收到却收到、收到的包内容错误等问题都会详细记录下来。</p>]]></content>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;ipv6-ready-logo&quot;&gt;IPv6 Ready Logo&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.ipv6ready.org&quot;&gt;IPv6 Ready Logo&lt;/a&gt;是一项国际认证计划，提供一个全球通用的规范，验证IPv6产品的可部署和应用性，为遵守这些规范的厂商颁发IPv6 Ready Logo证书，为企业采购硬件设备提供参考。&lt;/p&gt;
+&lt;p&gt;IPv6 Ready Logo共有5个分类：Core Protocols、CE Router、DHCPv6、IPSecv6、SNMP。其中Core Protocols是最通用的认证，所有厂商都会申请。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="IPv6" scheme="https://yecl.net/categories/IPv6/"/>
+    
+    
+    <category term="IPv6" scheme="https://yecl.net/tags/IPv6/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>冬逝</title>
+    <link href="https://yecl.net/merry-chiristmas-frost-nova/"/>
+    <id>https://yecl.net/merry-chiristmas-frost-nova/</id>
+    <published>2019-12-26T13:14:00.000Z</published>
+    <updated>2019-12-26T13:14:00.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>人有三次死亡</p><p>第一次的死亡是呼吸停止心脏停跳，在生物学上死了</p><p>第二次的死亡是在葬礼上，认识你的人都来祭奠，来怀念你的一生，在社会上你死了，不再有你的位置</p><p>第三次的终极死亡是最后一个记得你的人也死了，你彻底被这个世界遗忘了</p><p>——《寻梦环游记》</p><span id="more"></span><p><img src="https://static.schale.jp/IMG_4235.GIF" /></p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;人有三次死亡&lt;/p&gt;
+&lt;p&gt;第一次的死亡是呼吸停止心脏停跳，在生物学上死了&lt;/p&gt;
+&lt;p&gt;第二次的死亡是在葬礼上，认识你的人都来祭奠，来怀念你的一生，在社会上你死了，不再有你的位置&lt;/p&gt;
+&lt;p&gt;第三次的终极死亡是最后一个记得你的人也死了，你彻底被这个世界遗忘了&lt;/p&gt;
+&lt;p&gt;——《寻梦环游记》&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="随笔" scheme="https://yecl.net/categories/essay/"/>
+    
+    
+    <category term="明日方舟" scheme="https://yecl.net/tags/arknights/"/>
+    
+    <category term="手机游戏" scheme="https://yecl.net/tags/mobilegames/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>潮湿是最大的困扰</title>
+    <link href="https://yecl.net/nanjing-so-wet-weather/"/>
+    <id>https://yecl.net/nanjing-so-wet-weather/</id>
+    <published>2019-02-21T14:41:00.000Z</published>
+    <updated>2019-02-21T14:41:00.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>江苏省近一个月都没见过太阳。</p><p>在家里呆了25天后回到学校，从下车之后，一直都是这种感觉：</p><span id="more"></span><p><img src="https://static.schale.jp/20190221225433.gif" /><br />（虽然这图里的是广州）</p><p>虽然南京的名字里带那么一个“南”字，但在整个中国的版图来说，也不算南。有句话说得好，黑龙江人认为除了自己都是南方，广东人认为除了自己都是北方；北京人认为除了自己都是地方，上海人认为除了自己都是乡下。我一个黑龙江人真觉得南京已经非常南了。</p><p>去年我回来的比较早，大约初十二吧，天气也没这么潮湿，就是单纯的冷。冷不是问题，问题是没电。没电就没有空调，我大概23点回来的，又饿又渴，打着手机的手电筒在没擦的桌子上吃了点在30个小时的火车上没吃完的袋装秋刀鱼，没脱衣服就在正好0度的室内睡了五个小时，然后被冻醒。那可是正月十三，别人都在自己家过年呢，我出来觅食，只有开封菜营业。进去点了一份大干汉堡套餐，吃了两个钟头。下午电来了，我才终于能正常睡觉。</p><p>今年回家的时候带了几件衣服，回去后父母摸了一把，不动声色地递给我一件刚洗完甩干的衣服。我一摸，一样的。</p><p>每个见过我的家乡人都说我白了，皮肤好了，我说你长年在水汽里泡着你也白。在家乡的时候脸上又干燥又开裂，抹保湿霜，加湿器对脸喷之类的措施都是必备的，回到学校这些一样都没必要了，因为有天然加湿器，还免费。</p><p>回到学校开了空调的除湿模式，室外机出水孔那水流得和水龙头一样，直径半米的桶接了20厘米深的水。开了好几个小时的制热的宿舍被除湿模式吹的冷风又吹回了我回来前的样子，又打开了制热模式后就只能爬到高处来尽快接触到刚吹出来的热风。</p><p>这水是除了，但是屋子里的潮气依旧没觉得减少。过了几个小时，我的身体神奇般地适应了，然后就是无边的寒冷。水蒸发会带走热量嘛。这种天气，钻进被窝都不够暖和。从家里带来的干燥的衣服成为了战略物资，被装进了密封袋里以备不时之需。换睡衣的时候觉得是真他妈煎熬啊，这湿漉漉的衣服只能靠体温来将它干燥，我能做的也就是尽量紧点裹衣服了吧。</p><p>俗话说，淹死的都是会水的，冻死的都是东北的，救世啊。</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;江苏省近一个月都没见过太阳。&lt;/p&gt;
+&lt;p&gt;在家里呆了25天后回到学校，从下车之后，一直都是这种感觉：&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="随笔" scheme="https://yecl.net/categories/essay/"/>
+    
+    
+    <category term="南京" scheme="https://yecl.net/tags/nanjing/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>一个基于命令方块的投票重启装置</title>
+    <link href="https://yecl.net/a-vote-reboot-by-command-block/"/>
+    <id>https://yecl.net/a-vote-reboot-by-command-block/</id>
+    <published>2018-09-01T17:45:34.000Z</published>
+    <updated>2018-09-01T17:45:34.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>因为服务器有几个大户家里的机器过多，导致他们家区块被加载的时候服务器的TPS经常下降得很大，影响了正常玩家的游戏体验，故群里有人提议加个投票重启mod。 而MC1.12.2并没有能够这样做的mod，于是我拿命令方块撸了一个，用着还可以。</p><span id="more"></span><p><img src="https://static.schale.jp/2018-09-02_00.32.36.png" /></p><h1 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h1><blockquote><p>由重启提出者按按钮触发投票，创建一个类型为trigger的计分项目，并给玩家修改的权限。 通过/tellraw给玩家创建可以修改这个trigger的clickevent（同意为1，反对为0）。 规定时间后将所有玩家的分数集中到一个虚拟实体上，检查这个虚拟实体的分数，根据分数是多少来决定下一步动作。如需要全体成员都同意（即分数都为1）则将所有人分数相乘，全部同意的情况下积为1，此时的操作就是进行重启准备，只要有人反对（即分数为0）最终的积就会为0，此时不会进行重启。如需要半数成员同意，则将所有人分数相加，将和与0做比较，大于0的重启，小于等于0的不重启。 执行/stop的命令方块，使用活塞短脉冲发生器产生0.5红时刻的脉冲，防止重启后命令方块依旧被激活。 通过漏斗计时器来进行时间限制。</p></blockquote><h1 id="详细命令"><a href="#详细命令" class="headerlink" title="详细命令"></a>详细命令</h1><pre><code class="json">//在用户触发地/scoreboard players tag @p add applicant //给触发申请的人单独上tag以免@p圈错人/setblock x y z redstone_torch //每一个红石火把的放置都是为了触发下一个电路//在x y z处/tellraw @a ["",&#123;"text":"================================\n","color":"yellow"&#125;,&#123;"text":"【公告】","color":"light_purple","bold":true&#125;,&#123;"text":"玩家","color":"none","bold":false&#125;,&#123;"text":"@","color":"gold","bold":true&#125;,&#123;"selector":"@p[tag=applicant]","color":"gold","bold":true&#125;,&#123;"text":"提出重启服务器，请投票\n","color":"none","bold":false&#125;,&#123;"text":"请于30秒内做出选择，弃权视为反对\n","color":"none"&#125;,&#123;"text":"【支持重启】","color":"dark_green","bold":true,"underlined":true,"clickEvent":&#123;"action":"run_command","value":"/trigger reboot set 1"&#125;&#125;,&#123;"text":"      ","color":"none","bold":false,"underlined":false&#125;,&#123;"text":"【反对重启】","color":"dark_red","bold":true,"underlined":true,"clickEvent":&#123;"action":"run_command","value":"/trigger reboot set 0"&#125;&#125;,&#123;"text":"\n================================","color":"yellow","bold":false,"underlined":false&#125;]/scoreboard objectives add reboot trigger 重启支持情况/scoreboard players set @a reboot 0 //默认=反对/scoreboard players enable @a reboot //允许修改/setblock x1 y1 z1 minecraft:redstone_torch/scoreboard objectives setdisplay sidebar reboot/scoreboard players tag @a[tag=applicant] remove applicant//在漏斗计时器后/scoreboard players set #final_reboot reboot 1/scoreboard players operation #final_reboot reboot *= @a reboot //将所有玩家的分数乘到#final_reboot上/scoreboard players test #final_reboot reboot 1 1 //判断#final_reboot的分数是否在1到1之间/setblock x2 y2 z2 redstone_torch //条件制约的连锁命令方块，只有上面的判断通过才会触发此命令方块重启，不通过则无提示，也可以用比较器接个非门提示重启不通过。此命令方块同时激活一个漏斗计时器/scoreboard objectives remove reboot //删除投票用的计分项。由于是否重启都需要进行这步操作，我选择将此脉冲命令方块单独接在上一个漏斗计时器上//在x2 y2 z2处/tellraw @a ["",&#123;"text":"==================================\n","color":"yellow"&#125;,&#123;"text":"【公告】","color":"light_purple","bold":true&#125;,&#123;"text":"服务器将在30秒后重启，请做好准备","color":"none","bold":false&#125;,&#123;"text":"\n==================================","color":"yellow"&#125;]//在漏斗计时器后/stop //前接活塞短脉冲发生器</code></pre><h1 id="注释"><a href="#注释" class="headerlink" title="注释："></a>注释：</h1><h2 id="命令方块种类"><a href="#命令方块种类" class="headerlink" title="命令方块种类："></a>命令方块种类：</h2><p>每段电路的起始命令方块都是【红石控制，不受制约】的脉冲命令方块；所有它们后面的电路都是【保持开启，条件制约】的连锁命令方块。</p><h2 id="活塞短脉冲发生器"><a href="#活塞短脉冲发生器" class="headerlink" title="活塞短脉冲发生器："></a>活塞短脉冲发生器：</h2><p><img src="https://static.schale.jp/180902012249.png" /></p><h2 id="漏斗计时器"><a href="#漏斗计时器" class="headerlink" title="漏斗计时器："></a>漏斗计时器：</h2><p><img src="https://static.schale.jp/2018/09/2430.png" /></p><p>漏斗中的物品数量×2÷2.5=计时器的秒数</p><h2 id="红石火把的好处"><a href="#红石火把的好处" class="headerlink" title="红石火把的好处："></a>红石火把的好处：</h2><p>因为使用比较器时，直到下一次命令执行失败之前，比较器会一直保持输出状态，而不是形成脉冲。故采用能被活塞推掉的红石火把，当被放置时延迟触发活塞推掉红石火把。</p><h2 id="关于防误触"><a href="#关于防误触" class="headerlink" title="关于防误触："></a>关于防误触：</h2><p>防误触指的是防止前一个人的重启申请处理完毕前有第二个人按下提出重启的按钮。/setblock未加参数时，会先检查目标处的方块和命令里指定的方块是否一样，如果一样就会跳过，所以只需要在第一个红石火把处接一个时间足够长的延迟启动活塞即可阻止这段延时内命令方块被再次激活，但此延迟不得大于计算电路前的漏斗计时器和重启电路前的漏斗计时器的计时长度之和。</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;因为服务器有几个大户家里的机器过多，导致他们家区块被加载的时候服务器的TPS经常下降得很大，影响了正常玩家的游戏体验，故群里有人提议加个投票重启mod。 而MC1.12.2并没有能够这样做的mod，于是我拿命令方块撸了一个，用着还可以。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="minecraft" scheme="https://yecl.net/categories/minecraft/"/>
+    
+    
+    <category term="minecraft" scheme="https://yecl.net/tags/minecraft/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Nintendo Switch摇杆清洁小记（无拆机）</title>
+    <link href="https://yecl.net/nintendo-switch-joy-con-repair/"/>
+    <id>https://yecl.net/nintendo-switch-joy-con-repair/</id>
+    <published>2018-05-10T01:56:44.000Z</published>
+    <updated>2018-05-10T01:56:44.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>事情起因是这样。 我的笔记本和桌子的边缘相距很窄，大概只有一个5.5寸手机那么宽。因为这里离手比较近，所以我经常把手机手柄之类的东西放在这里方便拿。<br /></p><span id="more"></span><p><img src="https://static.schale.jp/Untitled.png" /></p><p>因为NS比手机宽，放在这位置显然有一部分是悬空的，而我并未在意，所以有那么一天，它就摔了。红色joy-con先着的地。 拿起来之后，右摇杆就坏了，有的时候会自动向右漂移，有的时候手动拨到右端然后松手，不是立刻回到原点而是慢慢慢慢慢慢地挪回去。</p><p>网上查了下遇到这种情况的人还不少，有的人即使没摔过joy-con也出了这毛病。 很多人说是摔的时候摇杆里掉漆了，污染了触点，并推荐了一款能清洁触点的东西，叫WD-40。好处是，不用拆开，直接在外面掀开摇杆下方的胶，喷一点就好了。我自己买了罐喷了一下，立刻生效，然后再在NS里校准摇杆，最后喷一点CRC精密仪器清洗剂来把油性的WD-40溶解。</p><p>WD-40 NB！</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;事情起因是这样。 我的笔记本和桌子的边缘相距很窄，大概只有一个5.5寸手机那么宽。因为这里离手比较近，所以我经常把手机手柄之类的东西放在这里方便拿。&lt;br /&gt;
+&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="随笔" scheme="https://yecl.net/categories/essay/"/>
+    
+    
+    <category term="Nintendo" scheme="https://yecl.net/tags/Nintendo/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>南京没有春天</title>
+    <link href="https://yecl.net/nanjing-weather-changed-a-lot-in-3-days/"/>
+    <id>https://yecl.net/nanjing-weather-changed-a-lot-in-3-days/</id>
+    <published>2018-03-29T02:23:25.000Z</published>
+    <updated>2018-03-29T02:23:25.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>这个城市的天气和它的历史一样变化多端。</p><span id="more"></span><hr /><p><img src="https://static.schale.jp/TIM截图20180328201132.jpg" /></p><p>南京市3月天气曲线图。来源：<a href="https://www.accuweather.com/zh/cn/nanjing/105570/march-weather/105570?monyr=3/1/2018&amp;view=table">Accuweather</a></p><hr /><p>南京天气多变我早有耳闻，却没想到变化这么大，前一天穿着短袖出门，后一天就裹着棉袄吹空调了。</p><p><img src="https://static.schale.jp/e16fc503gy1flopozogxwg206o05r4jx.gif" /></p><p>离开了东北才知道，南方是真冷。来的时候我幻想过这里全是25℃以上的大热天，带了很多夏天穿的T恤，遇到这冬春交接的时候却没有衣服穿。于是我只能退而求其次，以外面穿着大衣里面穿着长袖衬衫这种很别扭的穿着挺过这几天一个月。 等终于可以脱下大衣换上并没有几条的夹克衫的时候，我却发现春天已经过去了。展现在我面前的是终日25℃以上，有点夏天气息的南京。</p><p>赖床又少了一个理由，又少了一份心理斗争。在以前，从床上醒过来，把胳膊伸出被子都是很难的事，从床上下来到走到换衣服的地方的几步更是有如蜀道之难。现在，一个前仰就起来了，然后迷糊一会，随便找个理由继续倒下。等到愧疚感逐渐充满整个大脑的时候，睡在被子里已经很热了，不得不出来。</p><p>天气热起来，坏处也立刻就显现了出来。上那种200人的大课的时候，一进教室，就能闻到那种你懂得的味道，我称之为“人味”。让人很不爽的是，很快你就会习惯这个味道，并且加入产生这种“人味”的行列。</p><p>我爱暖气。</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;这个城市的天气和它的历史一样变化多端。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="随笔" scheme="https://yecl.net/categories/essay/"/>
+    
+    
+    <category term="南京" scheme="https://yecl.net/tags/nanjing/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>南京一神奇的bugpo：明发水卵子</title>
+    <link href="https://yecl.net/nanjing-mingfa-bug-portal/"/>
+    <id>https://yecl.net/nanjing-mingfa-bug-portal/</id>
+    <published>2017-05-29T15:49:31.000Z</published>
+    <updated>2017-05-29T15:49:31.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>开头先吐槽一下，这个po的名字起得真烂。</p><p>我最开始看portal介绍里的图片，以为是个什么祭坛呢，今天终于有时间了，我骑行了12公里来到了这里。（真是累死我了，从自行车上下来都不会走路了）</p><span id="more"></span><p><img src="https://static.schale.jp/Screenshot_20170529-183559.png" /></p><p><img src="https://static.schale.jp/TIM截图20170529235818.png" /></p><p><img src="https://static.schale.jp/Ingress_2017-05-29-18-47-35.png" /></p><p>到了实地我才知道这是明发广场正面的喷泉，算是地标吧。中间的那个球是铁做的地球。 图片经Google Photos自动美化过，我又一次深深地感受到自己的拍照水平真的是太差了。。。。。</p><p><img src="https://static.schale.jp/IMG_20170529_184535-EFFECTS.jpg" /></p><p>曾经有一位南京土豪蓝军，叫epizza，经常去明发广场的这个“水卵子”氪金塞Portal Fracker，塞的次数太多了，竟然出了bug，Fracker的双倍效果消失了，但是这个动态的特效颜色还存在，即使被毒或者打掉重建都不能让它变回正常，于是这个po就成了南京ingresser迎接外宾的保留节目。</p><p>PS：在我在po附近的路边想摸一张Key的时候还有几个人走过来问我是要住店吗，反正我自己觉得自己怎么看怎么不像是要住店的，不过一个人举着手机站在挺空旷的一个喷泉边上，也是挺容易让人起疑的。</p><p>PS2：在我去的时候还是绿的，回到宿舍就蓝了……残念</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;开头先吐槽一下，这个po的名字起得真烂。&lt;/p&gt;
+&lt;p&gt;我最开始看portal介绍里的图片，以为是个什么祭坛呢，今天终于有时间了，我骑行了12公里来到了这里。（真是累死我了，从自行车上下来都不会走路了）&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="随笔" scheme="https://yecl.net/categories/essay/"/>
+    
+    
+    <category term="手机游戏" scheme="https://yecl.net/tags/mobilegames/"/>
+    
+    <category term="ingress" scheme="https://yecl.net/tags/ingress/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>没有什么会根本停不下来，除了时间</title>
+    <link href="https://yecl.net/nothing-eternity-but-time/"/>
+    <id>https://yecl.net/nothing-eternity-but-time/</id>
+    <published>2017-04-03T09:20:35.000Z</published>
+    <updated>2017-04-03T09:20:35.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>这篇是在火车上为打发时间写的，多为抒发自己感情，没有什么逻辑和道理可言。 昨天愚人节，我成功地忘记了公主殿下的生日。 还在不到一年以前，信誓旦旦地说过“不会忘记你”的又是谁呢。 从小学到大学，不知有多少“就他/她/它了，这辈子不换了”的承诺或决定化为泡影。</p><span id="more"></span><blockquote><p>有个你曾经以为离不开的群，你很久没在里面说话了。某个你曾经想为他肝脑涂地的偶像，你早就没再追踪他最新动态了。一些曾经亲密无间的人，你们已经几年没有联系。天天追的美剧你打算弃了，每天玩的 LOL 你也准备戒了。多少在乎正在被稀释，多少热情渐渐被冲淡。没有什么会“根本停不下来”，除了时间。</p></blockquote><p>小学的时候喜欢MJ，当时很满足，有了MJ，其他歌手都去死吧。ipod里塞满了MJ。后来MJ和JB并存了，这是我极少有的允许两个歌手共同统治我的列表的情况。</p><p>后来机缘巧合，看了电磁炮，又为了探源看了魔禁，从此跳入二次元巨坑，从一本科学杂志中了解了初音ミク，然后，MJ和JB都从播放列表消失了，取而代之的是Vocaloid。在我整个初中阶段，Vocaloid是我唯一的信仰。那个时候最喜欢Kaito的《悲怯战队啥啥啥啥》的，每日单曲循环。用一分钱在马云秒杀了一个能插u盘的音响，天天循环自己的Vocaloid歌曲，吃饭听，睡觉听，写作业也听。</p><p>初中毕业的时候流行写同学录，我认认真真地写上这辈子只爱悲怯战队，一上高一立刻反水，转而喜欢上传统三大泪曲《虽然歌声无形》《letter song》《夕日坂》，后转而投奔40mp和gumi，初音和镜音的歌曲渐渐减少。尽管我对外仍声称是镜音双子死忠粉，但已经没办法了啊，我也不知道为什么我与它们渐行渐远。</p><p>随着nicosound的倒闭，我没有了听新Vocaloid周榜的途径，拖得久了也就忘记了。那之后很长一段时间里，Google还是个存在的网站，GAE还是最佳的翻墙方案，配合Pagespeed 4k视频随便看。那个时候niconico用GAE访问极其困难，后来Google不存在了，niconico我再也没上去过。</p><p>我以为自己真的会一辈子喜欢着Vocaloid，理由很简单：Vocaloid曲是唯一不带歌手个人感情的曲子，其思想与作曲家最为接近。</p><p>当我知道了什么是Shadowskcks有了爬niconico的能力后，我早已不太关心Vocaloid。某天打开歌单，发现，MJ的歌真他娘好听。</p><p>我与互联网的接触始于百度罪恶都市吧。罪恶都市吧是个dalao休闲的场所，chrome吧，firefox吧和bug吧的dalao累了就来吹吹水，顺便带了一些新技术来，比如云签到。于是一来二去，云签成了我接触互联网的开端。剩下的无非就是加群互捧学习姿势而已。</p><p>既然踏入了二次元，怎么会不知道三大邪教。一面是粉丝有组织有纪律有宗教般信仰的Lovelive，一面是本子刷屏玩梗无数黑枪成风的舰队Collection，我站了东方Project。我自认手残，不敢碰游戏，奈何东方庞大的世界观多建立在游戏中，我很难在不玩游戏的情况下进行了解，这可能也是我最后叛变的原因吧。</p><p>2016年元旦一高中同学拉我玩WG的《战舰世界》，这是我与舰C的第一次“所谓的”接触。我很喜欢这游戏，尽管那个时候网吧里全是撸啊撸，我还是能看见一两个开船的。在沉迷三个月后，我正式“上船了”，我当时有台IDCF，搭个ss完全能应付（现在一想去年10月份拖着账单不付导致账号被删真的是太蠢了，现在IDCF申请难度直逼Sakura，最重要的是稳，便宜，当然限制CPU频率这种欺诈消费者的事就应该往死里黑，MySQL一天死一次，发个文章死，写个评论死，优化一下还死，直接说你不卖500円的机子不就得了，我们都省心）。</p><p>话题好像跑远了。借着对战舰世界的兴趣，我背叛东方投靠了舰C，已经是高三最后一百天。纯音乐成了我不变的信仰。2016年6月27日，我（被迫）彻底斩断与公主殿下的联系，同时斩断的还有与Vocaloid的联系。 “纯音乐成为了不变的信仰”什么的也是在扯蛋啦，尼尔机械纪元的带Vocal的音乐直接把我从纯音乐的殿堂里扯了出来。</p><p>我玩的最久的游戏是l4d2。就是四个冻鳗美少女拿着AK47火神怼天线宝宝的那个游戏。这款现在来看完全是mod撑起天下的游戏，我曾经也沉迷其中，也觉得根本停不下来，但时间久了未免审美疲劳，结果现在玩彩虹六号的时间直逼l4d2。一直到对现在的我来说，彩虹六号是最满意的FPS，甚至是最满意的游戏，我想过不再买其他游戏，然而，2个月后我买了尼尔机械纪元的首发版，两天游玩24小时，彩虹六号什么的吃翔吧。</p><p>所以没有什么根本停不下来的东西啊，只有时间。时间会抹去一切。我曾经固执地反对这句话，现在觉得，真是这样。人心是会变的。</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;这篇是在火车上为打发时间写的，多为抒发自己感情，没有什么逻辑和道理可言。 昨天愚人节，我成功地忘记了公主殿下的生日。 还在不到一年以前，信誓旦旦地说过“不会忘记你”的又是谁呢。 从小学到大学，不知有多少“就他/她/它了，这辈子不换了”的承诺或决定化为泡影。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="随笔" scheme="https://yecl.net/categories/essay/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Minecraft：重力方块与Lazy Chunks</title>
+    <link href="https://yecl.net/minecraft-gravity-affected-blocks-lazy-chunks/"/>
+    <id>https://yecl.net/minecraft-gravity-affected-blocks-lazy-chunks/</id>
+    <published>2017-02-09T13:40:25.000Z</published>
+    <updated>2017-02-09T13:40:25.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>Minecraft中，已经被加载的Chunks有两种状态：Entities-processing Chunks 与 Lazy Chunks。本文将讲解受重力影响的方块在Lazy Chunks中的表现，从而用它做一些诸如修复铁砧，破坏基岩的小把戏。</p><span id="more"></span><p>Entities-processing Chunks是大家最为熟悉的Chunks类型，就是我们在Minecraft中经常看见的Chunks，这些Chunks里面实体与方块遵循它正常应该遵循的形式运动；Lazy Chunks则处于Entities-processing Chunks的边缘，其中的实体表现与前者有些不同：在Lazy Chunks里，实体活动会停止——这意味着生物会停止活动，落沙不会形成。</p><p>需要说明的是，“落沙”一词不仅仅指“掉落的沙子”，它可以指“掉落的任何方块”，用“沙”来代指全体是因为在Minecraft中有一种实体类型叫FallingSand，这种实体的nbt可以设置为任何方块来使本来不受重力影响的方块变得受重力影响（即和沙子的表现相同）。尽管FallingSand在1.11被移除并使用Falling_Blocks代替，但约定俗成的东西也不是那么容易就改的。</p><p>百度Minecraft吧的defanive在他的末地里做了一个“手动防止末地主岛刷末影人”的装置，使用一条超级长的红石线路去激活16Chunks以外的有着79只末影人的刷怪塔，使整个世界刷怪数量达到上限，使主岛不再生成末影人。这个装置是对Lazy Chunks的一次有效运用，不过本文讨论的重点不在这里，举这个例子的作用是帮助看官们记起对Lazy Chunks的了解。</p><p>Lazy Chunks对待落沙的方式与Entities-processing Chunks不同，接下来博主会讲解不同在何处。</p><p>在Entities-processing Chunks中，沙子落到地上的过程分为三个阶段：</p><ol type="1"><li>沙子删除自身<br /></li><li>创造一个FallingSand类型，包含原方块nbt的实体，并按照实体应该遵守和的物理规律掉落，直到碰到固体方块<br /></li><li>碰到固体方块后，删除自身，使用自身nbt在原地创造和原来一样的方块</li></ol><p>在Lazy Chunks中，这个过程只有两个阶段：</p><ol type="1"><li>沙子向下探测固体方块<br /></li><li>探测到固体方块后，删除自身，在所探测到的固体方块上创造和原来<strong>几乎</strong>一样的方块。因为没有掉落阶段，所以没有掉落动画</li></ol><p>注意这里加粗的字，之所以说“几乎一样”，是因为后者与前者相比，少了掉落阶段，从而少了“存储nbt”这一关键因素，导致创造新方块后nbt丢失，所以游戏使用了默认的nbt代替。利用这个特性，我们可以玩这些把戏：红沙褪色、铁砧修复</p><p>Entities-processing Chunks的大小取决于游戏的可视距离（Render Distance），在Entities-processing Chunks周围两个Chunks宽的环形区域则为Lazy Chunks。</p><blockquote><p>红沙的方块数据值为1，在Lazy Chunks里掉落后，数据值恢复为默认的0，变成了常见的黄沙子；</p></blockquote><p><img src="https://static.schale.jp/2017-02-09_22.36.25.png" /></p><p><img src="https://static.schale.jp/2017-02-09_22.37.34.png" /></p><p>铁砧的方块数据值如表： &gt; &gt; * * <em> &gt; &gt; 0 &gt; &gt; 铁砧（北/南） &gt; &gt; 1 &gt; &gt; 铁砧（东/西） &gt; &gt; 2 &gt; &gt; 铁砧（西/东） &gt; &gt; 3 &gt; &gt; 铁砧（南/北） &gt; &gt; 4 &gt; &gt; 轻微受损的铁砧 （北/南） &gt; &gt; 5 &gt; &gt; 轻微受损的铁砧 （东/西） &gt; &gt; 6 &gt; &gt; 轻微受损的铁砧 （西/东） &gt; &gt; 7 &gt; &gt; 轻微受损的铁砧 （南/北） &gt; &gt; 8 &gt; &gt; 严重受损的铁砧（北/南） &gt; &gt; 9 &gt; &gt; 严重受损的铁砧（东/西） &gt; &gt; 10 &gt; &gt; 严重受损的铁砧（西/东） &gt; &gt; 11 &gt; &gt; 严重受损的铁砧（南/北） &gt; &gt; </em> * * &gt; &gt; 铁砧在Lazy Chunks里掉落后，数据值恢复默认的0，变成没有损伤的样子，并朝向南/北。</p><p><img src="https://static.schale.jp/2017-02-09_22.38.42.png" /></p><p><img src="https://static.schale.jp/2017-02-09_22.39.13.png" /></p><p>然而，同样作为重力方块的龙蛋和它们不同，在Lazy Chunks中的掉落方式是这样的：</p><p><img src="https://static.schale.jp/2017-02-09_22.40.14.png" /> <img src="https://static.schale.jp/2017-02-09_22.40.34.png" /></p><p>可以看到龙蛋并不是在探测到的方块上创造本身，而是将探测到的方块直接替换成本身，无论那个是什么方块——这意味着用这种方法可以从上到下地破坏基岩。</p><p>在需要破坏的基岩上方做这个装置，放上龙蛋。打开设置将可视距离调到2，这样能节约时间。</p><p><img src="https://static.schale.jp/2017-02-09_22.54.29.png" /></p><p>按F3+G显示区块边缘，使用红石线+中继器延伸两个区块，直到这个装置<strong>正好</strong>从视野内消失。</p><p><img src="https://static.schale.jp/2017-02-09_23.02.36.png" /></p><p>给它一个信号，再慢慢走回去查看装置，会发现变成了这样：</p><p><img src="https://static.schale.jp/2017-02-09_23.04.28.png" /></p><p>可以看到龙蛋已经取代了基岩的位置，重复这个过程，就可以快速破坏基岩。 下图为三种方块在Lazy Chunks掉落后的状态</p><p><img src="https://static.schale.jp/2017-02-09_23.12.58.png" /></p><p><img src="https://static.schale.jp/2017-02-09_23.15.46.png" /></p><p>可以看到只有龙蛋替换了沙石，红沙和东西朝向的损坏的铁砧分别还原成黄沙和修复的南北朝向的铁砧。</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;Minecraft中，已经被加载的Chunks有两种状态：Entities-processing Chunks 与 Lazy Chunks。本文将讲解受重力影响的方块在Lazy Chunks中的表现，从而用它做一些诸如修复铁砧，破坏基岩的小把戏。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="minecraft" scheme="https://yecl.net/categories/minecraft/"/>
+    
+    
+    <category term="minecraft" scheme="https://yecl.net/tags/minecraft/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>跨越半个中国的春运</title>
+    <link href="https://yecl.net/span-half-china-during-the-spring-rush/"/>
+    <id>https://yecl.net/span-half-china-during-the-spring-rush/</id>
+    <published>2017-01-24T14:44:43.000Z</published>
+    <updated>2017-01-24T14:44:43.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>中国的南北距离是5000公里，而我的回家旅程正好跨越了半个中国。</p><p>我们这辣鸡学校特意把放假时间拖到小年这天。其他高中同学都回家吃饱喝足该上哪玩玩完了，我们才回来。</p><p>数不胜数的人为了在这个月回家过年而拼命地挤火车。尽管坐的火车已经加了很多节车厢，也还有很多人没有座位，这些人买的票便宜，名曰“站票”。买了站票的人把两节车厢的连接处堵住了，上个厕所还要当心不要踩到人。</p><p>北京到哈尔滨的车21点开，开9个小时，我不得不在车上（硬座）度过一晚上。熬到3:30终于忍不住困的我睡了一个半小时，感觉和在学校一觉睡到中午没什么不一样。 虽说南京现在的温度不过1℃，哈尔滨是-22℃，但是在体感上来讲二者没什么不同。无论在哪我的手都不能伸出袖子外，只能用一只手拿着手机，另一只手伸进兜里取暖，再换手。</p><p>家乡还是那么熟悉，去年过年贴的红对联依旧像新的一样，我还以为是新贴的。我奋战过六年的书桌也还在，上面没有灰尘，看来是父母擦掉了。我掏出电脑摆在上面，它立刻恢复了往日的杂乱，让我的心情轻松了许多。</p><p>扎眼的堆成山的高考练习册终于从我眼前里消失了，这让我感受到了一种解脱。我曾经以为高考是天大的一个坎，实际上，参加高考的我并没有什么特殊的感觉。相比之下，大学的期末考试更容易让我紧张，毕竟什么都不会嘛，高考起码肚子里是有干货的，还能比划比划。</p><p>回到家之后给老妈的电脑和手机安上了Google Photos，她成天喊照片没地方放，一删除就找不到，Google相册的自动备份和同步还是很方便的。</p><p>总算是能“完全”闲下来了。CF前两天搞了个什么活动，送了我一把金AK47，这是我以前想都不敢想的事。于是我趁着这闲工夫玩了几把CF，也算是弥补了小时候从来没碰过豪枪的遗憾。顺带，CF真的没人玩了。我选择彩虹六号。</p><p>我就读的高中又涌现了一批新的学霸，而且大有超越我们这一届的趋势。不过从南京回来，我明白了一个道理：东北边远地区的小城市的孩子的发展注定要比北上广深晚，因为在我们家乡这种小地方，接触到的世界实在是太小，99%的学生在考入大学走出家门前，对九门文化课之外的领域一无所知。他们未来的计划和理想和也无法延伸得更远。这大概就是人们（包括我）向南跑的原因吧。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;中国的南北距离是5000公里，而我的回家旅程正好跨越了半个中国。&lt;/p&gt;
+&lt;p&gt;我们这辣鸡学校特意把放假时间拖到小年这天。其他高中同学都回家吃饱喝足该上哪玩玩完了，我们才回来。&lt;/p&gt;
+&lt;p&gt;数不胜数的人为了在这个月回家过年而拼命地挤火车。尽管坐的火车已经加了很多节车厢，也</summary>
+      
+    
+    
+    
+    <category term="随笔" scheme="https://yecl.net/categories/essay/"/>
+    
+    
+    <category term="南京" scheme="https://yecl.net/tags/nanjing/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>这是一款垃圾游戏，因为你根本无法透过泪水看见屏幕</title>
+    <link href="https://yecl.net/the-game-undertale/"/>
+    <id>https://yecl.net/the-game-undertale/</id>
+    <published>2017-01-03T15:33:40.000Z</published>
+    <updated>2017-01-03T15:33:40.000Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p>It might not be pretty, but Undertale is absolutely a work of art.</p></blockquote><p>Undertale（中文非官方译名为传说之下），2015年发布的一款像素游戏，却是steam拥有最高好评率的游戏之一。IGN给了它满分10分的评价。</p><span id="more"></span><p><img src="https://static.schale.jp/20170103204948.png" /></p><p>对于Undertale多么的神作，已经不需要博主细说，博主就说说这个游戏里那些惊艳的地方。</p><p><strong>========剧透注意========</strong></p><p>放眼目前绝大多数游戏，叙事和游戏的割裂都是非常严重的。身着神装的你轻易捏爆了boss，但在剧情中变成了你与boss进行了艰苦激烈的战斗（和声泪俱下的嘴炮），亦或是开放世界中各条支线任务时间线和氛围的冲突（来盘昆特牌吗？），自体意识较强的游戏往往会被贴上游戏性不足的标签，而拟真画面与游戏玩法的不匹配又会陷入游戏机制的恐怖谷。Undertale做到了游戏和剧情的完美平衡，让每一次“战斗”的选择都发自玩家内心，就好像面对这些的不是屏幕里的Frisk，而是屏幕前的玩家。每一次的战斗结果又与剧情发展和最终结局环环相扣，使游戏的真实性上升到新的层次。</p><p>区别于其他RPG游戏，玩家和怪物之间的互动不止有打杀，还有语言交流和行动。当自己和怪物有足够多的了解，或者是用某种行动使得怪物对战斗失去兴趣，就可以选择mercy来表示“我不想打了”，和平解决战斗。玩家杀或不杀死怪物的结果，会在后来的剧情中得到体现。一路和平下去，主角会受到怪物们的欢迎和鼓励；一路杀戮下去，所有的怪物都会害怕、逃离主角。</p><p>在其他RPG游戏中，小怪只是没有感情的，由一堆代码组成的机器，它们不会有自己的思想，不知道和谁战斗，为什么战斗。在玩家的眼里，它们只是升级用的经验值和购买神装的金币罢了。但Undertale完全颠覆了这个世界观。在Undertale中，所有生物都有自己的感情，有自己的思想和梦想。</p><p>Froggit乐于学习知识；Whimsun生性怕人；Snowdrake是个为了当笑星刻苦练习的鸟；狗狗们被抚摸就会丧失攻击性；Undyne是个女汉子，在私下性格豪爽；Mettaton为继续做怪物们的偶像而奋斗；Papyrus和Sans拥有最强的攻击力但甘愿过着平凡且逗比的生活……在传说之下，每个人都充满了决心。</p><p>对，决心。决心这个词在每一次主角存档的时候出现。令主角充满决心的原因也千奇百怪：</p><blockquote><p>雪总是能够打掉重新做成其他更加有用的东西。如此简单的道理使你充满了决心。<br />知道老鼠总有一天会从神秘的水晶中抽取出起司……这使你充满了决心。<br />成为无用垃圾中的一员，你充满了决心。<br />看到如此奇怪的实验室位在这样的地方……使你充满了决心。<br />知道老鼠总有一天会骇进保险箱拿到裡面的起司……使你充满了决心。</p></blockquote><p>在玩家死亡后，游戏也会告诫玩家“不要失去决心！”决心是什么呢？是改变地底世界的意念还是想回家的热切希望？对Asgore的决战中他击碎了玩家的mercy选项，因为两人必须要决出胜负。“决心”在此超越了mercy,正是决心让主角来到了Asgore面前，也正是（双方的）决心要求这最终战斗不能再有宽恕（mercy）。</p><p>游戏的另一大有趣之处是，如果你试图卖东西给商店，店主会说“我要是买了那破缎带和没用的树枝，还怎么赚钱啊！”，讽刺了多数RPG游戏玩家视NPC商店为垃圾桶，而商店对垃圾也照单全收的游戏设计；如果你在杀了某个怪物后感到后悔并选择读档重来，有两个怪物会记住你的这个行为，并嘲讽你悔不当初；如果你走了屠杀路线，存档会上传steam云端，永远无法走回和平路线；屠杀路线Sans的“特殊攻击”是将玩家永远困在他的回合之中，要知道控制回合一直以来都是玩家的能力，这是对习惯了对自己拥有上帝能力而为所欲为的玩家的讽刺。</p><p>游戏中层出不穷的谜团，有趣又不难的谜题，充满人物情感又不像东方雷电那样坑手残玩家的弹幕，让这个游戏变得生动起来。最重要的，是作者Toby Fox（同时也是游戏音乐制作人）制作的绝赞的音乐。如果没有了音乐的配合，这款游戏的乐趣会降低一半以上。</p><p>这款游戏留给人们的是无限回忆和思考。在游戏中，亲情、友情始终围绕在主角周围，主角的一举一动都会影响到这两种感情。当你费尽周折地终于达到了旅途的终点，熟悉的bgm响起，你恍惚间回到了故事开始的地方，听着最初遇见的怪物诉说它们的故事。它们在最后的爆发也是触动了人们的泪点。玩完这个游戏，你会重新认识游戏中每一个被设定为不值一提的小卒，认真地思索着它们的过往，重新重视那些在作者或生活的有意或无意安排而忽略的事物。</p><p><img src="https://static.schale.jp/0200fb399b504fc262eadcd7e2dde71191ef6d5e.jpg" /></p><p>相关链接：<a href="http://www.u-acg.com/archives/7972">《UNDERTALE》：一款重新定義玩家與角色扮演內涵的偉大作品</a></p>]]></content>
+    
+    
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;It might not be pretty, but Undertale is absolutely a work of art.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Undertale（中文非官方译名为传说之下），2015年发布的一款像素游戏，却是steam拥有最高好评率的游戏之一。IGN给了它满分10分的评价。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="随笔" scheme="https://yecl.net/categories/essay/"/>
+    
+    
+    <category term="游戏" scheme="https://yecl.net/tags/games/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>2016，南京的第一场雪</title>
+    <link href="https://yecl.net/2016-first-snow-in-nanjing/"/>
+    <id>https://yecl.net/2016-first-snow-in-nanjing/</id>
+    <published>2016-11-23T09:00:23.000Z</published>
+    <updated>2016-11-23T09:00:23.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="https://static.schale.jp/default.jpeg" /></p><p>南京迎来了一次大降温。昨天明明还是15度，今天一下子就接近了0度。如此剧烈降温的结果就是，南京下雪了。</p><p>南方的雪花没有东北的大，下得也没有东北的猛烈。可能是因为南方的地面还比较热，雪落地即化，像下了一场雨一样。在雪花中偶尔还夹带着一点点雨滴，它们聚集在路边树的叶子上（我仍未知道那种树的名字），然后向下面路过的行人发起空袭。</p><span id="more"></span><p>南方人在下雪天是打伞的。雪天打伞在一个东北人眼中看来很滑稽。我本着“老子是东北人，见过的雪不知道比你们大到哪里去了”的理念坚持不打伞。而事实也证明不用打伞，可能南方的雪花容易化，不像东北的雪花粘在衣服上用手一拍就掉。况且，东北的雪靠伞来挡还是naive，东北的雪不仅能竖着下，还能横着下；不仅能从上往下下，还能从下往上下。 刚才在扣扣空间上看到一条说说：</p><p>淹死的都是会水的，冻死的都是东北的。</p><p>被我们高中同学疯狂转发。看来我们这些考到长江一带的同学都有同样的感受。在只有不到10摄氏度的寝室里待着简直度日如年，更不用提上课的教室里的3度了。上完大英回来的我双腿都僵了，在寝室里开着空调吹了一会才缓过来。 在无边的寒冷中，我终于理解了什么叫“南方人过冬靠正气，东北人过冬靠暖气”。在东北，这种0度左右的“高温”，人们丝毫不会感觉到冷，即使在户外也是如此。而东北人到了南方，就饱受室内外一样温度的折磨。难道是东北人去了南方就“入乡随俗”了？倒是真正的南方人，面对这气温表现得从容淡定。</p><p>不过，南方的这种小雪看起来别有一番滋味。那种雪覆在叶子上，白绿相间的温柔感觉是东北这种能把大树压塌的雪不能比的。当然，东北的这种压塌大树的雪在南方人看来也极为震撼。不知道是否东北人和南方人的性格与情调与当地下的雪有关呢？</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;&lt;img src=&quot;https://static.schale.jp/default.jpeg&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;南京迎来了一次大降温。昨天明明还是15度，今天一下子就接近了0度。如此剧烈降温的结果就是，南京下雪了。&lt;/p&gt;
+&lt;p&gt;南方的雪花没有东北的大，下得也没有东北的猛烈。可能是因为南方的地面还比较热，雪落地即化，像下了一场雨一样。在雪花中偶尔还夹带着一点点雨滴，它们聚集在路边树的叶子上（我仍未知道那种树的名字），然后向下面路过的行人发起空袭。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="随笔" scheme="https://yecl.net/categories/essay/"/>
+    
+    
+    <category term="南京" scheme="https://yecl.net/tags/nanjing/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>艦隊これくしょん 1/7 瑞鶴改二 手办</title>
+    <link href="https://yecl.net/kancolle-zuihou-kai-ni-figure/"/>
+    <id>https://yecl.net/kancolle-zuihou-kai-ni-figure/</id>
+    <published>2016-10-15T15:15:58.000Z</published>
+    <updated>2016-10-15T15:15:58.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="https://static.schale.jp/dsc_11242.jpg" /></p><p>这个小姨子是10月4日从日亚购买的，因为在砍口垒里造出了小姨子，就想着祝贺一下自己。</p><p>图是托楼上宿舍擅长摄影的同学拍的，因为时间不够没有拍到细节。大光圈真是不错，能拍出很美的效果。</p><p><img src="https://static.schale.jp/dsc_1141.jpg" /></p><p><img src="https://static.schale.jp/dsc_11292.jpg" /></p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;&lt;img src=&quot;https://static.schale.jp/dsc_11242.jpg&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;这个小姨子是10月4日从日亚购买的，因为在砍口垒里造出了小姨子，就想着祝贺一下自己。&lt;/p&gt;
+&lt;p&gt;图是托楼上宿舍擅长摄影的同学拍的，因为时间不够没有拍到</summary>
+      
+    
+    
+    
+    <category term="随笔" scheme="https://yecl.net/categories/essay/"/>
+    
+    
+    <category term="舰队collection" scheme="https://yecl.net/tags/kancolle/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>康威生命游戏 in Minecraft</title>
+    <link href="https://yecl.net/conways-game-in-minecraft/"/>
+    <id>https://yecl.net/conways-game-in-minecraft/</id>
+    <published>2015-12-27T14:23:57.000Z</published>
+    <updated>2015-12-27T14:23:57.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>联动<a href="http://xcgx.me/archives/300">Cancergary</a>， <a href="http://www.tyanboot.pw/post/27.html">Tyanboot</a></p><p>康威生命游戏是啥大伙可以在上面的链接中了解，本文以<a href="https://www.youtube.com/watch?v=2VwMfdTDbcI">Accidental Games的作品</a>为例详细讲解mc中的Conway’s Game。游戏展示和存档视频里都有。</p><span id="more"></span><p>那么开始。 注： 本游戏需要Minecraft 1.9版本。</p><p>ICB：Impulse Command Block，即1.8及以前版本里的黄色命令方块<br />RCB：Repeat Command Block，即自带脉冲的命令方块，紫色，每t运行一次。<br />CCB：Chain Command Block，即指向它的命令方块被激活时会连锁激活的绿色命令方块，本文的CCB全是Unconditional模式，不需要红石激活。</p><p><img src="https://static.schale.jp/2015-11-08_15.16.22.png" alt="2015-11-08_15.16.22" /></p><p>首先，ICB用来创建一个名叫life的无判据计分板。它是基础。当然，它只需要运行一次，直接用按钮开启即可。</p><p>/scoreboard objectives add life dummy</p><p>接下来这段非——常——长的一串CCB就是Run Life，它控制整个游戏的运行。 首先用一个RCB testfor玩家手中的绿宝石块，如果检测到，就会触发它指着的那个CCB。</p><p>/testfor <span class="citation" data-cites="p">@p</span> {SelectedItem:{id:minecraft:emerald_block}}</p><p>这里的ICB和上一个CCB分开了，我也不知道为什么。在ICB上方summon一个名字为runLife的盔甲架（过程略），然后在CCB中让它在原地放置红石块，正好激活下方的ICB（还是原来的配方，还是熟悉的味道）。</p><p>/execute <span class="citation" data-cites="e">@e</span>[name=runLife] ~ ~ ~ setblock ~ ~ ~ redstone_block</p><p>为什么要用这个ICB呢？因为RCB的脉冲是不可控的╮(╯▽╰)╭</p><p>/setblock ~ ~1 ~ wool 14</p><p>然后就是一串的CCB，最开始的CCB重置分数，接下来八个CCB探测每个药水云周围是否有其他药水云（药水云哪来的在后面会说到），然后加一分。翻译成康威生命游戏的话就探测每个居民身边是否有邻居。这是判断死亡的条件。</p><p>/scoreboard players set <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud] life 0</p><p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud] ~1 ~ ~ scoreboard players add <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,r=0] life 1</p><p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud] ~1 ~ ~1 scoreboard players add <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,r=0] life 1</p><p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud] ~ ~ ~1 scoreboard players add <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,r=0] life 1</p><p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud] ~-1 ~ ~1 scoreboard players add <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,r=0] life 1</p><p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud] ~-1 ~ ~ scoreboard players add <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,r=0] life 1</p><p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud] ~-1 ~ ~-1 scoreboard players add <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,r=0] life 1</p><p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud] ~1 ~ ~-1 scoreboard players add <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,r=0] life 1</p><p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud] ~ ~ ~-1 scoreboard players add <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,r=0] life 1</p><p>然后该判断复活的条件了，八个CCB分别探测八个方向，每探测到一个煤块就生成一个名为check的药水云。</p><p>/execute <span class="citation" data-cites="e">@e</span>[name=tile,type=AreaEffectCloud] ~1 ~ ~ detect ~ ~-1 ~ coal_block -1 summon AreaEffectCloud ~ ~ ~ {Duration:2147483647,CustomName:check}</p><p>/execute <span class="citation" data-cites="e">@e</span>[name=tile,type=AreaEffectCloud] ~1 ~ ~1 detect ~ ~-1 ~ coal_block -1 summon AreaEffectCloud ~ ~ ~ {Duration:2147483647,CustomName:check}</p><p>/execute <span class="citation" data-cites="e">@e</span>[name=tile,type=AreaEffectCloud] ~ ~ ~1 detect ~ ~-1 ~ coal_block -1 summon AreaEffectCloud ~ ~ ~ {Duration:2147483647,CustomName:check}</p><p>/execute <span class="citation" data-cites="e">@e</span>[name=tile,type=AreaEffectCloud] ~-1 ~ ~1 detect ~ ~-1 ~ coal_block -1 summon AreaEffectCloud ~ ~ ~ {Duration:2147483647,CustomName:check}</p><p>/execute <span class="citation" data-cites="e">@e</span>[name=tile,type=AreaEffectCloud] ~-1 ~ ~ detect ~ ~-1 ~ coal_block -1 summon AreaEffectCloud ~ ~ ~ {Duration:2147483647,CustomName:check}</p><p>/execute <span class="citation" data-cites="e">@e</span>[name=tile,type=AreaEffectCloud] ~-1 ~ ~-1 detect ~ ~-1 ~ coal_block -1 summon AreaEffectCloud ~ ~ ~ {Duration:2147483647,CustomName:check}</p><p>/execute <span class="citation" data-cites="e">@e</span>[name=tile,type=AreaEffectCloud] ~ ~ ~-1 detect ~ ~-1 ~ coal_block -1 summon AreaEffectCloud ~ ~ ~ {Duration:2147483647,CustomName:check}</p><p>/execute <span class="citation" data-cites="e">@e</span>[name=tile,type=AreaEffectCloud] ~1 ~ ~-1 detect ~ ~-1 ~ coal_block -1 summon AreaEffectCloud ~ ~ ~ {Duration:2147483647,CustomName:check}</p><p>接着为所有名为check的药水云加名为keep的tag。</p><p>/execute <span class="citation" data-cites="e">@e</span>[name=check,type=AreaEffectCloud] ~ ~ ~ scoreboard players tag <span class="citation" data-cites="e">@e</span>[name=check,type=AreaEffectCloud,r=0,c=-1] add keep</p><p>接着的CCB每探测到一个名为check的药水云就给药水云自身加一分。然后杀死所有tag不是keep的药水云。</p><p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,name=check] ~ ~ ~ scoreboard players add <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,name=check,r=0] life 1</p><p>/kill <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,name=check,tag=!keep]</p><p>接下来CCB给所有分数为1的药水云（当然是带keep的）下方放一个煤块，即杀死居民。然后杀死那个作为锚点的药水云。</p><p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,name=tile,score_life=1] ~ ~ ~ setblock ~ ~-1 ~ coal_block</p><p>/kill <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,name=tile,score_life=1]</p><p>杀死所有4+分的居民，跟上面一样，不详细说了。</p><p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,name=tile,score_life_min=4] ~ ~ ~ setblock ~ ~-1 ~ coal_block</p><p>/kill <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,name=tile,score_life_min=4]</p><p>接下来CCB让分数为3的居民复活，给他们上加一个名为tile的药水云，作用是什么下面会说。循环完毕杀死所有名为check的药水云。</p><p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,name=check,score_life=3,score_life_min=3] ~ ~ ~ setblock ~ ~-1 ~ quartz_block</p><p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,name=check,score_life=3,score_life_min=3] ~ ~ ~ summon AreaEffectCloud ~ ~ ~ {Duration:2147483647,CustomName:tile}</p><p>/kill <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,name=check]</p><p>此时玩家手中还有绿宝石块，第一个RCB就会再次loop一次刚才的过程。</p><p><img src="https://static.schale.jp/2015-11-08_15.16.26.png" alt="2015-11-08_15.16.26" /></p><p>接下来就是玩家生产生命的时候到了，在代表死亡的煤块上用羊蛋生成羊的同时放置代表居民的石英块，触发CCB生成名为tile的药水云供前面的CCB判定（现在知道为什么刚才要用tile药水云了吧），把羊tp到虚空里杀死。</p><p>//RCB Here</p><p>/execute <span class="citation" data-cites="e">@e</span>[type=Sheep] ~ ~ ~ setblock ~ ~-1 ~ quartz_block</p><p>//CCB Here</p><p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud] ~ ~ ~ tp <span class="citation" data-cites="e">@e</span>[type=Sheep,r=0] ~ -100 ~</p><p>/execute <span class="citation" data-cites="e">@e</span>[type=Sheep] ~ ~ ~ summon AreaEffectCloud ~ ~ ~ {Duration:2147483647,CustomName:tile}</p><p>/tp <span class="citation" data-cites="e">@e</span>[type=Sheep] ~ -100 ~</p><p>通过末影螨蛋把石英块变（居民）变成煤块（死亡），不再赘述。</p><p>//RCB Here</p><p>/execute <span class="citation" data-cites="e">@e</span>[type=Endermite] ~ ~ ~ setblock ~ ~-1 ~ coal_block</p><p>//CCB Here</p><p>/execute <span class="citation" data-cites="e">@e</span>[type=Endermite] ~ ~ ~ kill <span class="citation" data-cites="e">@e</span>[r=0,type=AreaEffectCloud,c=1]</p><p>/tp <span class="citation" data-cites="e">@e</span>[type=EnderMite] ~ -100 ~</p><p>哞菇蛋杀死所有居民和药水云。</p><p>//RCB Here</p><p>/execute <span class="citation" data-cites="e">@e</span>[type=MushroomCow] ~ ~ ~ execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud] ~ ~ ~ setblock ~ ~-1 ~ coal_block</p><p>//CCB Here</p><p>/execute <span class="citation" data-cites="e">@e</span>[type=MushroomCow] ~ ~ ~ kill <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud]</p><p>/tp <span class="citation" data-cites="e">@e</span>[type=MushroomCow] ~ -100 ~</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;联动&lt;a href=&quot;http://xcgx.me/archives/300&quot;&gt;Cancergary&lt;/a&gt;， &lt;a href=&quot;http://www.tyanboot.pw/post/27.html&quot;&gt;Tyanboot&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;康威生命游戏是啥大伙可以在上面的链接中了解，本文以&lt;a href=&quot;https://www.youtube.com/watch?v=2VwMfdTDbcI&quot;&gt;Accidental Games的作品&lt;/a&gt;为例详细讲解mc中的Conway’s Game。游戏展示和存档视频里都有。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="minecraft" scheme="https://yecl.net/categories/minecraft/"/>
+    
+    
+    <category term="minecraft" scheme="https://yecl.net/tags/minecraft/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>yecl.net的base64</title>
+    <link href="https://yecl.net/base64-gfwed/"/>
+    <id>https://yecl.net/base64-gfwed/</id>
+    <published>2015-12-16T05:02:02.000Z</published>
+    <updated>2015-12-16T05:02:02.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>今天起，伟大的GFW把<a href="https://yecl.net">https://yecl.net</a>的base64密文 aHR0cHM6Ly95ZWNsLm5ldA给加入关键字封锁列表了。</p><p>如果你是从gfwlist过来的，在此说上一句，欢迎光临。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;今天起，伟大的GFW把&lt;a href=&quot;https://yecl.net&quot;&gt;https://yecl.net&lt;/a&gt;的base64密文 aHR0cHM6Ly95ZWNsLm5ldA给加入关键字封锁列表了。&lt;/p&gt;
+&lt;p&gt;如果你是从gfwlist过来的，在此说上一句，欢迎光临</summary>
+      
+    
+    
+    
+    <category term="随笔" scheme="https://yecl.net/categories/essay/"/>
+    
+    
+    <category term="GFW" scheme="https://yecl.net/tags/GFW/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>在PlayMindCrack玩Missile Wars时的一些截图</title>
+    <link href="https://yecl.net/screenshots-of-missilewars-on-playmindcrack/"/>
+    <id>https://yecl.net/screenshots-of-missilewars-on-playmindcrack/</id>
+    <published>2015-05-08T03:11:09.000Z</published>
+    <updated>2015-05-08T03:11:09.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="https://static.schale.jp/2015-01-02_13.48.19.png" /></p><p><img src="https://static.schale.jp/2015-01-02_13.48.24.png" alt="2015-01-02_13.48.24" /></p><p><img src="https://static.schale.jp/2015-01-02_13.48.31.png" alt="2015-01-02_13.48.31" /></p><p><img src="https://static.schale.jp/2015-01-02_13.49.00.png" alt="2015-01-02_13.49.00" /></p><p><img src="https://static.schale.jp/2015-01-02_13.49.11.png" alt="2015-01-02_13.49.11" /></p><p><img src="https://static.schale.jp/2015-01-02_13.49.33.png" alt="2015-01-02_13.49.33" /></p><p><img src="https://static.schale.jp/2015-01-02_13.50.02.png" alt="2015-01-02_13.50.02" /></p><p><img src="https://static.schale.jp/2015-01-02_13.50.10.png" alt="2015-01-02_13.50.10" /></p><p><img src="https://static.schale.jp/2015-01-02_13.50.20.png" alt="2015-01-02_13.50.20" /></p><p><img src="https://static.schale.jp/2015-01-02_13.50.33.png" alt="2015-01-02_13.50.33" /></p><p><img src="https://static.schale.jp/2015-01-02_13.50.40.png" alt="2015-01-02_13.50.40" /></p><p><img src="https://static.schale.jp/2015-01-02_13.50.58.png" alt="2015-01-02_13.50.58" /></p><p><img src="https://static.schale.jp/2015-01-02_13.50.59.png" alt="2015-01-02_13.50.59" /></p><p><img src="https://static.schale.jp/2015-01-02_13.51.02.png" alt="2015-01-02_13.51.02" /></p><p><img src="https://static.schale.jp/2015-01-02_13.51.15.png" alt="2015-01-02_13.51.15" /></p><p><img src="https://static.schale.jp/2015-01-02_13.51.17.png" alt="2015-01-02_13.51.17" /></p><p><img src="https://static.schale.jp/2015-01-02_13.51.33.png" alt="2015-01-02_13.51.33" /></p><p><img src="https://static.schale.jp/2015-01-02_13.51.40.png" alt="2015-01-02_13.51.40" /></p><p><img src="https://static.schale.jp/2015-01-02_13.51.50.png" alt="2015-01-02_13.51.50" /></p><p><img src="https://static.schale.jp/2015-01-02_13.52.06.png" alt="2015-01-02_13.52.06" /></p><p><img src="https://static.schale.jp/2015-01-02_13.52.08.png" alt="2015-01-02_13.52.08" /></p><p><img src="https://static.schale.jp/2015-01-02_13.52.27.png" alt="2015-01-02_13.52.27" /></p><p><img src="https://static.schale.jp/2015-01-02_13.53.46.png" alt="2015-01-02_13.53.46" /></p><p><img src="https://static.schale.jp/2015-01-02_13.53.56.png" alt="2015-01-02_13.53.56" /></p><p><img src="https://static.schale.jp/2015-01-02_13.54.19.png" alt="2015-01-02_13.54.19" /></p><p><img src="https://static.schale.jp/2015-01-02_13.54.33.png" alt="2015-01-02_13.54.33" /></p><p><img src="https://static.schale.jp/2015-01-02_13.54.58.png" alt="2015-01-02_13.54.58" /></p><p><img src="https://static.schale.jp/2015-01-02_13.55.12.png" alt="2015-01-02_13.55.12" /></p><p><img src="https://static.schale.jp/2015-01-02_13.55.18.png" alt="2015-01-02_13.55.18" /></p><p><img src="https://static.schale.jp/2015-01-02_13.55.30.png" alt="2015-01-02_13.55.30" /></p><p><img src="https://static.schale.jp/2015-01-02_13.55.37.png" alt="2015-01-02_13.55.37" /></p><p><img src="https://static.schale.jp/2015-01-02_13.56.16.png" alt="2015-01-02_13.56.16" /></p><p><img src="https://static.schale.jp/2015-01-02_13.56.40.png" alt="2015-01-02_13.56.40" /></p><p><img src="https://static.schale.jp/2015-01-02_13.57.14.png" alt="2015-01-02_13.57.14" /></p><p><img src="https://static.schale.jp/2015-01-02_13.57.22.png" alt="2015-01-02_13.57.22" /></p><p><img src="https://static.schale.jp/2015-01-02_13.58.13.png" alt="2015-01-02_13.58.13" /></p><p><img src="https://static.schale.jp/2015-01-02_13.58.18.png" alt="2015-01-02_13.58.18" /></p><p><img src="https://static.schale.jp/2015-01-02_13.58.22.png" alt="2015-01-02_13.58.22" /></p><p><img src="https://static.schale.jp/2015-01-02_13.58.27.png" alt="2015-01-02_13.58.27" /></p><p><img src="https://static.schale.jp/2015-01-02_13.58.30.png" alt="2015-01-02_13.58.30" /></p><p><img src="https://static.schale.jp/2015-01-02_13.58.38.png" alt="2015-01-02_13.58.38" /></p><p><img src="https://static.schale.jp/2015-01-02_13.58.50.png" alt="2015-01-02_13.58.50" /></p><p><img src="https://static.schale.jp/2015-01-02_13.59.01.png" alt="2015-01-02_13.59.01" /></p><p><img src="https://static.schale.jp/2015-01-02_13.59.16.png" alt="2015-01-02_13.59.16" /></p><p><img src="https://static.schale.jp/2015-01-02_13.59.44.png" alt="2015-01-02_13.59.44" /></p><p><img src="https://static.schale.jp/2015-01-02_13.59.52.png" alt="2015-01-02_13.59.52" /></p><p><img src="https://static.schale.jp/2015-01-02_14.00.00.png" alt="2015-01-02_14.00.00" /></p><p><img src="https://static.schale.jp/2015-01-02_14.00.12.png" alt="2015-01-02_14.00.12" /></p><p><img src="https://static.schale.jp/2015-01-02_14.00.21.png" alt="2015-01-02_14.00.21" /></p><p><img src="https://static.schale.jp/2015-01-02_14.01.09.png" alt="2015-01-02_14.01.09" /></p><p><img src="https://static.schale.jp/2015-01-02_14.01.12.png" alt="2015-01-02_14.01.12" /></p><p><img src="https://static.schale.jp/2015-01-02_14.01.20.png" alt="2015-01-02_14.01.20" /></p><p><img src="https://static.schale.jp/2015-01-02_14.01.21.png" alt="2015-01-02_14.01.21" /></p><p><img src="https://static.schale.jp/2015-01-02_14.01.31.png" alt="2015-01-02_14.01.31" /></p><p><img src="https://static.schale.jp/2015-01-02_14.01.34.png" alt="2015-01-02_14.01.34" /></p><p><img src="https://static.schale.jp/2015-01-02_14.02.11.png" alt="2015-01-02_14.02.11" /></p><p><img src="https://static.schale.jp/2015-01-02_14.02.13.png" alt="2015-01-02_14.02.13" /></p><p><img src="https://static.schale.jp/2015-01-02_14.03.36.png" alt="2015-01-02_14.03.36" /></p><p><img src="https://static.schale.jp/2015-01-02_14.04.16.png" alt="2015-01-02_14.04.16" /></p><p><img src="https://static.schale.jp/2015-01-02_14.05.08.png" alt="2015-01-02_14.05.08" /></p><p><img src="https://static.schale.jp/2015-01-02_14.05.38.png" alt="2015-01-02_14.05.38" /></p><p><img src="https://static.schale.jp/2015-01-02_14.05.45.png" alt="2015-01-02_14.05.45" /></p><p><img src="https://static.schale.jp/2015-01-02_14.06.04.png" alt="2015-01-02_14.06.04" /></p><p><img src="https://static.schale.jp/2015-01-02_14.06.21.png" alt="2015-01-02_14.06.21" /></p><p><img src="https://static.schale.jp/2015-01-02_14.06.43.png" alt="2015-01-02_14.06.43" /></p><p><img src="https://static.schale.jp/2015-01-02_14.06.45.png" alt="2015-01-02_14.06.45" /></p><p><img src="https://static.schale.jp/2015-01-02_14.06.56.png" alt="2015-01-02_14.06.56" /></p><p><img src="https://static.schale.jp/2015-01-02_14.07.00.png" alt="2015-01-02_14.07.00" /></p><p><img src="https://static.schale.jp/2015-01-02_14.07.03.png" alt="2015-01-02_14.07.03" /></p><p><img src="https://static.schale.jp/2015-01-02_14.07.05.png" alt="2015-01-02_14.07.05" /></p><p><img src="https://static.schale.jp/2015-01-02_14.07.08.png" alt="2015-01-02_14.07.08" /></p><p><img src="https://static.schale.jp/2015-01-02_14.07.10.png" alt="2015-01-02_14.07.10" /></p><p><img src="https://static.schale.jp/2015-01-02_14.07.13.png" alt="2015-01-02_14.07.13" /></p><p><img src="https://static.schale.jp/2015-01-02_14.07.18.png" alt="2015-01-02_14.07.18" /></p><p><img src="https://static.schale.jp/2015-01-02_14.07.20.png" alt="2015-01-02_14.07.20" /></p><p><img src="https://static.schale.jp/2015-01-02_14.07.43.png" alt="2015-01-02_14.07.43" /></p><p><img src="https://static.schale.jp/2015-01-02_14.07.48.png" alt="2015-01-02_14.07.48" /></p><p><img src="https://static.schale.jp/2015-01-02_14.07.57.png" alt="2015-01-02_14.07.57" /></p><p><img src="https://static.schale.jp/2015-01-02_14.09.04.png" alt="2015-01-02_14.09.04" /></p><p><img src="https://static.schale.jp/2015-01-02_14.09.09.png" alt="2015-01-02_14.09.09" /></p><p><img src="https://static.schale.jp/2015-01-02_14.09.15.png" alt="2015-01-02_14.09.15" /></p><p><img src="https://static.schale.jp/2015-01-02_14.09.18.png" alt="2015-01-02_14.09.18" /></p><p><img src="https://static.schale.jp/2015-01-02_14.09.23.png" alt="2015-01-02_14.09.23" /></p><p><img src="https://static.schale.jp/2015-01-02_14.09.25.png" alt="2015-01-02_14.09.25" /></p><p><img src="https://static.schale.jp/2015-01-02_14.09.27.png" alt="2015-01-02_14.09.27" /></p><p><img src="https://static.schale.jp/2015-01-02_14.09.39.png" alt="2015-01-02_14.09.39" /></p><p><img src="https://static.schale.jp/2015-01-02_14.09.44.png" alt="2015-01-02_14.09.44" /></p><p><img src="https://static.schale.jp/2015-01-02_14.09.45.png" alt="2015-01-02_14.09.45" /></p><p><img src="https://static.schale.jp/2015-01-02_14.09.57.png" alt="2015-01-02_14.09.57" /></p><p><img src="https://static.schale.jp/2015-01-02_14.10.19.png" alt="2015-01-02_14.10.19" /></p><p><img src="https://static.schale.jp/2015-01-02_14.10.22.png" alt="2015-01-02_14.10.22" /></p><p><img src="https://static.schale.jp/2015-01-02_14.10.27.png" alt="2015-01-02_14.10.27" /></p><p><img src="https://static.schale.jp/2015-01-02_14.10.29.png" alt="2015-01-02_14.10.29" /></p><p><img src="https://static.schale.jp/2015-01-02_14.10.31.png" alt="2015-01-02_14.10.31" /></p><p><img src="https://static.schale.jp/2015-01-02_14.10.33.png" alt="2015-01-02_14.10.33" /></p><p><img src="https://static.schale.jp/2015-01-02_14.10.34.png" alt="2015-01-02_14.10.34" /></p><p><img src="https://static.schale.jp/2015-01-02_14.10.36.png" alt="2015-01-02_14.10.36" /></p><p><img src="https://static.schale.jp/2015-01-02_14.12.05.png" alt="2015-01-02_14.12.05" /></p><p><img src="https://static.schale.jp/2015-01-02_14.12.32.png" alt="2015-01-02_14.12.32" /></p><p><img src="https://static.schale.jp/2015-01-02_14.12.48.png" alt="2015-01-02_14.12.48" /></p><p><img src="https://static.schale.jp/2015-01-02_14.12.50.png" alt="2015-01-02_14.12.50" /></p><p><img src="https://static.schale.jp/2015-01-02_14.12.54.png" alt="2015-01-02_14.12.54" /></p><p><img src="https://static.schale.jp/2015-01-02_14.12.59.png" alt="2015-01-02_14.12.59" /></p><p><img src="https://static.schale.jp/2015-01-02_14.13.03.png" alt="2015-01-02_14.13.03" /></p><p><img src="https://static.schale.jp/2015-01-02_14.13.05.png" alt="2015-01-02_14.13.05" /></p><p><img src="https://static.schale.jp/2015-01-02_14.13.06.png" alt="2015-01-02_14.13.06" /></p><p><img src="https://static.schale.jp/2015-01-02_14.13.07.png" alt="2015-01-02_14.13.07" /></p><p><img src="https://static.schale.jp/2015-01-02_14.13.11.png" alt="2015-01-02_14.13.11" /></p><p><img src="https://static.schale.jp/2015-01-02_14.13.16.png" alt="2015-01-02_14.13.16" /></p><p><img src="https://static.schale.jp/2015-01-02_14.13.19.png" alt="2015-01-02_14.13.19" /></p><p><img src="https://static.schale.jp/2015-01-02_14.13.24.png" alt="2015-01-02_14.13.24" /></p><p><img src="https://static.schale.jp/2015-01-02_14.13.52.png" alt="2015-01-02_14.13.52" /></p><p><img src="https://static.schale.jp/2015-01-02_14.14.02.png" alt="2015-01-02_14.14.02" /></p><p><img src="https://static.schale.jp/2015-01-02_14.14.13.png" alt="2015-01-02_14.14.13" /></p><p><img src="https://static.schale.jp/2015-01-02_14.14.19.png" alt="2015-01-02_14.14.19" /></p><p><img src="https://static.schale.jp/2015-01-02_14.14.48.png" alt="2015-01-02_14.14.48" /></p><p><img src="https://static.schale.jp/2015-01-02_14.14.53.png" alt="2015-01-02_14.14.53" /></p><p><img src="https://static.schale.jp/2015-01-02_14.15.16.png" alt="2015-01-02_14.15.16" /></p><p><img src="https://static.schale.jp/2015-01-02_14.15.30.png" alt="2015-01-02_14.15.30" /></p><p><img src="https://static.schale.jp/2015-01-02_14.15.32.png" alt="2015-01-02_14.15.32" /></p><p><img src="https://static.schale.jp/2015-01-02_14.15.34.png" alt="2015-01-02_14.15.34" /></p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;&lt;img src=&quot;https://static.schale.jp/2015-01-02_13.48.19.png&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://static.schale.jp/2015-01-02_13.48.24.png&quot; alt=&quot;20</summary>
+      
+    
+    
+    
+    <category term="minecraft" scheme="https://yecl.net/categories/minecraft/"/>
+    
+    
+    <category term="minecraft" scheme="https://yecl.net/tags/minecraft/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>鲜花总会长出来，不在墙这边相见，就在墙外面思念。</title>
+    <link href="https://yecl.net/greatwall-cannot-stop-the-climbers/"/>
+    <id>https://yecl.net/greatwall-cannot-stop-the-climbers/</id>
+    <published>2015-04-25T15:55:37.000Z</published>
+    <updated>2015-04-25T15:55:37.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>2015年4月6日下午，<a href="https://blog.lwl12.com"><span class="citation" data-cites="liwanglin12">@liwanglin12</span></a>给我留言说博客连接中断了，要挂代理才能上来，我自己看到时觉得很惊诧，试了一下确实是这样。后来开始出现DNS解析错乱，我当时在吃饭，没太着急解决这事。后来去<a href="https://greatfire.org">Greatfire</a>查证了一下，发现确实被认证了。</p><p>这种无形的力量最终会落在我头上，既在意料之外又在情理之中。我曾在前一天发过一篇批评CNNIC的文章，但是，这种如隔靴搔痒的文章并没有什么理由能让朝廷如此重视，并对我的域名使用了最强封锁手段——DNS污染。</p><p>DNS污染宣告着正常访问方式的彻底终结，这是连Greatfire都没有享受过的荣誉，我表示受宠若惊。</p><h2 id="朝廷是从哪个入口进到我的博客的"><a href="#朝廷是从哪个入口进到我的博客的" class="headerlink" title="朝廷是从哪个入口进到我的博客的？"></a>朝廷是从哪个入口进到我的博客的？</h2><ul><li><p><strong>关键词扫描？</strong> 这个不太可能，毕竟我的博客强制https不是摆着看样子的。</p></li><li><p><strong>多说评论框？</strong> 这个很有可能，考虑到独立博客使用多说的非常多，而且这些使用独立博客的博主求的就是一个说话自由，有点敏感话题是非常正常的，所以朝廷一定会严加看管多说的评论数据，包括文章标题。</p></li><li><p><strong>但是后来我觉得最可能的是，微博。</strong> 没错，发布文章时多说直接给我同步到微博了，而且有一个橙V给我转发了。等到我过了一天再打开微博，发现粉丝数量少了60个。虽然我后来删除了微博并隐藏了文章，但是粉丝回不来了。</p></li></ul><h2 id="我如何应对"><a href="#我如何应对" class="headerlink" title="我如何应对？"></a>我如何应对？</h2><ol type="1"><li><p><strong>DNS方面，从<a href="http://cloudxns.net">CloudXNS</a>换到了<a href="http://he.net">He.net</a></strong>，因为大概是墙的新招数，在国外访问托管在国内服务商的被DNS污染的域名时，墙会在出口路由篡改IP，导致国外线路也受到污染，所以挺好用的CloudXNS被我抛弃了。好吧。</p></li><li><p><strong>域名方面，从<a href="http://www.net.cn">中国万网</a>转到了<a href="https://www.namesilo.com">Namesilo</a></strong>，因为它有永久免费的Whois隐私保护，价格也稳定便宜。最初我选择中国万网是因为它支持支付宝，但是现在Namesilo也开始支持支付宝，最后一个支撑我留在万网的理由已经破灭。</p></li><li><p><strong>网站方面，停用了多说和七牛</strong>，多说是必然要弃的，七牛因为域名被墙无法同步而死，况且七牛只存储静态文件，跟网站内容无关，所以以后重新打开也没准。</p></li></ol><p>最后还有一点，除了博主被有关部门勒令 / 抓走 / 杀害，或者出天灾人祸以外，决不会放弃这个博客。一个原因是，就是在这里，我认识了许许多多的朋友；另一个原因，我需要这么一个没有审查的发言平台，把我的想法记录下来。能找到我博客的都是我认识的人，都有着不错的翻墙技巧，不需我做什么。</p><p>鲜花总会长出来，不在墙这边相见，就在墙外面思念。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;2015年4月6日下午，&lt;a href=&quot;https://blog.lwl12.com&quot;&gt;&lt;span class=&quot;citation&quot; data-cites=&quot;liwanglin12&quot;&gt;@liwanglin12&lt;/span&gt;&lt;/a&gt;给我留言说博客连接中断了，要挂代理才能上来</summary>
+      
+    
+    
+    
+    <category term="随笔" scheme="https://yecl.net/categories/essay/"/>
+    
+    
+    <category term="GFW" scheme="https://yecl.net/tags/GFW/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>开始使用比特币</title>
+    <link href="https://yecl.net/start-to-use-bitcoin/"/>
+    <id>https://yecl.net/start-to-use-bitcoin/</id>
+    <published>2015-04-12T08:00:00.000Z</published>
+    <updated>2015-04-12T08:00:00.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>因为考虑要购买新域名，听说<a href="http://www.namesilo.com">Namesilo</a>提供免费永久Whois保护，就打算从那买。</p><p>但是呢，它不支持国内的支付宝，而我有张VISA卡，不能随便花里面的钱 ，于是想采用比特币来付款。</p><span id="more"></span><p>比特币兑CNY的汇率好像比上个月降了一些，现在是1467CNY吧，没记错的话。在Namesilo转移旧的域名过去大概是需要10刀左右。</p><p>总之呢，博主就算是有了人生的第一笔比特币资产。</p><p><img src="https://statis.schale.jp/bitcoin.png" /></p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;因为考虑要购买新域名，听说&lt;a href=&quot;http://www.namesilo.com&quot;&gt;Namesilo&lt;/a&gt;提供免费永久Whois保护，就打算从那买。&lt;/p&gt;
+&lt;p&gt;但是呢，它不支持国内的支付宝，而我有张VISA卡，不能随便花里面的钱 ，于是想采用比特币来付款。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="随笔" scheme="https://yecl.net/categories/essay/"/>
+    
+    
+    <category term="bitcoin" scheme="https://yecl.net/tags/bitcoin/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>imouto.host : 少壮不努力 , 一生在内地</title>
+    <link href="https://yecl.net/imouto-host-stopped/"/>
+    <id>https://yecl.net/imouto-host-stopped/</id>
+    <published>2014-11-01T03:40:04.000Z</published>
+    <updated>2025-01-24T07:29:39.406Z</updated>
+    
+    <content type="html"><![CDATA[<p>这篇文章来自<a href="https://github.com/zxdrive/imouto.host">imoutu.host的readme</a>。</p><blockquote><p>2014.10.30 今天中午，GFW又一次升级，你们应该都感受到了。 然后我一气之下，制作了一个充满恶意的Host文件放到了GitHub上。</p><p>本来我有自己的想法，但发现实际上对大家所造成的麻烦更大。 在此对大家致以诚挚的歉意。</p><p>众所周知，最近GFW升级愈加频繁。 对于Host这个翻墙手段，照这样下去，可用IP最终会枯竭。 很遗憾，现在这个时间快到了。 在此我不得不宣布：从现在起imouto.host将无限期停止公开更新，同时不再接受任何的报错。若有一个更新重开的机会，我想那很可能是谷歌在未来又买了一批IP地址。</p><p>作为对我之前恶意的补偿，和停止更新的善后，我将采取以下措施：</p><p>1：在这条消息发布后的几分钟，在所有官方渠道会更新一个真正的 2.25.0530 Asata Shino 版本，速度不错，请大家尽情使用。能用到什么时候，听GFW之命。</p><p>2：在未来我会撰写一篇文章，总结我这段时间来制作Host的所有经验。可能是一周，也可能是一个月，主要看我拖延症的严重程度。撰写完毕后，会贴链接在这里，请大家继续关注。</p><p>3：开放社群，大家可以继续在社群讨论各种话题（当然不再接受报错），也可以灌水，但不要太过分，我会看着你们的。</p><p>4：对于捐助者，首先感谢你们的捐助。若希望得到退款，请通过与捐助账号相同的电子邮箱与我联系。</p><p>最后，谨代表所有反对互联网审查的中国纳税人们，对GFW的建设者，包括但不限于方滨兴、齐向东、参与GFW建设的北京邮电大学师生、参与GFW建设的哈尔滨工业大学师生、参与GFW建设的中国各大科技企业、等等等等，致以深深的鄙视。</p><p>少壮不努力，一生在内地。</p></blockquote>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;这篇文章来自&lt;a href=&quot;https://github.com/zxdrive/imouto.host&quot;&gt;imoutu.host的readme&lt;/a&gt;。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;2014.10.30 今天中午，GFW又一次升级，你们应该都感受到了。 然后</summary>
+      
+    
+    
+    
+    <category term="随笔" scheme="https://yecl.net/categories/essay/"/>
+    
+    
+    <category term="GFW" scheme="https://yecl.net/tags/GFW/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>偶然一看 , 井中月好像倒闭了 .</title>
+    <link href="https://yecl.net/moonic-seems-to-be-closed/"/>
+    <id>https://yecl.net/moonic-seems-to-be-closed/</id>
+    <published>2014-10-25T13:40:55.000Z</published>
+    <updated>2014-10-25T13:40:55.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>今天突发奇想想看看丧尸危机3出了没有，就百度了一下。</p><p>令我惊讶的是，原本在搜索结果第一条的”上海井中月信息科技有限公司”已经没了，取而代之的是一些公司介绍和人才招聘的内容，时间定格在2013年。</p><p>我访问www.moonic.cn，发现不能访问了。查询whois的结果是，域名忘记续费被收回了。在其他地方，再也没见到它的影子。</p><p>所以我觉得它倒闭了。</p><span id="more"></span><p>井中月是让我非常敬佩的游戏公司，它开发出了著名的丧尸危机系列游戏。2011年，我在乐讯上看到了丧尸危机-全城爆发这款游戏，便好奇下来看看。它有着精致的画面，悬疑的剧情，打击力十足的武器。游戏是试玩+收费的，我就花了4元买了下来。玩的过程非常辛苦。</p><p>后来2012年，我看到井中月出了第二部丧尸危机-自由之翼，便马上下载。这回有了购买手机号验证，即购买后需要连接服务器确认购买，所以破解就难了。后来网上出了跳关版，能从验证的那个场景跳到下一场景。我虽然开始花了4元购买，但出了破解版还是装上了，因为那些付费才能购买的装备。</p><p>2013年，我没有看到井中月出其他游戏。这个系列也停留在第二部上。网上的破解版已经铺天盖地了。</p><p>2014年的今天，我在dospy论坛里找以前老款诺基亚3310里的空间大战时想起了这游戏，就习惯性地去百度了一下井中月 (记不住域名)，发现没了。各大游戏网站也没有第3部的影子。</p><p>于是我断定公司倒闭，或者潜入地下了。</p><p>从百度知道上一些零星的问答，我明白可能是因为赚不到钱而不做了。就这样，一款在java机游戏市场萎靡不振时横空出世的火爆游戏没了。从游戏最后的开发人员列表看，游戏的开发人数不过10个。</p><p>盗版又一次坑害了一款好游戏。</p><p>虽然我在这款游戏上前后共投了¥30，但也无力挽回赚不到钱的局面。</p><p>只有默哀了。</p><p>那个时期的好游戏不多，只有两部丧尸危机和两部暗黑启示录最火罢了。</p><p>java机正在沦落，逐渐被智能机取代。手机乐园的每周免费java游戏推荐也定格在2012年末。倒是论坛上有着一些大呼”java不倒”的人。</p><p>新事物终究会取代旧事物，我们的下一代估计不会见过，也不会听说当年一统天下的java机吧。</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;今天突发奇想想看看丧尸危机3出了没有，就百度了一下。&lt;/p&gt;
+&lt;p&gt;令我惊讶的是，原本在搜索结果第一条的”上海井中月信息科技有限公司”已经没了，取而代之的是一些公司介绍和人才招聘的内容，时间定格在2013年。&lt;/p&gt;
+&lt;p&gt;我访问www.moonic.cn，发现不能访问了。查询whois的结果是，域名忘记续费被收回了。在其他地方，再也没见到它的影子。&lt;/p&gt;
+&lt;p&gt;所以我觉得它倒闭了。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="随笔" scheme="https://yecl.net/categories/essay/"/>
+    
+    
+    <category term="手机游戏" scheme="https://yecl.net/tags/mobilegames/"/>
+    
+  </entry>
+  
+</feed>

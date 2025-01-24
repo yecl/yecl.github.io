@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <title>康威生命游戏 in Minecraft - Yoruka's Blog</title>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="HandheldFriendly" content="True" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+<meta name="generator" content="Hexo" />
+<link rel="icon" href="/images/favicon.ico" />
+<link rel="apple-touch-icon-precomposed" href="/images/apple-icon-precomposed.png">
+  <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="Yoruka's Blog">
+  <meta name="keywords" content="minecraft," />
+
+<meta name="description" content="联动Cancergary， Tyanboot 康威生命游戏是啥大伙可以在上面的链接中了解，本文以Accidental Games的作品为例详细讲解mc中的Conway’s Game。游戏展示和存档视频里都有。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="康威生命游戏 in Minecraft">
+<meta property="og:url" content="https://yecl.net/conways-game-in-minecraft/index.html">
+<meta property="og:site_name" content="Yoruka&#39;s Blog">
+<meta property="og:description" content="联动Cancergary， Tyanboot 康威生命游戏是啥大伙可以在上面的链接中了解，本文以Accidental Games的作品为例详细讲解mc中的Conway’s Game。游戏展示和存档视频里都有。">
+<meta property="og:locale">
+<meta property="og:image" content="https://static.schale.jp/2015-11-08_15.16.22.png">
+<meta property="og:image" content="https://static.schale.jp/2015-11-08_15.16.26.png">
+<meta property="article:published_time" content="2015-12-27T14:23:57.000Z">
+<meta property="article:modified_time" content="2015-12-27T14:23:57.000Z">
+<meta property="article:author" content="Yoruka">
+<meta property="article:tag" content="minecraft">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://static.schale.jp/2015-11-08_15.16.22.png">
+
+<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/han-css@3.3.0/dist/han.min.css">
+<link rel="stylesheet" href="https://fonts.loli.net/css?family=Fira+Mono|Roboto+Slab:400,600|Noto+Serif+SC:600&display=swap">
+<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@highlightjs/cdn-assets@10.6.0/styles/atom-one-dark.min.css" media="screen and (prefers-color-scheme: dark)">
+<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@highlightjs/cdn-assets@10.6.0/styles/atom-one-light.min.css" media="screen and (prefers-color-scheme: light)">
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" type="text/css" href="https://fastly.jsdelivr.net/npm/node-tikzjax@latest/css/fonts.css" /><style>.tikzjax { display: block; text-align: center; user-select: none; }</style></head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="site-name">
+      <a class="logo" href="/">Yoruka's Blog</a>
+      <span class="description">我们决不倒下，让刽子手显得高大，好阻挡那自由的风。</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    <div class="row">
+      <section class="content col-md-8 col-12">
+        
+  <article>
+    <h1 class="post-title">
+      <a href="/conways-game-in-minecraft/">康威生命游戏 in Minecraft</a>
+    </h1>
+    <div class="post-meta">
+      <span class="post-meta-item post-meta-date">
+  <time datetime="2015-12-27T22:23:57+08:00">2015-12-27</time>
+</span>
+
+<span class="post-meta-item post-meta-categories">
+  <span class="post-meta-item-indicator">Category:</span>
+  
+    <a class="category-link" href="/categories/minecraft/">minecraft</a>
+  
+</span>
+
+<span class="post-meta-item post-meta-tags">
+  
+    <a class="tag--link" href="/tags/minecraft/" rel="tag">minecraft</a>
+  
+</span>
+
+
+<span class="post-meta-item post-meta-views">
+  <span class="pv-counter">loading</span> views
+</span>
+
+
+    </div>
+
+    
+      <script src="https://fastly.jsdelivr.net/npm/dayjs@1.10.4/dayjs.min.js"></script>
+<script>
+  var post_updated = dayjs("2015-12-27T14:23:57.000Z");
+  var days_diff_now = dayjs().diff(post_updated, 'days');
+
+  if (days_diff_now > 365) {
+    document.write(
+      '<div class="post-warning">'+
+        '本文最后修订于 '+days_diff_now+' 天前（'+post_updated.format('YYYY-MM-DD')+'），'+
+        '其中的信息可能已经有所发展或者不再适用于现阶段。'+
+      '</div>'
+    );
+  }
+</script>
+
+    
+
+    
+
+    <div class="post-content"><p>联动<a target="_blank" rel="noopener" href="http://xcgx.me/archives/300">Cancergary</a>， <a target="_blank" rel="noopener" href="http://www.tyanboot.pw/post/27.html">Tyanboot</a></p>
+<p>康威生命游戏是啥大伙可以在上面的链接中了解，本文以<a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=2VwMfdTDbcI">Accidental Games的作品</a>为例详细讲解mc中的Conway’s Game。游戏展示和存档视频里都有。</p>
+<span id="more"></span>
+<p>那么开始。 注： 本游戏需要Minecraft 1.9版本。</p>
+<p>ICB：Impulse Command Block，即1.8及以前版本里的黄色命令方块<br />
+RCB：Repeat Command Block，即自带脉冲的命令方块，紫色，每t运行一次。<br />
+CCB：Chain Command Block，即指向它的命令方块被激活时会连锁激活的绿色命令方块，本文的CCB全是Unconditional模式，不需要红石激活。</p>
+<p><img src="https://static.schale.jp/2015-11-08_15.16.22.png" srcset="/images/loading.jpg" data-srcset="https://static.schale.jp/2015-11-08_15.16.22.png" alt="2015-11-08_15.16.22" /></p>
+<p>首先，ICB用来创建一个名叫life的无判据计分板。它是基础。当然，它只需要运行一次，直接用按钮开启即可。</p>
+<p>/scoreboard objectives add life dummy</p>
+<p>接下来这段非——常——长的一串CCB就是Run Life，它控制整个游戏的运行。 首先用一个RCB testfor玩家手中的绿宝石块，如果检测到，就会触发它指着的那个CCB。</p>
+<p>/testfor <span class="citation" data-cites="p">@p</span> {SelectedItem:{id:minecraft:emerald_block}}</p>
+<p>这里的ICB和上一个CCB分开了，我也不知道为什么。在ICB上方summon一个名字为runLife的盔甲架（过程略），然后在CCB中让它在原地放置红石块，正好激活下方的ICB（还是原来的配方，还是熟悉的味道）。</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[name=runLife] ~ ~ ~ setblock ~ ~ ~ redstone_block</p>
+<p>为什么要用这个ICB呢？因为RCB的脉冲是不可控的╮(╯▽╰)╭</p>
+<p>/setblock ~ ~1 ~ wool 14</p>
+<p>然后就是一串的CCB，最开始的CCB重置分数，接下来八个CCB探测每个药水云周围是否有其他药水云（药水云哪来的在后面会说到），然后加一分。翻译成康威生命游戏的话就探测每个居民身边是否有邻居。这是判断死亡的条件。</p>
+<p>/scoreboard players set <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud] life 0</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud] ~1 ~ ~ scoreboard players add <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,r=0] life 1</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud] ~1 ~ ~1 scoreboard players add <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,r=0] life 1</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud] ~ ~ ~1 scoreboard players add <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,r=0] life 1</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud] ~-1 ~ ~1 scoreboard players add <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,r=0] life 1</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud] ~-1 ~ ~ scoreboard players add <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,r=0] life 1</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud] ~-1 ~ ~-1 scoreboard players add <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,r=0] life 1</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud] ~1 ~ ~-1 scoreboard players add <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,r=0] life 1</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud] ~ ~ ~-1 scoreboard players add <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,r=0] life 1</p>
+<p>然后该判断复活的条件了，八个CCB分别探测八个方向，每探测到一个煤块就生成一个名为check的药水云。</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[name=tile,type=AreaEffectCloud] ~1 ~ ~ detect ~ ~-1 ~ coal_block -1 summon AreaEffectCloud ~ ~ ~ {Duration:2147483647,CustomName:check}</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[name=tile,type=AreaEffectCloud] ~1 ~ ~1 detect ~ ~-1 ~ coal_block -1 summon AreaEffectCloud ~ ~ ~ {Duration:2147483647,CustomName:check}</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[name=tile,type=AreaEffectCloud] ~ ~ ~1 detect ~ ~-1 ~ coal_block -1 summon AreaEffectCloud ~ ~ ~ {Duration:2147483647,CustomName:check}</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[name=tile,type=AreaEffectCloud] ~-1 ~ ~1 detect ~ ~-1 ~ coal_block -1 summon AreaEffectCloud ~ ~ ~ {Duration:2147483647,CustomName:check}</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[name=tile,type=AreaEffectCloud] ~-1 ~ ~ detect ~ ~-1 ~ coal_block -1 summon AreaEffectCloud ~ ~ ~ {Duration:2147483647,CustomName:check}</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[name=tile,type=AreaEffectCloud] ~-1 ~ ~-1 detect ~ ~-1 ~ coal_block -1 summon AreaEffectCloud ~ ~ ~ {Duration:2147483647,CustomName:check}</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[name=tile,type=AreaEffectCloud] ~ ~ ~-1 detect ~ ~-1 ~ coal_block -1 summon AreaEffectCloud ~ ~ ~ {Duration:2147483647,CustomName:check}</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[name=tile,type=AreaEffectCloud] ~1 ~ ~-1 detect ~ ~-1 ~ coal_block -1 summon AreaEffectCloud ~ ~ ~ {Duration:2147483647,CustomName:check}</p>
+<p>接着为所有名为check的药水云加名为keep的tag。</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[name=check,type=AreaEffectCloud] ~ ~ ~ scoreboard players tag <span class="citation" data-cites="e">@e</span>[name=check,type=AreaEffectCloud,r=0,c=-1] add keep</p>
+<p>接着的CCB每探测到一个名为check的药水云就给药水云自身加一分。然后杀死所有tag不是keep的药水云。</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,name=check] ~ ~ ~ scoreboard players add <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,name=check,r=0] life 1</p>
+<p>/kill <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,name=check,tag=!keep]</p>
+<p>接下来CCB给所有分数为1的药水云（当然是带keep的）下方放一个煤块，即杀死居民。然后杀死那个作为锚点的药水云。</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,name=tile,score_life=1] ~ ~ ~ setblock ~ ~-1 ~ coal_block</p>
+<p>/kill <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,name=tile,score_life=1]</p>
+<p>杀死所有4+分的居民，跟上面一样，不详细说了。</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,name=tile,score_life_min=4] ~ ~ ~ setblock ~ ~-1 ~ coal_block</p>
+<p>/kill <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,name=tile,score_life_min=4]</p>
+<p>接下来CCB让分数为3的居民复活，给他们上加一个名为tile的药水云，作用是什么下面会说。循环完毕杀死所有名为check的药水云。</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,name=check,score_life=3,score_life_min=3] ~ ~ ~ setblock ~ ~-1 ~ quartz_block</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,name=check,score_life=3,score_life_min=3] ~ ~ ~ summon AreaEffectCloud ~ ~ ~ {Duration:2147483647,CustomName:tile}</p>
+<p>/kill <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,name=check]</p>
+<p>此时玩家手中还有绿宝石块，第一个RCB就会再次loop一次刚才的过程。</p>
+<p><img src="https://static.schale.jp/2015-11-08_15.16.26.png" srcset="/images/loading.jpg" data-srcset="https://static.schale.jp/2015-11-08_15.16.26.png" alt="2015-11-08_15.16.26" /></p>
+<p>接下来就是玩家生产生命的时候到了，在代表死亡的煤块上用羊蛋生成羊的同时放置代表居民的石英块，触发CCB生成名为tile的药水云供前面的CCB判定（现在知道为什么刚才要用tile药水云了吧），把羊tp到虚空里杀死。</p>
+<p>//RCB Here</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[type=Sheep] ~ ~ ~ setblock ~ ~-1 ~ quartz_block</p>
+<p>//CCB Here</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud] ~ ~ ~ tp <span class="citation" data-cites="e">@e</span>[type=Sheep,r=0] ~ -100 ~</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[type=Sheep] ~ ~ ~ summon AreaEffectCloud ~ ~ ~ {Duration:2147483647,CustomName:tile}</p>
+<p>/tp <span class="citation" data-cites="e">@e</span>[type=Sheep] ~ -100 ~</p>
+<p>通过末影螨蛋把石英块变（居民）变成煤块（死亡），不再赘述。</p>
+<p>//RCB Here</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[type=Endermite] ~ ~ ~ setblock ~ ~-1 ~ coal_block</p>
+<p>//CCB Here</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[type=Endermite] ~ ~ ~ kill <span class="citation" data-cites="e">@e</span>[r=0,type=AreaEffectCloud,c=1]</p>
+<p>/tp <span class="citation" data-cites="e">@e</span>[type=EnderMite] ~ -100 ~</p>
+<p>哞菇蛋杀死所有居民和药水云。</p>
+<p>//RCB Here</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[type=MushroomCow] ~ ~ ~ execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud] ~ ~ ~ setblock ~ ~-1 ~ coal_block</p>
+<p>//CCB Here</p>
+<p>/execute <span class="citation" data-cites="e">@e</span>[type=MushroomCow] ~ ~ ~ kill <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud]</p>
+<p>/tp <span class="citation" data-cites="e">@e</span>[type=MushroomCow] ~ -100 ~</p>
+</div>
+    <br />
+  </article>
+
+  
+    <nav class="post-nav">
+      
+      <div class="post-nav-item post-nav-prev">上一篇：
+        <a href="/kancolle-zuihou-kai-ni-figure/">艦隊これくしょん 1/7 瑞鶴改二 手办</a>
+      </div>
+      
+      
+      <div class="post-nav-item post-nav-next">下一篇：
+        <a href="/base64-gfwed/">yecl.net的base64</a>
+      </div>
+      
+    </nav>
+  
+
+  
+    
+
+
+<script src="https://giscus.app/client.js"
+  data-repo="yecl/schalejp-comments"
+  data-repo-id="R_kgDOLpzXkw"
+  data-category="Announcements"
+  data-category-id="DIC_kwDOLpzXk84Ceczg"
+  data-mapping="title"
+  data-strict="0"
+  data-reactions-enabled="0"
+  data-emit-metadata="0"
+  data-input-position="top"
+  data-theme="preferred_color_scheme"
+  data-lang="zh-CN"
+  data-loading="lazy"
+  crossorigin="anonymous"
+  async>
+</script>
+
+
+  
+
+      </section>
+      <aside class="sidebar col-md-3 offset-md-1 col-12">
+        
+  
+
+        
+
+
+<section class="widget" id="widget-categories">
+  <h3 class="widget-title">分类</h3>
+  
+  
+    <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/IPv6/">IPv6</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/minecraft/">minecraft</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/others/">其他</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/essay/">随笔</a></li></ul>
+  
+</section>
+
+
+
+<section class="widget" id="widget-pages">
+  <h3 class="widget-title">页面</h3>
+  <ul class="menu">
+    
+      
+      <li class="menu-item menu-item-archives">
+        <a href="/archives" title="">归档</a>
+      </li>
+    
+      
+      <li class="menu-item menu-item-about">
+        <a href="/about" title="">关于</a>
+      </li>
+    
+      
+      <li class="menu-item menu-item-friends">
+        <a href="/friends" title="">朋友们</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+<section class="widget" id="widget-links">
+  <h3 class="widget-title">链接</h3>
+  <ul class="menu">
+    
+      
+      <li class="menu-item menu-item-github">
+        <a href="https://github.com/yecl" title="" target="_blank">GitHub</a>
+      </li>
+    
+      
+      <li class="menu-item menu-item-rss">
+        <a href="/atom.xml" title="" target="_blank">RSS Feed</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+      </aside>
+    </div>
+  </div>
+</main>
+
+<footer>
+  
+  <div class="container">
+    <p>
+    
+      <span style='display: inline-block; text-align: right; margin: 0px; -moz-transform: scaleX(-1); -o-transform: scaleX(-1); -webkit-transform: scaleX(-1); transform: scaleX(-1); filter: FlipH; -ms-filter: “FlipH”;'>&copy;</span>
+    
+       2025 <a href="https://yecl.net">Yoruka's Blog</a>. Proudly published with
+      <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/printempw/hexo-theme-murasaki/" target="_blank">Murasaki</a> & <a href="https://www.sakura.ad.jp" target="_blank">SakuraInternet</a>.
+    </p>
+  </div>
+</footer>
+
+<script src="https://fastly.jsdelivr.net/npm/han-css@3.3.0/dist/han.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/@highlightjs/cdn-assets@10.6.0/highlight.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/vanilla-lazyload@17.3.1/dist/lazyload.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+  Han(document.querySelector('section.content')).setRoutine([
+    'initCond', 'renderElem', 'renderJiya', 'correctBasicBD', 'substCombLigaWithPUA'
+    // 'renderHanging', 'renderHWS'
+  ]).render();
+  new LazyLoad({
+    elements_selector: '.post-content img',
+    callback_loaded: function (el) {
+      el.parentNode.nodeName.toLowerCase() === 'a' || mediumZoom(el, { margin: 24 });
+    }
+  });
+</script>
+
+</body>
+</html>
