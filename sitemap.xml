@@ -553,14 +553,14 @@
   </url>
   
   <url>
-    <loc>https://yecl.net/tags/kancolle/</loc>
+    <loc>https://yecl.net/tags/IPv6/</loc>
     <lastmod>2025-01-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://yecl.net/tags/IPv6/</loc>
+    <loc>https://yecl.net/tags/kancolle/</loc>
     <lastmod>2025-01-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -630,6 +630,13 @@
   </url>
   
   <url>
+    <loc>https://yecl.net/tags/bitcoin/</loc>
+    <lastmod>2025-01-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://yecl.net/tags/%E9%87%91%E5%B1%9E/</loc>
     <lastmod>2025-01-26</lastmod>
     <changefreq>weekly</changefreq>
@@ -645,13 +652,6 @@
   
   <url>
     <loc>https://yecl.net/tags/SnTe/</loc>
-    <lastmod>2025-01-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://yecl.net/tags/bitcoin/</loc>
     <lastmod>2025-01-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -730,14 +730,14 @@
   </url>
   
   <url>
-    <loc>https://yecl.net/categories/%E8%88%B0%E9%98%9FCollection/</loc>
+    <loc>https://yecl.net/categories/IPv6/</loc>
     <lastmod>2025-01-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://yecl.net/categories/IPv6/</loc>
+    <loc>https://yecl.net/categories/%E8%88%B0%E9%98%9FCollection/</loc>
     <lastmod>2025-01-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
