@@ -50,23 +50,23 @@
   
     <article class="post">
       <h2 class="post-title">
-        <a href="/nanjing-weather-changed-a-lot-in-3-days/">南京没有春天</a>
+        <a href="/pocket-git-usage-tutorial/">Android上的git app：Pocket Git 使用教程</a>
       </h2>
       <div class="post-meta">
         <span class="post-meta-item post-meta-date">
-  <time datetime="2018-03-29T10:23:25+08:00">2018-03-29</time>
+  <time datetime="2018-12-16T00:16:00+08:00">2018-12-16</time>
 </span>
 
 <span class="post-meta-item post-meta-categories">
   <span class="post-meta-item-indicator">Category:</span>
   
-    <a class="category-link" href="/categories/essay/">随笔</a>
+    <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>, <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/%E6%95%99%E7%A8%8B/">教程</a>
   
 </span>
 
 <span class="post-meta-item post-meta-tags">
   
-    <a class="tag--link" href="/tags/nanjing/" rel="tag">南京</a>
+    <a class="tag--link" href="/tags/Android/" rel="tag">Android</a> <a class="tag--link" href="/tags/git/" rel="tag">git</a> <a class="tag--link" href="/tags/github/" rel="tag">github</a>
   
 </span>
 
@@ -79,63 +79,50 @@
       </div>
       <div class="post-content">
         
-          <p>这个城市的天气和它的历史一样变化多端。</p>
-          <p><a class="more-link" href="/nanjing-weather-changed-a-lot-in-3-days/#more">&gt; READ MORE...</a></p>
+          <h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2>
+<p>因为博客现在使用Travis-CI进行自动部署，我就没有必要每次写新博文都hexo g hexo d一下，直接把写完的.md扔进github，就会自动同步到博客上。这样虽然实现了无论何时何地都能快速方便地部署，但是<del>并没有什么卵用，我也不经常发博文，摸爆就完事了</del>用手机网页登陆github进行commit还是挺痛苦的，就想找一个Android端的git软件，但是找来找去，只有一款app能这么做，就是今天介绍的Pocket Git。</p>
+<p>Google Play链接<a target="_blank" rel="noopener" href="https://play.google.com/store/apps/details?id=com.aor.pocketgit">在这</a>，日区价格是¥260。</p>
+<h2 id="教程"><a href="#教程" class="headerlink" title="教程"></a>教程</h2>
+<h3 id="clone与pull"><a href="#clone与pull" class="headerlink" title="clone与pull"></a>clone与pull</h3>
+<p>安装完毕后，先在设置里设置自己的账号。</p>
+<p><img src="https://img.yecl.net/2018/12/Screenshot_20181216-002546.png" srcset="/images/loading.jpg" data-srcset="https://img.yecl.net/2018/12/Screenshot_20181216-002546.png" /></p>
+<p>接着点击加号添加需要clone的仓库，如果是github的私有仓库，需要输入账号密码。</p>
+<p><img src="https://img.yecl.net/2018/12/Screenshot_20181216-002658.png" srcset="/images/loading.jpg" data-srcset="https://img.yecl.net/2018/12/Screenshot_20181216-002658.png" /></p>
+<p>划出左抽屉，切换Branches到remote就可进行checkout。点击右上角的云图标可以pull or fetch。</p>
+<h3 id="commit与push"><a href="#commit与push" class="headerlink" title="commit与push"></a>commit与push</h3>
+<p>修改过的文件会显示蓝色圈，删除的文件会显示红色问号，增加的文件会显示蓝色问号。</p>
+<p>在需要git add的文件上长按选中，点击右上角的👍，它会变绿，即添加进了暂存区，已经加入暂存区的，再次长按文件，点击👎即可reset。</p>
+<p><img src="https://img.yecl.net/2018/12/Screenshot_20181216-004453.png" srcset="/images/loading.jpg" data-srcset="https://img.yecl.net/2018/12/Screenshot_20181216-004453.png" /></p>
+<p>这时候右下角变成了绿色圈，在将需要git add的文件都如此操作后，点击绿色圈进行commit。</p>
+<p><img src="https://img.yecl.net/2018/12/Screenshot_20181216-004918.png" srcset="/images/loading.jpg" data-srcset="https://img.yecl.net/2018/12/Screenshot_20181216-004918.png" /></p>
+<p>然后在右上角云图标处选择Push。</p>
+<h3 id="版本回退"><a href="#版本回退" class="headerlink" title="版本回退"></a>版本回退</h3>
+<p>点击右上角菜单-Log，可查看所有的commit，点击任意commit即可查看详情和具体的改动，点击右上角的下载图标可以checkout到此commit。</p>
+<p>此外，在具体的文件上长按，点击右上角的Revert图标，即可checkout此文件到指定版本。</p>
+<p><img src="https://img.yecl.net/2018/12/Screenshot_20181216-005502.png" srcset="/images/loading.jpg" data-srcset="https://img.yecl.net/2018/12/Screenshot_20181216-005502.png" /></p>
+<p><img src="https://img.yecl.net/2018/12/Screenshot_20181216-005613.png" srcset="/images/loading.jpg" data-srcset="https://img.yecl.net/2018/12/Screenshot_20181216-005613.png" /></p>
+<h3 id="其他功能"><a href="#其他功能" class="headerlink" title="其他功能"></a>其他功能</h3>
+<p>其他功能都在app内置的Help里面，包括merge，diff，需要自己看啦</p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2>
+<p>本文就是在Android上的Quickedit写成，通过Pocket Git push到github的，Travis-CI会自动生成新的博客。关于Travis-CI的使用，推荐printempw的<a target="_blank" rel="noopener" href="https://blessing.studio/deploy-hexo-blog-automatically-with-travis-ci/">这个教程</a>。</p>
+
         
       </div>
     </article>
   
     <article class="post">
       <h2 class="post-title">
-        <a href="/nanjing-mingfa-bug-portal/">南京一神奇的bugpo：明发水卵子</a>
+        <a href="/i-will-not-post-it-posts/">对自己可能的it类博文的感想</a>
       </h2>
       <div class="post-meta">
         <span class="post-meta-item post-meta-date">
-  <time datetime="2017-05-29T23:49:31+08:00">2017-05-29</time>
+  <time datetime="2018-10-29T00:48:58+08:00">2018-10-29</time>
 </span>
 
 <span class="post-meta-item post-meta-categories">
   <span class="post-meta-item-indicator">Category:</span>
   
-    <a class="category-link" href="/categories/essay/">随笔</a>
-  
-</span>
-
-<span class="post-meta-item post-meta-tags">
-  
-    <a class="tag--link" href="/tags/ingress/" rel="tag">ingress</a> <a class="tag--link" href="/tags/mobilegames/" rel="tag">手机游戏</a>
-  
-</span>
-
-
-<span class="post-meta-item post-meta-views">
-  <span class="pv-counter">loading</span> views
-</span>
-
-
-      </div>
-      <div class="post-content">
-        
-          <p>开头先吐槽一下，这个po的名字起得真烂。</p>
-<p>我最开始看portal介绍里的图片，以为是个什么祭坛呢，今天终于有时间了，我骑行了12公里来到了这里。（真是累死我了，从自行车上下来都不会走路了）</p>
-          <p><a class="more-link" href="/nanjing-mingfa-bug-portal/#more">&gt; READ MORE...</a></p>
-        
-      </div>
-    </article>
-  
-    <article class="post">
-      <h2 class="post-title">
-        <a href="/nothing-eternity-but-time/">没有什么会根本停不下来，除了时间</a>
-      </h2>
-      <div class="post-meta">
-        <span class="post-meta-item post-meta-date">
-  <time datetime="2017-04-03T17:20:35+08:00">2017-04-03</time>
-</span>
-
-<span class="post-meta-item post-meta-categories">
-  <span class="post-meta-item-indicator">Category:</span>
-  
-    <a class="category-link" href="/categories/essay/">随笔</a>
+    <a class="category-link" href="/categories/%E6%9D%82%E8%B0%88/">杂谈</a>
   
 </span>
 
@@ -154,19 +141,19 @@
       </div>
       <div class="post-content">
         
-          <p>这篇是在火车上为打发时间写的，多为抒发自己感情，没有什么逻辑和道理可言。 昨天愚人节，我成功地忘记了公主殿下的生日。 还在不到一年以前，信誓旦旦地说过“不会忘记你”的又是谁呢。 从小学到大学，不知有多少“就他/她/它了，这辈子不换了”的承诺或决定化为泡影。</p>
-          <p><a class="more-link" href="/nothing-eternity-but-time/#more">&gt; READ MORE...</a></p>
+          <p>不知怎么的，我这几年已经对it啊编程啊linux啊之类的东西退热了。毕竟大学学的不是计算机，我也需要对开销精打细算，也就没有那个时刻关注it的能力了。要怎么说呢，我输一手家境，一手分数和一手眼界，惭愧。</p>
+
         
       </div>
     </article>
   
     <article class="post">
       <h2 class="post-title">
-        <a href="/minecraft-gravity-affected-blocks-lazy-chunks/">Minecraft：重力方块与Lazy Chunks</a>
+        <a href="/a-vote-reboot-by-command-block/">一个基于命令方块的投票重启装置</a>
       </h2>
       <div class="post-meta">
         <span class="post-meta-item post-meta-date">
-  <time datetime="2017-02-09T21:40:25+08:00">2017-02-09</time>
+  <time datetime="2018-09-02T01:45:34+08:00">2018-09-02</time>
 </span>
 
 <span class="post-meta-item post-meta-categories">
@@ -191,31 +178,31 @@
       </div>
       <div class="post-content">
         
-          <p>Minecraft中，已经被加载的Chunks有两种状态：Entities-processing Chunks 与 Lazy Chunks。本文将讲解受重力影响的方块在Lazy Chunks中的表现，从而用它做一些诸如修复铁砧，破坏基岩的小把戏。</p>
-          <p><a class="more-link" href="/minecraft-gravity-affected-blocks-lazy-chunks/#more">&gt; READ MORE...</a></p>
+          <p>因为服务器有几个大户家里的机器过多，导致他们家区块被加载的时候服务器的TPS经常下降得很大，影响了正常玩家的游戏体验，故群里有人提议加个投票重启mod。 而MC1.12.2并没有能够这样做的mod，于是我拿命令方块撸了一个，用着还可以。</p>
+          <p><a class="more-link" href="/a-vote-reboot-by-command-block/#more">&gt; READ MORE...</a></p>
         
       </div>
     </article>
   
     <article class="post">
       <h2 class="post-title">
-        <a href="/span-half-china-during-the-spring-rush/">跨越半个中国的春运</a>
+        <a href="/kancolle-the-only-anime/">我与二次元之间，隔着一个砍口垒</a>
       </h2>
       <div class="post-meta">
         <span class="post-meta-item post-meta-date">
-  <time datetime="2017-01-24T22:44:43+08:00">2017-01-24</time>
+  <time datetime="2018-07-18T23:05:45+08:00">2018-07-18</time>
 </span>
 
 <span class="post-meta-item post-meta-categories">
   <span class="post-meta-item-indicator">Category:</span>
   
-    <a class="category-link" href="/categories/essay/">随笔</a>
+    <a class="category-link" href="/categories/%E8%88%B0%E9%98%9FCollection/">舰队Collection</a>
   
 </span>
 
 <span class="post-meta-item post-meta-tags">
   
-    <a class="tag--link" href="/tags/nanjing/" rel="tag">南京</a>
+    <a class="tag--link" href="/tags/kancolle/" rel="tag">舰队collection</a>
   
 </span>
 
@@ -228,23 +215,58 @@
       </div>
       <div class="post-content">
         
-          <p>中国的南北距离是5000公里，而我的回家旅程正好跨越了半个中国。</p>
-<p>我们这辣鸡学校特意把放假时间拖到小年这天。其他高中同学都回家吃饱喝足该上哪玩玩完了，我们才回来。</p>
-<p>数不胜数的人为了在这个月回家过年而拼命地挤火车。尽管坐的火车已经加了很多节车厢，也还有很多人没有座位，这些人买的票便宜，名曰“站票”。买了站票的人把两节车厢的连接处堵住了，上个厕所还要当心不要踩到人。</p>
-<p>北京到哈尔滨的车21点开，开9个小时，我不得不在车上（硬座）度过一晚上。熬到3:30终于忍不住困的我睡了一个半小时，感觉和在学校一觉睡到中午没什么不一样。 虽说南京现在的温度不过1℃，哈尔滨是-22℃，但是在体感上来讲二者没什么不同。无论在哪我的手都不能伸出袖子外，只能用一只手拿着手机，另一只手伸进兜里取暖，再换手。</p>
-<p>家乡还是那么熟悉，去年过年贴的红对联依旧像新的一样，我还以为是新贴的。我奋战过六年的书桌也还在，上面没有灰尘，看来是父母擦掉了。我掏出电脑摆在上面，它立刻恢复了往日的杂乱，让我的心情轻松了许多。</p>
-<p>扎眼的堆成山的高考练习册终于从我眼前里消失了，这让我感受到了一种解脱。我曾经以为高考是天大的一个坎，实际上，参加高考的我并没有什么特殊的感觉。相比之下，大学的期末考试更容易让我紧张，毕竟什么都不会嘛，高考起码肚子里是有干货的，还能比划比划。</p>
-<p>回到家之后给老妈的电脑和手机安上了Google Photos，她成天喊照片没地方放，一删除就找不到，Google相册的自动备份和同步还是很方便的。</p>
-<p>总算是能“完全”闲下来了。CF前两天搞了个什么活动，送了我一把金AK47，这是我以前想都不敢想的事。于是我趁着这闲工夫玩了几把CF，也算是弥补了小时候从来没碰过豪枪的遗憾。顺带，CF真的没人玩了。我选择彩虹六号。</p>
-<p>我就读的高中又涌现了一批新的学霸，而且大有超越我们这一届的趋势。不过从南京回来，我明白了一个道理：东北边远地区的小城市的孩子的发展注定要比北上广深晚，因为在我们家乡这种小地方，接触到的世界实在是太小，99%的学生在考入大学走出家门前，对九门文化课之外的领域一无所知。他们未来的计划和理想和也无法延伸得更远。这大概就是人们（包括我）向南跑的原因吧。</p>
+          <p>我已经退化为普通的宅男，即使我依然顶着一个冻鳗美少女的头像。我说我已经无限远离二次元，但细想下似乎从未接近过。</p>
+<p>2010年我开始喜欢Vocaloid，到处搜集Vocaloid相关的图片、音乐，也结交了一个很亲密的朋友，但在2016年分开了。那之后我对Vocaloid的兴趣也如潮水般退去。</p>
+<p>现在的我不看番，不玩galgame，不玩手游，不追偶像，不看vtuber，不关心唱见舞见，我看到其他人顶着冻鳗美少女头像却全都叫不出名字，所以我在这个圈子里其实很难和谁说上话，这也许也是我话少的一个原因。另一个原因其实是，在现实中已经够累了。</p>
+<p>不过我之所以顶着这个头像，之所以还愿意在别人眼里以爱着纸片人的肥宅自居，和其他人一块喊着老婆！，都要归功于砍口垒。 在转服申请的时候，我在“你认为砍口垒___”处勾选了“谜之魅力”，不知道为什么，这个游戏让我无法离开。</p>
+<p><a target="_blank" rel="noopener" href="https://static.schale.jp/2018/07/v2-a6df345ceefde5f1508e48737f3c11ac_r.jpg"><img src="https://static.schale.jp/2018/07/v2-a6df345ceefde5f1508e48737f3c11ac_r.jpg" srcset="/images/loading.jpg" data-srcset="https://static.schale.jp/2018/07/v2-a6df345ceefde5f1508e48737f3c11ac_r.jpg" /></a></p>
+<p>田中也通过各种出乎意料的联动和线下活动来让砍口垒变得不仅限于小圈子。如此一来，我确实已经退化成普通的游戏宅了吧。这是好事。</p>
 
+        
+      </div>
+    </article>
+  
+    <article class="post">
+      <h2 class="post-title">
+        <a href="/nintendo-switch-joy-con-repair/">Nintendo Switch摇杆清洁小记（无拆机）</a>
+      </h2>
+      <div class="post-meta">
+        <span class="post-meta-item post-meta-date">
+  <time datetime="2018-05-10T09:56:44+08:00">2018-05-10</time>
+</span>
+
+<span class="post-meta-item post-meta-categories">
+  <span class="post-meta-item-indicator">Category:</span>
+  
+    <a class="category-link" href="/categories/essay/">随笔</a>
+  
+</span>
+
+<span class="post-meta-item post-meta-tags">
+  
+    <a class="tag--link" href="/tags/Nintendo/" rel="tag">Nintendo</a>
+  
+</span>
+
+
+<span class="post-meta-item post-meta-views">
+  <span class="pv-counter">loading</span> views
+</span>
+
+
+      </div>
+      <div class="post-content">
+        
+          <p>事情起因是这样。 我的笔记本和桌子的边缘相距很窄，大概只有一个5.5寸手机那么宽。因为这里离手比较近，所以我经常把手机手柄之类的东西放在这里方便拿。<br />
+</p>
+          <p><a class="more-link" href="/nintendo-switch-joy-con-repair/#more">&gt; READ MORE...</a></p>
         
       </div>
     </article>
   
 
   <nav class="pagination">
-  <a class="extend prev" rel="prev" href="/">Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/3/">Next</a>
+  <a class="extend prev" rel="prev" href="/">Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/3/">Next</a>
 </nav>
 
 
@@ -268,15 +290,15 @@
       </li>
     
       <li class="menu-item">
+        <a href="/ba-co-doping-bicuseo/">Ba、Co双掺杂BiCuSeO热电性能研究</a>
+      </li>
+    
+      <li class="menu-item">
+        <a href="/snte-opening-report/">Bi/Mn 双掺及Sn过量自补偿对SnTe的热电性能改善</a>
+      </li>
+    
+      <li class="menu-item">
         <a href="/nanjing-so-wet-weather/">潮湿是最大的困扰</a>
-      </li>
-    
-      <li class="menu-item">
-        <a href="/a-vote-reboot-by-command-block/">一个基于命令方块的投票重启装置</a>
-      </li>
-    
-      <li class="menu-item">
-        <a href="/nintendo-switch-joy-con-repair/">Nintendo Switch摇杆清洁小记（无拆机）</a>
       </li>
     
   </ul>
@@ -288,7 +310,7 @@
   <h3 class="widget-title">分类</h3>
   
   
-    <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/IPv6/">IPv6</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/minecraft/">minecraft</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/others/">其他</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/essay/">随笔</a></li></ul>
+    <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/IPv6/">IPv6</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/minecraft/">minecraft</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/minecraft/%E6%8A%80%E6%9C%AF/">技术</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%BA%91%E6%9C%8D%E5%8A%A1/">云服务</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/others/">其他</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/%E6%95%99%E7%A8%8B/">教程</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9D%82%E8%B0%88/">杂谈</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%AC%94%E8%AE%B0/">笔记</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%AC%94%E8%AE%B0/%E6%8A%80%E6%9C%AF/">技术</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%88%B0%E9%98%9FCollection/">舰队Collection</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/essay/">随笔</a></li></ul>
   
 </section>
 
@@ -339,7 +361,7 @@
 
 <section class="widget" id="widget-tagcloud">
   <h3 class="widget-title">标签云</h3>
-  <a href="/tags/GFW/" style="font-size: 15px;">GFW</a> <a href="/tags/IPv6/" style="font-size: 10px;">IPv6</a> <a href="/tags/Nintendo/" style="font-size: 10px;">Nintendo</a> <a href="/tags/bitcoin/" style="font-size: 10px;">bitcoin</a> <a href="/tags/ingress/" style="font-size: 10px;">ingress</a> <a href="/tags/minecraft/" style="font-size: 20px;">minecraft</a> <a href="/tags/helloworld/" style="font-size: 10px;">世界，你好！</a> <a href="/tags/nanjing/" style="font-size: 20px;">南京</a> <a href="/tags/mobilegames/" style="font-size: 15px;">手机游戏</a> <a href="/tags/arknights/" style="font-size: 10px;">明日方舟</a> <a href="/tags/games/" style="font-size: 10px;">游戏</a> <a href="/tags/kancolle/" style="font-size: 10px;">舰队collection</a>
+  <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/BiCuSeO/" style="font-size: 10px;">BiCuSeO</a> <a href="/tags/DNS/" style="font-size: 12.5px;">DNS</a> <a href="/tags/DNSimple/" style="font-size: 12.5px;">DNSimple</a> <a href="/tags/GFW/" style="font-size: 15px;">GFW</a> <a href="/tags/He-DNS/" style="font-size: 10px;">He DNS</a> <a href="/tags/IPv6/" style="font-size: 10px;">IPv6</a> <a href="/tags/Nintendo/" style="font-size: 10px;">Nintendo</a> <a href="/tags/Rage4/" style="font-size: 10px;">Rage4</a> <a href="/tags/SnTe/" style="font-size: 10px;">SnTe</a> <a href="/tags/bitcoin/" style="font-size: 10px;">bitcoin</a> <a href="/tags/bug/" style="font-size: 10px;">bug</a> <a href="/tags/csgo/" style="font-size: 10px;">csgo</a> <a href="/tags/forge/" style="font-size: 10px;">forge</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/github/" style="font-size: 10px;">github</a> <a href="/tags/ingress/" style="font-size: 10px;">ingress</a> <a href="/tags/java/" style="font-size: 10px;">java</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/minecraft/" style="font-size: 20px;">minecraft</a> <a href="/tags/openwrt/" style="font-size: 10px;">openwrt</a> <a href="/tags/root/" style="font-size: 10px;">root</a> <a href="/tags/steam/" style="font-size: 10px;">steam</a> <a href="/tags/%E4%B8%89%E8%8F%B1%E9%93%85%E7%AC%94/" style="font-size: 10px;">三菱铅笔</a> <a href="/tags/helloworld/" style="font-size: 10px;">世界，你好！</a> <a href="/tags/%E4%B9%B0%E4%B9%B0%E4%B9%B0/" style="font-size: 10px;">买买买</a> <a href="/tags/%E5%88%B7%E6%9C%BA/" style="font-size: 10px;">刷机</a> <a href="/tags/nanjing/" style="font-size: 17.5px;">南京</a> <a href="/tags/%E5%8F%A4%E6%98%8E%E5%9C%B0%E8%A7%89/" style="font-size: 10px;">古明地觉</a> <a href="/tags/%E5%9E%83%E5%9C%BE%E8%AF%84%E8%AE%BA/" style="font-size: 10px;">垃圾评论</a> <a href="/tags/%E5%AE%88%E6%9C%9B%E5%85%88%E9%94%8B/" style="font-size: 10px;">守望先锋</a> <a href="/tags/mobilegames/" style="font-size: 15px;">手机游戏</a> <a href="/tags/arknights/" style="font-size: 10px;">明日方舟</a> <a href="/tags/%E6%9D%90%E6%96%99/" style="font-size: 12.5px;">材料</a> <a href="/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/" style="font-size: 10px;">树莓派</a> <a href="/tags/games/" style="font-size: 10px;">游戏</a> <a href="/tags/%E7%99%BE%E5%BA%A6%E4%BA%91rom/" style="font-size: 10px;">百度云rom</a> <a href="/tags/%E7%A2%B2%E5%8C%96%E9%94%A1/" style="font-size: 10px;">碲化锡</a> <a href="/tags/kancolle/" style="font-size: 12.5px;">舰队collection</a> <a href="/tags/%E9%87%91%E5%B1%9E/" style="font-size: 10px;">金属</a> <a href="/tags/%E9%94%91%E5%BA%A6/" style="font-size: 10px;">锑度</a> <a href="/tags/%E9%AB%98%E8%80%83/" style="font-size: 10px;">高考</a>
 </section>
 
 
