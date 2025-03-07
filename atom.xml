@@ -1,0 +1,503 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Yoruka&#39;s Blog</title>
+  
+  <subtitle>我们决不倒下，让刽子手显得高大，好阻挡那自由的风。</subtitle>
+  <link href="https://yecl.net/atom.xml" rel="self"/>
+  
+  <link href="https://yecl.net/"/>
+  <updated>2024-10-07T12:44:27.000Z</updated>
+  <id>https://yecl.net/</id>
+  
+  <author>
+    <name>Yoruka</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>IPv6 Ready Logo Phaze-2 测试指南</title>
+    <link href="https://yecl.net/ipv6ready-logo-p2-self-test/"/>
+    <id>https://yecl.net/ipv6ready-logo-p2-self-test/</id>
+    <published>2024-10-07T12:44:27.000Z</published>
+    <updated>2024-10-07T12:44:27.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="ipv6-ready-logo"><a href="#ipv6-ready-logo" class="headerlink" title="IPv6 Ready Logo"></a>IPv6 Ready Logo</h2><p><a href="https://www.ipv6ready.org">IPv6 Ready Logo</a>是一项国际认证计划，提供一个全球通用的规范，验证IPv6产品的可部署和应用性，为遵守这些规范的厂商颁发IPv6 Ready Logo证书，为企业采购硬件设备提供参考。</p><p>IPv6 Ready Logo共有5个分类：Core Protocols、CE Router、DHCPv6、IPSecv6、SNMP。其中Core Protocols是最通用的认证，所有厂商都会申请。</p><span id="more"></span><p>Core Protocols分为6个部分：</p><ol type="1"><li>IPV6基础协议(Internet Protocol Version 6(IPv6)Specification)<br /></li><li>IPv6邻居发现协议(Neighbor Discoveryfor IP version 6(IPv6))<br /></li><li>IPv6无状态地址自动配置协议(IPv6 Stateless Address Autoconfiguration)<br /></li><li>IPv6路径MTU发现协议(Path MTU Discovery for IP version 6)<br /></li><li>ICMPv6协议(Internet Control Message Protocol(ICMPv6)for the Internet Protocol)<br /></li><li>IPv6互通(lPv6 Interoperability)</li></ol><p>其中，前5项被称为一致性（Conformance），考察不同厂商的产品对IPv6核心协议的应用是否一致。考察通过的设备，在和其他厂商进行IPv6通信时才不会出错。考察的标准根据RFC制定，所以是非常权威的。</p><p>Phaze指的是IPv6 Ready Logo委员会的Phaze，最初成立的时候（Phaze 1）没有那么复杂的认证内容，在2011年11月后，才建立并完善了现在的认证内容（Phaze 2）。直至现在，该认证的版本也在不断更新，最新的是2024年6月的5.1.3。</p><p>在中国大陆的认证工作由<a href="https://www.biigroup.com">天地互连信息技术有限公司</a>负责。</p><blockquote><p>认证标准文档下载：<a href="https://www.ipv6ready.org/docs/Core_Conformance.pdf">Core_Conformance.pdf</a>，<a href="https://www.ipv6ready.org/docs/Core_Interoperability.pdf">Core_Interoperability.pdf</a></p></blockquote><h3 id="一致性conformance"><a href="#一致性conformance" class="headerlink" title="一致性（Conformance）"></a>一致性（Conformance）</h3><p>由于IPv6比IPv4多了巨量的特性，且许多特性的规定并不严格，会导致报文在不同厂商的设备之间传递时出现偏差，比如忽略了不该忽略的报文、不该发送报文却发送了报文、发送的报文里某一字段的值不正确等。一致性测试的目的就是消除各厂商的差距，让它们更好地协同工作。</p><p>接下来介绍测试环境与方法。</p><h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><p>硬件需要一台有3个网口的PC或服务器，直接安装或者虚拟机安装freebsd 8，虚拟机要将3个网口直通/桥接，开混杂模式。</p><p>测试基于v6eval这个测试工具，测试脚本基于perl，由于freebsd 8没有pkg包管理，常用工具命令都需要编译/usr/ports里的软件（而且还不全），所以跟着<a href="https://www.ipv6ready.org.cn/home/views/default/resource/logo/phase2-core/index.htm">官方教程</a>手动安装是很折磨的。本文提供一个整合好的镜像下载，下载后导入最新版的Self Test工具就可以测试。</p><blockquote><p>下载链接：<a href="https://drive.google.com/file/d/1a1wldA9MJqXySh4A0SQgG9UIwGy95N3g">Google Drive</a>，freebsd用户名：root 密码：123456</p></blockquote><h2 id="测试步骤"><a href="#测试步骤" class="headerlink" title="测试步骤"></a>测试步骤</h2><h3 id="拓扑"><a href="#拓扑" class="headerlink" title="1.拓扑"></a>1.拓扑</h3><p><img src="https://golden-warehouse.kivotos.jp/image-20241007222633850.jpg" alt="image-20241007222633850" /></p><p>TN为测试设备，NUT为被测设备。TN和NUT通过2个网口互连。TN可选使用console连接NUT来实现自动输入命令。</p><p>从<a href="https://www.ipv6ready.org.cn/home/views/default/resource/logo/phase2-core/index.htm">官方教程</a>中下载最新的Self_Test_5-?-?.tar.gz，解压到/usr/local/ipv6ready/ 目录下。</p><h3 id="预配置"><a href="#预配置" class="headerlink" title="2.预配置"></a>2.预配置</h3><p>有3个文件需要预先配置好：</p><blockquote><p>/usr/local/v6eval/etc/nut.def<br />/usr/local/v6eval/etc/tn.def<br />/usr/local/ipv6ready/Self_Test_5-?-?/config.pl</p></blockquote><p><strong>nut.def:</strong></p><pre>ipv6# cat nut.def.sample## nut.def## Information about the Node Under Test (NUT)## System typeSystem cisco-system #----若手动测试此项修改为 manual# System informationTargetName Cisco1812 #----被测设备# NameHostName cisco #-----被测厂家# Type# host, router, specialType router #-----被测设备类型，如果 NUT 为 host 类需修改为 host# Super user name and it's password# if you select manual as "System", you don't care "User" and "Password"#User rootPassword v6eval#linkname   interface    The EXACT ether source address     link-local address     global addressLink0 fxp0 00:00:92:a7:6d:f5 fe80::7508:aaa8:e1d0:a425 3ffe:501:ffff:100:b003:5ce2:e51:aab #被测设备第一个接口，需填写地址#Link1 fxp1 00:00:92:a7:6d:f6 fe80::7508:aaa8:e1d0:a425 3ffe:501:ffff:100:b003:5ce2:e51:aac #被测设备第二个接口，需填写地址#Link2 de0 00:c0:f6:b0:aa:ef fe80::7508:aaa8:e1d0:a425 3ffe:501:ffff:100:b003:5ce2:e51:aac#Link3 de1 00:00:92:a7:6d:f8 fe80::7508:aaa8:e1d0:a425 3ffe:501:ffff:100:b003:5ce2:e51:aac#Link4 de2 00:90:27:14:ce:e3 fe80::7508:aaa8:e1d0:a425 3ffe:501:ffff:100:b003:5ce2:e51:aac</pre><p>举例：link0 那一行的 fxp0 是设备的接口名，00:00:92:a7:6d:f5是link0的MAC地址，fe80::7508:aaa8:e1d0:a42是link-local address，3ffe:501:ffff:100:b003:5ce2:e51:aab是global unicast address。这几项需要修改为NUT的真实地址。link1同理。</p><strong>tn.def</strong><pre>## tn.def## Information about the Tester Node (TN)### Remote Controal Configuration#RemoteDevice cuad0RemoteDebug 0RemoteIntDebug 0RemoteLog 1RemoteSpeed 0RemoteLogout 0RemoteMethod serial#filter ipv6#linkname interface BOGUS ether source address# name of the Tester InterfaceLink0 vr1 00:00:00:00:01:00Link1 vr2 00:00:00:00:01:01#Link2 de2 00:00:00:00:01:02#Link3 de4 00:00:00:00:01:03</pre><p>link0 那一行的 vr1是tn的网口名（用ifconfig -a可以看到），MAC可以不改，但建议改为真实MAC，有些安全设备会检查MAC真实性。</p><p>tn.def 与nut.def里的link0要互相连接，link1同理。</p><strong>config.pl</strong><pre>ipv6ready# vi /usr/local/ipv6ready/Self_Test_5-?-?/config.pl#########################################################################----------------------------------------------------------------------## ## Configure the advanced functionalities support ## ##----------------------------------------------------------------------### The support of transmitting Echo Requests and configuring packet size# v6LC.2.2.25, v6LC.4.1.10, v6LC.4.1.11, v6LC.5.1.1# zero - NUT does not support# non-zero - NUT supports#TRANSMITTING_EREQ =1 # 1 表示被测设备支持发送 EchoRequest# 0 表示不支持## The support of multicast routing# v6LC.1.1.10 H, I, J, K# v6LC.1.2.7 G, H# v6LC.5.1.4 B# zero - NUT does not support# non-zero - NUT supports#MULTICAST_ROUTING =1 #被测设备支持多播路由# 0 表示不支持## The support of link MTU configuration# v6LC.5.1.4, v6LC.5.1.11 B, v6LC.5.1.12 B, v6LC.5.1.13 B# zero - NUT does not support# non-zero - NUT supports#MTU_CONFIGURATION =1 #被测设备支持 MTU 配置# 0 表示不支持## The support of Hop-by-hop option process# v6LC.1.2.7# zero - NUT does not support# non-zero - NUT supports#$PROCESS_HBH = 1; #被测设备支持处理 hop-by-hop 选项## The support of sending more than three RSs# v6LC.2.2.1# zero - NUT does not support# non-zero - NUT supports#$SENDING_MORE_RSs = 1;## The support of sending only one RS# v6LC.2.2.2# zero - NUT does not support# non-zero - NUT supports#$SENDING_ONE_RS = 0;## The support of Type C host# v6LC.2.2.23# zero - NUT does not support# non-zero - NUT supports#$TYPE_C_HOST = 1; #被测设备支持 RFC4191## support to process Beyond Scope of Source Address# v6LC.5.1.3.E# zero - NUT does not support# non-zero - NUT supports#$BEYOND_SCOPE_SADDR = 1;#----------------------------------------------------------------------## ## Configure target environment ## ##----------------------------------------------------------------------### The support of multiple physical network interfaces# zero - one physical interface router# non-zero - generic router which has multiple interfaces#$HAS_MULTIPLE_INTERFACES = 1;</pre><p>本配置文件需要根据被测产品本身的功能进行配置，如 NUT 不支持 MTU 配置，需要将MTU_CONFIGURATION 置 0，否则测试到 V6LC.5.1.4 等 cases 时会failed。</p><h3 id="测试脚本编写手动测试可跳过"><a href="#测试脚本编写手动测试可跳过" class="headerlink" title="3.测试脚本编写（手动测试可跳过）"></a>3.测试脚本编写（手动测试可跳过）</h3><p>需要修改的脚本和配置如下：</p><p>/usr/local/lib/perl5/site_perl/5.10.1/V6evalRemote.pm<br />/usr/local/v6eval/bin/XXX/route.rmt 及其他*.rmt</p><p>因为在/usr/local/v6eval/bin/XXX/route.rmt …中都会用到 use V6evalRemote, 用户需要将V6evalRemote.pm 中的参数修改过来。若为手动测试，只需在 nut.def 文件中将 system 项修改为 manual 即可.</p><h3 id="self_test软件说明"><a href="#self_test软件说明" class="headerlink" title="4.Self_Test软件说明"></a>4.Self_Test软件说明</h3><p>Self_Test_5-0-4 软件中包含 Makefile 文件，用户可以在上述配置完成之后直接在此目录下输入 make ipv6ready_p2_host 或者 make ipv6ready_p2_router(根据被测产品的测试类型选择)。</p><p>软件中也包含每个 RFC 测试目录，如 RFC8200 的测试目录 spec.p2, RFC4861 的测试目录nd.p2, RFC4862 的测试目录 addr.p2, RFC8201 的测试目录 pmtu.p2, RFC4443 的测试目录icmp.p2, 用户也可以在相对应的目录下测试如</p><p><code>ipv6ready # cd spec.p2/</code><br /><code>ipv6ready # make ipv6ready_p2_host(router)</code></p><p>若用户仅测试某个或某些测试用例的话，可以</p><p><code>ipv6ready # cd spec.p2/</code><br /><code>ipv6ready # make ipv6ready_p2_host(router) AROPT="-s 1 -e 10"</code></p><p>注：-s: start，开始项；-e: end，结束项</p><p>Self_Test工具里的小项，对应标准文档<a href="https://www.ipv6ready.org/docs/Core_Conformance.pdf">Core_Conformance.pdf</a>里大项的某一Part，直接看看不出来它们的对应关系，在运行某个具体小项的时候，Log会显示该小项对应哪个大项的哪个Part。</p><p>如果是手动测试，要在途中按照脚本指示操作设备。比如提示Set AdvSendAdvertisements Flag to True，就需要操作设备的接口，变为可发送RA的接口。</p><h3 id="结果分析"><a href="#结果分析" class="headerlink" title="5.结果分析"></a>5.结果分析</h3><p>打开Self_Test_5-?-?/index.html可以看到测试结果的总览。</p><p><img src="https://golden-warehouse.kivotos.jp/image-20241007231146308.jpg" alt="image-20241007231146308" /></p><p>点击某个section进入测试项页面。测试结果以 html 格式显示，也可打开单独的测试结果，如 16.html，如下图所示</p><p><img src="https://golden-warehouse.kivotos.jp/image-20241007231327256.jpg" alt="image-20241007231327256" /></p><p>每个测试结果单元中包含 7 列，分别是 No.、Title、Result、Log、Script、Packet、Dump(bin)。</p><p>title 列中有具体的测试项名称，点击测试项名称进入详细的测试例用例。<br />Result 列为该测试项测试结果，一般黑色为通过，红色字体为测试结果有问题，需要修改；<br />Log 列为测试过程，点击“X”就可以进入测试 Log 页；<br />Script 列和 Packet 列为测试例设计的脚本和报文格式。<br />Dump(bin)列为测试过程中链路上的抓包，使用 wireshark 等软件打开。</p><p><img src="https://golden-warehouse.kivotos.jp/image-20241007231453622.jpg" alt="image-20241007231453622" /></p><p>点击Log下面的X可以查看项目的日志，用于排错。</p><p><img src="https://golden-warehouse.kivotos.jp/image-20241007231833664.jpg" alt="image-20241007231833664" /></p><p>也有交互的报文的详细展示。</p><p><img src="https://golden-warehouse.kivotos.jp/image-20241007231918420.jpg" alt="image-20241007231918420" /></p><p>出现<span style="color:red">NG</span>字样代表失败，需要对照Log来检查哪一步出错了，本应收到却未收到、本不应收到却收到、收到的包内容错误等问题都会详细记录下来。</p>]]></content>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;ipv6-ready-logo&quot;&gt;IPv6 Ready Logo&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.ipv6ready.org&quot;&gt;IPv6 Ready Logo&lt;/a&gt;是一项国际认证计划，提供一个全球通用的规范，验证IPv6产品的可部署和应用性，为遵守这些规范的厂商颁发IPv6 Ready Logo证书，为企业采购硬件设备提供参考。&lt;/p&gt;
+&lt;p&gt;IPv6 Ready Logo共有5个分类：Core Protocols、CE Router、DHCPv6、IPSecv6、SNMP。其中Core Protocols是最通用的认证，所有厂商都会申请。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="IPv6" scheme="https://yecl.net/categories/IPv6/"/>
+    
+    
+    <category term="IPv6" scheme="https://yecl.net/tags/IPv6/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>冬逝</title>
+    <link href="https://yecl.net/merry-chiristmas-frost-nova/"/>
+    <id>https://yecl.net/merry-chiristmas-frost-nova/</id>
+    <published>2019-12-26T13:14:00.000Z</published>
+    <updated>2019-12-26T13:14:00.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>人有三次死亡</p><p>第一次的死亡是呼吸停止心脏停跳，在生物学上死了</p><p>第二次的死亡是在葬礼上，认识你的人都来祭奠，来怀念你的一生，在社会上你死了，不再有你的位置</p><p>第三次的终极死亡是最后一个记得你的人也死了，你彻底被这个世界遗忘了</p><p>——《寻梦环游记》</p><span id="more"></span><p><img src="https://golden-warehouse.kivotos.jp/IMG_4235.GIF" /></p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;人有三次死亡&lt;/p&gt;
+&lt;p&gt;第一次的死亡是呼吸停止心脏停跳，在生物学上死了&lt;/p&gt;
+&lt;p&gt;第二次的死亡是在葬礼上，认识你的人都来祭奠，来怀念你的一生，在社会上你死了，不再有你的位置&lt;/p&gt;
+&lt;p&gt;第三次的终极死亡是最后一个记得你的人也死了，你彻底被这个世界遗忘了&lt;/p&gt;
+&lt;p&gt;——《寻梦环游记》&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="随笔" scheme="https://yecl.net/categories/essay/"/>
+    
+    
+    <category term="明日方舟" scheme="https://yecl.net/tags/arknights/"/>
+    
+    <category term="手机游戏" scheme="https://yecl.net/tags/mobilegames/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Ba、Co双掺杂BiCuSeO热电性能研究</title>
+    <link href="https://yecl.net/ba-co-doping-bicuseo/"/>
+    <id>https://yecl.net/ba-co-doping-bicuseo/</id>
+    <published>2019-09-29T03:22:26.000Z</published>
+    <updated>2019-09-29T04:07:26.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="要解决的问题"><a href="#要解决的问题" class="headerlink" title="要解决的问题"></a>要解决的问题</h2><p>BICuSeO基氧化物热电材料在高温热电材料中有很大的优势，为了进一步增强热电优值，我们需要进行掺杂改性，使其能够达到工业生产要求。同时，我们也希望掌握BiCuSeO基氧化物的制备方法，改进制备工艺。</p><span id="more"></span><h2 id="拟采用的方法"><a href="#拟采用的方法" class="headerlink" title="拟采用的方法"></a>拟采用的方法</h2><p>现拟采用如下途径提高热电性能：</p><ol type="1"><li><p>优化材料载流子浓度：材料的热点性能受费米能级影响，而费米能级受载流子浓度影响，当载流子浓度增大时，电导率增大，Seebeck系数降低。于是，合适的载流子浓度选取使电导率和Seebeck系数达到平衡，才能优化热电性能。</p></li><li><p>降低材料的热导率：材料的热导率受声子散射的影响且呈反比例，降低晶格热导率、增加声子散射极客提高材料的热电性能。可选用的操作有掺杂、晶粒细化增加晶界密度、开发电子晶体——声子玻璃输运特性的热电材料。</p></li><li><p>优化能带结构：半导体只有在价带顶或者导带底的载流子才能够参与电流传输，所以态密度在费米能级附近的载流子成为优化能带结构的关键。可选用的操作有增加能级简并度（增加费米面能级数量）、引入杂质能级（增加载流子传输途径）。</p></li></ol><p>实验操作过程如下：</p><ol type="1"><li><p>试采用Ba、Co作为在Bi、Cu位点双掺杂的掺杂剂，采用固相反应法合成掺杂Ba、Co的BiCuSeO，记录其测试得到的性能数据，试图获得合成BiCuSeO的较优条件。</p></li><li><p>采用SPS放电等离子体烧结法调节合适的烧结温度、烧结时间，分析形成颗粒的形貌的基本情况。进一步了解BiCuSeO制备的方法。用X射线衍射与标准样品比较以判断是否为目标材料BiCuSeO;用扫描电镜测试所得材料的微观形貌、尺寸。</p></li><li><p>将SPS烧结样品沿径向切成片（约5×5×2 mm<sup>3</sup>），以进行热导率和赛贝克系数测量。 沿着相同的方向切割条（约1.8×1.8×5 mm<sup>3</sup>）进行电导率测量。</p></li></ol><h2 id="实验具体步骤"><a href="#实验具体步骤" class="headerlink" title="实验具体步骤"></a>实验具体步骤</h2><p>将原料BaO、Bi<sub>2</sub>O<sub>3</sub>、Bi、Cu、Co<sub>2</sub>O<sub>3</sub>、Se固体化学试剂的粉末早化学计量天平上如下表按比例称量并混合在玛瑙研杵和研钵中彻底研磨，以200rpm的球磨过程约12小时。 然后将粉末在8 MPa的压力下用不锈钢模具压成片状，并放入真空石英管中。将管中的片剂在573K真空中打碎、加热8小时，然后加热至1023K，持续24小时。将获得的材料在玛瑙研杵和研钵中粉碎并重新磨碎，然后在250rpm下进行球磨处理约8小时。最后，通过放电等离子体烧结体系（SPS）在973K的真空中在50MPa的轴向压缩应力下烧结6min得到的粉末6分钟。</p><h2 id="x射线衍射分析"><a href="#x射线衍射分析" class="headerlink" title="X射线衍射分析"></a>X射线衍射分析</h2><p>我们采用的物像分析仪是实验室的D8 Advance型，厂家是德国布鲁克公司。实验的条件是：扫描速度；扫描角度2θ为10°～90°；步长为0.02°。在测定晶格常数时，添加单晶硅有利于减小仪器的误差。衍射发生的条件可以由下式得到：</p><p><span class="math display">\[2d\sin \theta =n\lambda \]</span></p><p>2θ决定衍射图上的线条坐标，而面间距d（晶体结构的基本量）和波长λ可以决定θ。固相反应法制得BiCuSeO的衍射强度图如下所示。根据图1，所有主要的布拉格峰都与纯四极P4 / nmm空间组中的ZrSiCuAs结构的纯BiCuSeO相（PDF＃82-0464）很好地匹配。对于Ba<sub>0.125</sub>Bi<sub>0.875</sub>Cu<sub>0.9</sub>Co<sub>0.1</sub>SeO（x=0.1），在26°~ 28°左右有一个很小的杂峰，表明在固态反应期间产生的少量Bi<sub>2</sub>O<sub>3</sub>。</p><center><img src="https://img.yecl.net/2019/09/xrd.png" /><br />图1 固相反应法制得BiCuSeO的衍射强度</center><p>下图是在利用jade6对如上衍射图象去掉仪器误差再用全谱拟合的办法得到的精修结果。晶格常数a和c随着Co的含量的增加而显示的曲线分布。由图2可得，由于Cu+（0.77Å）半径与Co<sub>2</sub>+（0.74Å）之间的微小差异，晶格常数a和c随着x的增加而呈现轻微的变化，其中a从3.91972Å增大又减小到3.92135Å，c从8.90738Å波动直到8.91962Å。说明在掺杂Ba和Co之后BiCuSeO产生了轻微的变形，但是并未影响整个晶体形状。</p><center><img src="https://img.yecl.net/2019/09/doping-fraction.png" /><br />图2 a和c随Co掺杂浓度的变化关系</center><h2 id="扫描电子显微镜分析"><a href="#扫描电子显微镜分析" class="headerlink" title="扫描电子显微镜分析"></a>扫描电子显微镜分析</h2><p>本实验采用德国蔡司生产的Zeiss Auriga型 FIB/SEM双束系统对合成材料的表面形貌和颗粒大小进行分析。扫描电子显微镜是利用聚焦得非常细的高能电子束在试样上扫描，激发出各种物理信息。通过对这些信息的接受、放大和显示成像，获得测试试样表面形貌的观察。下图为Ba<sub>0.125</sub>Bi<sub>0.875</sub>Cu<sub>0.85</sub>Co<sub>0.15</sub>SeO断面的SEM图，能够从图中了解其形貌（图为放大倍数为10000倍）。</p><p>从图中可以看出，所制得的BiCuSeO颗粒为层状，与预期一致。颗粒尺寸属于微米级别，虽然形状不是很规则，但尺寸比较均匀，没有出现尺寸差距特别大的颗粒。从b图可以看出，所得到的材料较为酥松且孔洞较多。</p><center><img src="https://img.yecl.net/2019/09/SEM.jpg" /><br /><img src="https://img.yecl.net/2019/09/SEM2.jpg" /><br />图3 Bi<sub>0.875</sub>Ba<sub>0.125</sub>Cu<sub>0.85</sub>Co<sub>0.1</sub>5SeO断面SEM图</center><h2 id="元素mapping"><a href="#元素mapping" class="headerlink" title="元素mapping"></a>元素mapping</h2><p>本次实验中，元素映射由FEI Quanta 250FEG扫描电子显微镜的内部EDS进行。在Ba<sub>0.125</sub>Bi<sub>0.875</sub>Cu<sub>0.85</sub>Co<sub>0.15</sub>SeO样品上进行元素映射。 可以发现，除Co之外，所有元素都显示均匀分布。Co元素的富集意味着Co存在第二相，表明Co元素的固溶度极限低于15％。</p><h2 id="热电性能测试"><a href="#热电性能测试" class="headerlink" title="热电性能测试"></a>热电性能测试</h2><h3 id="电导率"><a href="#电导率" class="headerlink" title="电导率"></a>电导率</h3><p>如图5所示。结果表明，五条曲线中的四条表示点道路随温度的升高而降低，另外一条则是纯相BiCuSeO。这表明了退化的半导体行为。不难看出，图中Ba<sub>0.125</sub>Bi<sub>0.875</sub>Cu<sub>0.85</sub>Co<sub>0.15</sub>SeO的电导率为最高，来自霍尔测量的研究样品的室温载流子浓度（n）和载流子迁移率（μ）示于图3-5（b）中。Cu位置上的Co掺杂导致较低的载流子浓度，但较高的载流子迁移率，这正如在Cu位点的Ag掺杂。 n随着Co掺杂含量的增加而降低，因为Cu+位点上的Co<sub>2</sub>+取代可以被视为施主掺杂。所以，被引入的电子与空穴相互抵消平衡。载流子迁移率的巨大增强可能是由能带结构的变化引起的，轻重带之间的能量减小偏移对载流子传输更有利。Ba和Co双掺杂样品和Ba单掺杂Ba<sub>0.125</sub>Bi<sub>0.875</sub>CuSeO的电导率明显高于纯相BiCuSeO，这是因为通过霍尔测量识别，载流子浓度增加的结果。</p><center><img src="https://img.yecl.net/2019/09/Conductivity.png" /><br /><img src="https://img.yecl.net/2019/09/doping-fraction2.png" /><br />图5 （a）电导率变化（b）室温下n和μ随Co掺杂浓度的变化关系</center><h3 id="seebeck系数"><a href="#seebeck系数" class="headerlink" title="Seebeck系数"></a>Seebeck系数</h3><p>Seebeck系数与温度的关系方程如下：</p><p><span class="math display">\[S=\frac{8{ {\pi }^{2} }k_{B}^{2}T}{3e{ {h}^{2} } }m_{d}^{*}{ {\left( \frac{\pi }{3n} \right)}^{2/3} }\]</span></p><p>由图可知，Seebeck系数与温度成正比。下图显示了Ba<sub>0.125</sub>Bi<sub>0.875</sub>Cu<sub>1-x</sub>Co<sub>x</sub>SeO样品的Seebeck系数的温度依赖性。</p><center><img src="https://img.yecl.net/2019/09/Seebeck.png" /><br />图6 Seebeck系数随温度变化关系</center><p>图片表明，所有 Seebeck系数随着温度的升高而增加，且这些系数均大于0。系数大于0表示了载流子的形式是空穴，而且350K下，纯相BiCuSeO的载流子浓度很高，导致存在Co和Ba掺杂的样品反而降低了Seebeck系数。尽管双掺杂Seebeck系数降低，也比Ba单掺杂样品载流子浓度高。对于Ba<sub>0.125</sub>Bi<sub>0.875</sub>Cu<sub>0.85</sub>Co<sub>0.1</sub>5SeO，其Seebeck系数在350K下实现了285mVK<sup>-1</sup>。对于Ba<sub>0.125</sub>Bi<sub>0.875</sub>Cu<sub>0.9</sub>Co<sub>0.1</sub>SeO，在350 K时，Co和Ba掺杂材料的最大赛贝克系数为315 mVK<sup>-1</sup>，约为Ba单掺杂样品（127 mVK<sup>-1</sup>）的1.5倍。此外，该值（315mVK<sup>-1</sup>）在相同温度下大于其它报道的掺杂BiCuSeO。总之，Co元素使得BiCuSeO和Ba掺杂的BiCuSeO体系的Seebeck系数大大提高。</p><p>有效质量的计算方程如下：</p><p><span class="math display">\[{ {m}^{*} }=\frac{ { {h}^{2} } }{2{ {k}_{B} }T}{ {\left( \frac{n}{4\pi { {F}_{1/2} }\left( \eta  \right)} \right)}^{2/3} }\]</span></p><p><span class="math display">\[S=\pm \frac{ { {k}_{B} } }{e}\left( \frac{\left( r+5/2 \right){ {F}_{r+3/2} }\left( \eta  \right)}{\left( r+3/2 \right){ {F}_{r+1/2} }\left( \eta  \right)}-\eta  \right)\]</span></p><p><span class="math display">\[{ {F}_{n} }\left( \eta  \right)=\int\limits_{0}^{\infty }{\frac{ { {\chi }^{n} } }{1+{ {e}^{\chi -\eta } } } }d\chi\]</span></p><p>式中，</p><p>Fn(η) —— 第n阶费米积分<br />e —— 电子电荷<br />kB —— 玻尔兹曼常数<br />h —— 普朗克常数<br />r —— 散射因子</p><p>将m*和n列表如下。</p><center><p>表1 室温下样品的m*和n</p><div class="line-block">样品 | —- | x=0 | x=0.05 | x=0.1 | x=0.15 |<br />m*(m0) | —- | 3.65 | 9.08 | 6.24 | 5.43 |<br />n(10<sup>18</sup>cm<sup>-3</sup>) | —- | 17.5 | 7.0 | 4.0 | 3.6 |</div></center><p>由表可知，Co掺杂后的载流子有效浓度增加，同时，载流子浓度随Co掺杂浓度上升而降低。增强的有效质量和降低的载流子浓度有助于根据方程(3)改善Seebeck系数。</p><h3 id="功率因子"><a href="#功率因子" class="headerlink" title="功率因子"></a>功率因子</h3><p>Bi<sub>0.875</sub>Ba<sub>0.125</sub>Cu<sub>1-x</sub>Co<sub>x</sub>SeO样品功率因子图像如下。Ba和Co双掺杂样品的功率因子（PF）由于其导电性增强而高于纯相BiCuSeO。在上一段提到，Co和Ba双掺杂的载流子浓度比Ba单掺杂要高，故功率因子也更大。对于相同的Co掺杂水平（x≤0.15），由于增强的导电性，Co和Ba双掺杂样品表现出比Ba单掺杂样品增强的功率因子。对于Bi<sub>0.875</sub>Ba<sub>0.125</sub>Cu<sub>0.85</sub>Co<sub>0.1</sub>5SeO，与Ag掺杂的BiCuSeO相比，实现了350 K时的206 mW m<sup>-1</sup> K<sup>2</sup>的功率因子 。</p><center><img src="https://img.yecl.net/2019/09/Power_faction.png" /><br />图7 Bi<sub>0.875</sub>Ba<sub>0.125</sub>Cu<sub>1-x</sub>Co<sub>x</sub>SeO样品功率因子</center><h3 id="热导率"><a href="#热导率" class="headerlink" title="热导率"></a>热导率</h3><p>图8给出了Bi<sub>0.875</sub>Ba<sub>0.125</sub>Cu<sub>1-x</sub>Co<sub>x</sub>SeO样品的总热导率（κtot）的温度依赖性。由图可得，所有样品表现出了低总热导率，由于样品的层状结构反射声子，根据Wiedemann-Franz定律，电热导率κele=LσT，其中L是洛伦兹数，其值由SPB模型计算。洛伦兹数可以通过组合方程(4)-(6)获得。</p><p><span class="math display">\[\text{L}=\left( \frac{ { {k}_{B} } }{e} \right)\left[ \frac{\left( r+7/2 \right){ {F}_{r+5/2} }\left( \eta  \right)}{\left( r+3/2 \right){ {F}_{r+1/2} }\left( \eta  \right)}-{ {\left( \frac{\left( r+5/2 \right){ {F}_{r+3/2} }\left( \eta  \right)}{\left( r+3/2 \right){ {F}_{r+1/2} }\left( \eta  \right)} \right)}^{2} } \right]\]</span></p><p>晶格热导率κlat可由<span class="math inline">\(κlat=κtot-κele\)</span>求得。κele的数值过小，故忽略不计，此时κlat和κtot几乎相等。在温度逐渐升高的初期，κlat升高，因为声子平均自由路径与内缺陷距离相当。接着，κlat开始随着温度的升高而降低。降低的原因是掺杂诱导的点缺陷散射中心。</p><center><img src="https://img.yecl.net/2019/09/Conductivity2.png" /><br /><img src="https://img.yecl.net/2019/09/Lorentz.png" /><br /><img src="https://img.yecl.net/2019/09/Conductivity3.png" /><br />图8（a）总热导率（b）洛伦兹数（c）晶格热导率</center><h3 id="热电优值"><a href="#热电优值" class="headerlink" title="热电优值"></a>热电优值</h3><p>经过测量，所有样品的ZT值都高于纯相BiCuSeO，最引人注目的是Bi<sub>0.875</sub>Ba<sub>0.125</sub>Cu<sub>0.85</sub>Co<sub>0.1</sub>5SeO在300 K时比纯相BiCuSeO的ZT值高近32倍，为0.06。与Seebeck系数原理相同，Ba和Co双掺杂的热电优值也比Ba单掺杂要高5倍，在350K为0.082。</p><h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>采用SPS放电等离子体烧结法合成了Ba、Co双掺杂的BaBiCuCoSeO样品和Co单掺杂的、单Ba掺杂的样品，并将它们与目前主流报道的Ag掺杂BiCuSeO与纯相做了比较。比较结果为双掺杂样品＞单掺杂Ag样品＞单掺杂Ba、Co样品＞纯相样品。究其原因，是掺杂元素导致了载流子浓度上升使载流子迁移率上升。在所有制备的样品中，Ba<sub>0.125</sub>Bi<sub>0.875</sub>Cu<sub>0.85</sub>Co<sub>0.15</sub>SeO电导率最高，是实验所期望的高电导率样品。它的热电优值ZT和Seebeck系数都比Ba、Ag或Co单掺杂样品、纯相样品高。它的ZT在350K时为0.082，是Ba单掺杂的6倍；它的Seebeck值因为有效质量增加而在载流子浓度降低的情况下也高于其他样品，为Ba单掺杂的1.5倍，350K下其值为285μVK<sup>-1</sup>。</p>]]></content>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;要解决的问题&quot;&gt;要解决的问题&lt;/h2&gt;
+&lt;p&gt;BICuSeO基氧化物热电材料在高温热电材料中有很大的优势，为了进一步增强热电优值，我们需要进行掺杂改性，使其能够达到工业生产要求。同时，我们也希望掌握BiCuSeO基氧化物的制备方法，改进制备工艺。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="笔记" scheme="https://yecl.net/categories/%E7%AC%94%E8%AE%B0/"/>
+    
+    
+    <category term="材料" scheme="https://yecl.net/tags/%E6%9D%90%E6%96%99/"/>
+    
+    <category term="BiCuSeO" scheme="https://yecl.net/tags/BiCuSeO/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Bi/Mn 双掺及Sn过量自补偿对SnTe的热电性能改善</title>
+    <link href="https://yecl.net/snte-opening-report/"/>
+    <id>https://yecl.net/snte-opening-report/</id>
+    <published>2019-03-07T12:50:26.000Z</published>
+    <updated>2019-09-29T03:12:26.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="性质"><a href="#性质" class="headerlink" title="性质"></a>性质</h2><p>在工业和汽车应用方面，产生的废热通常在500-900K温度范围内。为此需要开发出高性能的中温（400-900K）热电材料来回收这些热量。碲化铅（PbTe）及其合金成为了主要的材料然而，与Pb相关的毒性对环境造成严重威胁，需要交替用于家庭使用。因此，与其类似的具有岩盐晶体结构的碲化锡（SnTe）成为了新的重点研究对象。主要因为SnTe具有无毒，土壤丰富，环境友好等特点，使其成为实际工业应用中PbTe的绝佳替代品。相比于PbTe，本征SnTe具有固有的Sn空位和高的空穴浓度≈1020至1021 cm-3，导致塞贝克系数很低。然而，有效的方法，包括波段工程和纳米结构，已经实现了 SnTe的显着ZT改进。使其与与大多数其他热电材料相比具有竞争力。</p><span id="more"></span><h2 id="晶体结构"><a href="#晶体结构" class="headerlink" title="晶体结构"></a>晶体结构</h2><p>图1显示了SnTe的三个相，即具有菱形结构的α-SnTe晶格参数为a =6.325Å，α= 89.895°，空间群为R3m；具有岩盐结构的β-SnTe和晶格参数a =6.3268Å和α= 90°，空间群为Fm-3m，具有正交结构的γ-SnTe，晶格参数a =11.95Å，b =4.37Å，c =4.48Å，空间群Pnma。α-SnTe是低温（&lt;100K）相，而100K以上或者室温及一个大气压下β-SnTe可以稳定存在。当β-SnTe沿[111]方向发生畸变时，β-SnTe可以变为α-SnTe。在超过18kbar的压力下，β-SnTe可以转变为γ-SnTe。由于α-SnTe仅存在于低温（&lt;100K）同时γ-SnTe又存在于18kbar这样的高压下，因此β-SnTe是经过充分研究的系统，而通常称为SnTe。</p><center><img src="https://img.yecl.net/2019/03/snte.png" /><br />图1</center><h2 id="能带结构"><a href="#能带结构" class="headerlink" title="能带结构"></a>能带结构</h2><p>图2a是原始面心立方SnTe的布里渊区域的图示，并显示主要的导带和价带边缘出现在六边形面的中心处或附近（布里渊区的L点，价带顶部带有L6-，导带边缘有L6+）。1966年，Dimmock等人首先通过光致发光实验观察了两个主要SnTe带之间的带隙（Eg），发现Eg值为0.18eV，而1968年Rogers定量确定了光孔价带之间的能量分离（ΔEVBL-Σ）（在L点处）和重空穴价带（在Σ点处），光孔价带总是高度非抛物线，重空穴价带是抛物线，并且发现在300KΔEVBL-Σ约为300meV。</p><p>图2b显示了原始SnTe的典型能带结构，通过第一性原理计算，包括无旋转轨道耦合（SOC）和自旋轨道耦合（SOC）。可以观察到，在高对称点处的一些简并带通过SOC相互作用分裂。 SnTe的SOC直接Eg在L点处为110meV，其略小于实验值（180meV）。SOC的ΔEVBL-Σ为240 meV，略小于实验值。然而，非SOC的Eg被低估（仅40meV），而非SOC的ΔEVBL-Σ相对高估（360meV）。由于在电子空穴传输系统中没有来自VBΣ的重孔参与，ΔE越大，S值越低。然而，小的Eg可以在高温下导致双极传导。因此，本征SnTe并不具备优秀的热电性能。</p><center><img src="https://img.yecl.net/2019/03/snte2.png" /><br />图2</center><hr /><p>## 研究Bi/Mn 双掺及Sn过量自补偿对SnTe的热电性能改善</p><p>实验制备了Bi，Mn双掺杂及Sn过量自补偿的SnTe合金：Sn0.97-xBi0.06MnxTe（x=0.03, 0.06, 0.09, 0.12, 0.15）系列样品，并且还对其物相组成、显微组织结构以及热电性能等进行了一定的研究。</p><p>### 物相分析</p><p>图 3-1 是我们测定的合金Sn0.97-xBi0.06MnxTe（x=0.03~0.15）的样品衍射图谱，利用该图谱和已有的PDF卡片进行参考对比，就可以找出该合金的物相组成了，虽然杂质相可能难以确定，不过主要成分组成还是好确定的。</p><p>通过寻找对比就可以发现，该样品的主相是 NaCl 结构的SnTe。通过观察下图，我们可以发现，随着Mn的掺杂量的不断提高，图像中的衍射峰是有向右偏移的取向的，即使不是非常明显，不过还是有细微的差别。导致衍射峰偏移的原因应该是晶胞体积的收缩，然后进而使得晶格常数的减小。通过一定的计算推导，我们就可以得出，随着 Mn元素的掺杂量的不断提升，该合金的晶格常数逐渐减少，且两者之间的变化关系是线性的。</p><center><img src="https://img.yecl.net/2019/03/xrd.png" /><br />图 3-1 Sn0.97-xBi0.06MnxTe合金的XRD图谱</center><p>为什么会出现这种情况，经过分析就可以发现：这是由于 Mn2+的离子半径要小于比 Sn2+的离子半径，这样就会导致当Mn2+ 取代了 Sn2+ 后，原晶体的晶格因此发生收缩，晶格常数也因此减小。从图中我们还可以看出，该合金的主要成分是SnTe，并没有过多的杂质相，或是其他成分，这就说明该合金的固溶度还很高，看来由于Bi的掺杂贡献，即使掺杂这么多的Mn元素，该合金最终也还没有达到固溶度的上限。相关文献报告Mn在 SnTe 合金中的固溶度为 10 mol% 。反观该实验，我们就发现了Bi/Mn 共掺杂会提升Mn 在 SnTe 合金中的固溶度。</p><h3 id="热电性能分析"><a href="#热电性能分析" class="headerlink" title="热电性能分析"></a>热电性能分析</h3><p>图 3-2 为Sn0.97-xBi0.06MnxTe系列合金的电导率随温度变化的关系图。</p><p>从图中可以看出，所有合金样品的电导率都随着温度的升高而降低，这符合简并半导体的相关规律。由于我们采用了Sn过量自补偿法，这种方法可以有效降低合金的电导率，原因是因为Sn过量的引入，Bi离子的价位比Sn离子高，因此会使得体系内的正离子偏多，这样就会激发出原材料产生更多的电子来补偿这部分正离子，而原合金是P型半导体，产生更多的电子就会使得很多空穴被补偿了，因此载流子被削弱，导电性下降，电导率降低了。除此之外，在同一温度条件下进行对照，随着 Mn 元素的掺杂量的不断增加，合金的电导率总的来说是有很大幅度下降的，不过并不是掺杂含量越高效果越好，效果最好的反而是掺杂量为9%的，并且之后随着掺杂量的提升，电导率的变化并没有明显规律，只是总的来说都有所下降罢了，这可能与Sn过量自补偿有关。不过总的来说，Mn掺杂的确降低了合金的电导率，原因很容易理解，这是因为Mn掺杂降低了载流子的迁移率。除此之外，对比不同Mn掺杂量的曲线，虽然掺杂含量与电导率变化没有明显的规律，不过唯一的共同点就是不同掺杂含量的温度与电导率变化的曲线的大致波动幅度相似，其斜率或者说变化幅度相同，都比较平缓，如果相比于未掺杂的变化曲线的话，这是它们之间的规律。</p><p>具体而言，在 873 K 时，Mn 掺杂量为 9mol%的合金电导率达到最小值 1299.9 S/cm。与未掺杂 Mn 元素时的Sn0.97-xBi0.06MnxTe母合金相比，其电导率从1253.8 S/cm提高了46.1 S/cm，在 823K 时，Mn 掺杂量为 9mol%的合金电导率达到1459.5 S/cm，与未掺杂 Mn 元素时的Sn0.97-xBi0.06MnxTe母合金相比，其电导率从1474.6 S/cm降低了15.1S/cm。</p><center><img src="https://img.yecl.net/2019/03/Conductivity.png" /><br />图 3-2 Sn0.97-xBi0.06MnxTe系列合金的电导率随温度变化的关系图</center><p>图 3-3 为Sn0.97-xBi0.06MnxTe系列合金的 Seebeck 系数随温度的变化关系图。</p><p>Seebeck系数与下述公式相关：</p><p>α=kB{γ+2+ln[2(2πm*kBT)3/2/nch3]}/e （3-1）</p><p>该式中kB为玻尔兹曼常数，γ为散射因子，e为电子电荷，nc为载流子浓度，m*为载流子的有效质量，当温度一定时，上式简化为：</p><p>α=kB(γ+C-lnnc)/e （3-2）</p><p>分析该公式，我们可以看出，温度T与α是成正比的，也就是说温度越高，Seebeck系数的值越高，在图中表现的数据曲线也符合这一关系，然后，载流子浓度nc与α是呈反比关系的，也就是说载流子浓度越高，α就会越小，Seebeck系数值越小，图中也有体现，这也符合该公式。</p><p>由图中可以看出，随着温度的不断提升，所有样品的 Seebeck 系数都是单调递增的，不过在不同Mn掺杂量的曲线之间并没有明显的变化规律，唯一的共同点就是都是随着温度的升高而提升该系数。在掺杂含量中，最优值是掺杂含量为12%的那组，掺杂含量为15%的在高温下反而没有12%的性能好，而在中低温下，3%和9%的掺杂量的合金也有它们的优势，也就是说没有一种掺杂量是在所有温度区域内都是最好的，要根据情况进行具体优化与选择。同时我们注意到，所有的Seebeck 系数均为正值，这就意味着该合金系列均为 P 型半导体，以空穴导电为主。</p><p>具体来说的话，在室温环境的情况下，该合金的 Seebeck 系数从未掺杂时的 31.1 μV/K 提高到了 40 μV/K以上，其Seebeck 系数的提升幅度超过了 30%。而在 873 K 的环境下，其Seebeck 系数的提高效果在所有不同Mn 的掺杂含量的情况下几乎没有变化。在873K的情况下，未掺杂时的Seebeck 系数的值为 114.2 μV/K，而掺杂Mn之后，其Seebeck 系数几乎不再发生明显变化，稳定在 112 μV/K 左右。</p><p>整体而言，相比较于纯 SnTe 合金，Bi/Mn 双掺的确能提升该合金的Seebeck系数。在室温时，纯 SnTe 的 Seebeck 仅为 31.1 μV/K，而 Sn0.91Bi0.06Mn0.06Te 的 Seebeck系数为 44.9 μV/K，是纯 SnTe 的 1.44 倍；在 873 K 时，纯 SnTe 的 Seebeck系数为114 μV/K，而Sn0.85Bi0.06Mn0.12Te的 Seebeck 系数为 112μV/K，变化不是很明显，其Seebeck系数的提升效果主要体现在低温区。</p><center><img src="https://img.yecl.net/2019/03/Seebeck.png" /><br />图 3-3 Sn0.97-xBi0.06MnxTe系列合金的Seebeck系数随温度变化的关系图</center><p>Sn0.97-xBi0.06MnxTe系列合金的功率因子随温度的变化图如图 3-4 所示。</p><p>功率因子的表达式如下：</p><p>PF=S2σ （3-3）</p><p>式中S为赛贝克系数，σ为电导率。由上式可以看出，赛贝克系数与功率因子成正比关系，电导率也与功率因子成正比关系，结合相关数据图像，发现下图也符合这一规律。</p><p>从图中可以看出，在该体系合金中，不同Mn掺杂量的Bi/Mn双掺杂Sn过量自补偿的合金样品的功率因子，都随着温度的不断升高而升高，不过不同Mn掺杂量的合金曲线之间并没有明显的规律，最优值在高温下是掺杂量为15%的情况，低温下6%和12%掺杂量的都有达到最优值的时候，没有一种掺杂量是在所有温度下都保持最优的总的来说，掺杂都会提升该合金的功率因子，是有优化作用的。不同掺杂量的曲线在随温度变化的幅度上大致还是相似的，这是它们之间的共同点。具体而言，在 873 K 时，最高的功率因子为Sn0.82Bi0.06Mn0.15Te合金的 18.5 μWcm-1 K-2 ，同时我们发现，随着Mn掺杂量的不断提升，其对应的功率因子就会呈现一定幅度的向下偏移，这种情况产生的原因，是因为虽然掺杂可以提升热电性能，但是由于掺杂元素的原因，合金的电阻率也会相应地增加，如果电阻率的影响增大的话，其优化效果就会被削弱，在图中表现的就是斜率的下降，增幅的下降。但是尽管如此，对于纯的 SnTe而言，Bi/Mn双掺杂及Sn过量自补偿的确会提高SnTe 合金的功率因子。</p><center><img src="https://img.yecl.net/2019/03/Power_factor.png" /><br />图 3-4 Sn0.97-xBi0.06MnxTe系列合金的功率因子随温度变化关系图</center><p>我们知道， SnTe 合金的本征空穴浓度高，那么它的电导率就很高，同时它的热导率也会很高，最终使得它的ZT 值不理想。因此，我们想通过降低 SnTe 合金的热导率的方式优化它的热电性能。</p><p>图 3-5 为Sn0.97-xBi0.06MnxTe系列合金的热导率随温度的变化关系图。</p><p>首先介绍一下热导率公式：</p><p>κ=κel+κph （3-4）</p><p>即热导率由电子热导率κel和声子热导率κph之和而成。同时还有下式：</p><p>κel=LT/ρ （3-5）</p><p>式中L为洛仑兹常数，ρ为电阻率，T为绝对温度。由该式可以看出，电阻率与热导率成反比关系，且温度T与热导率成正比关系，即温度越高，热导率越高。</p><p>由下图可以得出，该体系合金的不同Mn掺杂含量的各个Bi/Mn双掺杂Sn过量自补偿的样品的热导率都是随着温度的上升而呈现出单调递减的状态，不过不同Mn掺杂含量之间的热导率变化并没有明显的规律，在高温下，Mn掺杂量为3%时的效果最理想，而在低温情况下，Mn掺杂量为15%时的性能最优，没有一种掺杂量可以在所有温度区间内都达到最优解的情况，所以要具体情况具体分析，不过总的来说Bi/Mn双掺杂及Sn过量自补偿的确可以降低SnTe合金的热导率，可以提升它的热电性能。在高温下，热导率的变化曲线逐渐趋于平缓。</p><p>具体而言，在室温条件下时，相比于未掺杂的合金情况，该体系合金的不同Mn掺杂量Sn过量自补偿的样品的热导率都是随着 Mn 元素掺杂量而大幅下降，从 9.5 W/m/K 下降到了 3.7 W/m/K。同时我们发现，随着Mn掺杂量的不断提升，该热导率曲线的变化幅度趋于平缓，斜率有一定的上升。在 873K 时，Sn0.94Bi0.06Mn0.03Te合金的热导率出现了最小值 1.92W/m/K，是纯SnTe同温度下的 3.97 W/m/K 的 48.4%，在300K时，其降低热导率的效果最为明显，从未掺杂时的9.47 W/m/K减小到了3.72W/m/K，是纯SnTe合金的39.3%。该实验表明， Bi/Mn 双掺及Sn过量自补偿能显著降低 SnTe 合金的热导率。</p><p>为什么Mn的掺杂可以明显地降低该SnTe合金的热导率，我们分析认为，其原因主要有以下两个：一是由于 Mn 的掺入，使得该合金的电导率下降，削弱了电子对热量的传导；二是因为原子取代，Mn 原子取代了Sn原子，改变了晶格常数，提高了声子散射，因此降低了晶格热导而且Sn过量自补偿引入了额外的点散射，这也进一步降低了声子热导率。总而言之，因为材料的热导率，就是由电子的热导和晶格的热导这两部分组成的，而 Mn 元素的掺杂，由于上述作用，正好同时降低了该合金的电子热导与声子热导，于是就产生了下图中明显降低热导率的现象，热电性能也因此得到了提升。</p><center><img src="https://img.yecl.net/2019/03/Conductivity2.png" /><br />图 3-5 Sn0.97-xBi0.06MnxTe系列合金的热导率随温度的变化关系图</center><p>我们知道了该合金的电阻率、赛贝克系数和热导率等数据，就可以计算出该合金的热电优值了。其公式如下：</p><p>ZT=S2Tσ/κ （3-6）</p><p>式中S为赛贝克系数，T为绝对温度，σ为电导率，κ为热导率。因此可以判断出赛贝克系数、温度和电导率与热电优值成正比，热导率与热电优值成反比。</p><p>下图3-6是Sn0.97-xBi0.06MnxTe系列合金的热电优值随温度的变化关系图。</p><p>由下图可以看出，所有合金样品的热电优值都随着温度的上升而单调递增，这是由于热电优值与温度的关系决定的，而且因为电导率等参数的作用，热电优值有一定的起伏，不过整体上是符合规律的。从图中可以看出，在873K的条件下，该合金的热电优值得到了最大的提升，从纯合金下的0.34提升到了0.75，提升了0.41，效果为221%，在低温段也有一定的提升，例如在300K的情况下，热电优值从纯合金下的0.02提升到了0.07，提升了0.05，效果为350%，不过整体上还是温度越高，提升效果越好。发现最好的两组是Mn掺杂量为3%和12%的这两组，这两组不相上下，而掺杂量最高的15%那一组反而效果不理想，应该是由于电阻率过大引起的。</p><center><img src="https://img.yecl.net/2019/03/ZT.png" /><br />图 3-6 Sn0.97-xBi0.06MnxTe系列合金的热电优值随温度的变化关系图</center><h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>（1）在Bi/Mn 双掺杂及Sn过量自补偿的 SnTe 合金中，该合金的主要物相仍为SnTe，基本没有杂质成分及其它组成，Bi的掺入可以在一定程度上提高 Mn 在该 SnTe 合金材料中的固溶度。 （2）所有的Sn0.97-xBi0.06MnxTe系列合金都为 P 型半导体，同时，总的来说该合金的电导率因为 Mn 元素的掺杂而下降，掺杂含量为9%时的综合性能最好，虽然不同Mn掺杂含量的合金之间没有明显的变化规律，这可能是由于Bi/Mn双掺杂和Sn过量自补偿的原因导致的。 （3）该合金的Seebeck 系数在整体上提高了很多，其热导率也因Bi/Mn双掺杂及Sn过量自补偿的原因而出现了大幅下降，最明显的是在300K时，从纯合金下的9.47 W/m/K减小到了3.72W/m/K，是纯SnTe合金的39.3%。 （4）该合金的热电优值在Bi/Mn双掺杂及Sn过量自补偿的情况下，的确在一定程度上提升了，最优的情况是在873K时，合金成分为Sn0.94Bi0.06Mn0.03Te，其热电优值为0.75，提升了221%。</p><h2 id="reference"><a href="#reference" class="headerlink" title="Reference"></a>Reference</h2><p>[1] Joseph R S, Duck Y C. New and Old Concepts in Thermoelectric Materials[J]. Angew Chem Int Ed. 2009(48): 8616-8639.<br />[2] Ananya B, Shenoy U S. Mg Alloying in SnTe Facilitates Valence Band Convergence and Optimizes Thermoelectric Properties [J]. Chemistry of Materials. 2015(27): 581−587.<br />[3] Dimmock J O, Melngailis I, Strauss A J. Strauss. Phys Rev Lett [J]. 1966(16): 1193.<br />[4] Dresselhaus M S, Chen G, M. Tang Y, etal. New Directions for Low-Dimensional Thermoelectric Materials [J]. Advanced Materials, 2007,19(8): 1043-1053.<br />[5] 高敏，张景韶. 温差电转换及其应用[M]. 北京：兵器工业出版社，1996，1-5.<br />[6] Rogacheva E, Dzyubenko N. 2000 IEEE, 18th Inter Conf on Thermoelectrics[C]. Baltimore; International Thermoelectric Society. 1999.<br />[7] Seo J, Park K, Lee D, Lee C. Fabrication and Thermoelectric Properties of n-type SbI 3 -doped Bi 2 Te 3 15 Compounds by Hot Extrusion [J]. Materials Research Bulletin. 1998, 33(4): 553-559.<br />[8] Terrasaki I, Sasago Y, Uchinokura K. Large Thermoelectric Power in NaCo2O4 Single Crystals [J]. Phys Rev.B. 1997, 56(20): R12685-12687<br />[9] Slack G A. New Material and Performance Limits of Thermoelectrics [M].US: CRC Press, 1995: 407-412.<br />[10] Littman H, Davidson B. Theoretical Bound on the Thermoelectric Figure of Merit from Irreversible Thermodynamics [J]. Journal of Applied Physics,1961, 32(2): 217-219.<br />[11] 徐广东，陈哲，严有为等. 高优值系数热电材料研究[J]. 材料导报：综述篇. 2010，24(2)：60-64.<br />[12] Vaqueiro P, Guelou G. A Copper-containing Oxytelluride as a Promising Thermoelectric Material for Waste Heat Recovery [J]. Journal of Materials Chemistry A. 2013(1): 520-523.<br />[13] Hiramatsu H, Yanagi H, Kamiya T. Crystal Structures, Optoelectronic Properties, and Electronic Structures of Layered Oxychalcogenides MCuOCh (M=Bi,La; Ch=S,Se,Te): Effects of Electronic Configurations of M3+ lons [J]. Chemical. Material. 2008(20): 326-334.<br />[14] Zhao L D, Berardan D, Pei Y L. Bi1-xSrxCuSeO Oxyselenides as Promising Thermoelectric Materials [J]. Applied Physics Letters. 2010(97): 2118-2134.<br />[15] A. Banik, K. Biswas, J. Solid State Chem. 2016, 242, Part 2, 43.<br />[16] X. J. Tan, H. Z. Shao, J. He, G. Q. Liu, J. T. Xu, J. Jiang, H. C. Jiang, Phys. Chem. Chem. Phys. 2016, 18, 7141.<br />[17] M. Zhou, Z. M. Gibbs, H. Wang, Y. Han, C. Xin, L. Li, G. J. Snyder, Phys. Chem. Chem. Phys. 2014, 16, 20741.<br />[18] J. Korringa, A. N. Gerritsen, Phys. 1953, 19, 457.<br />[19] Fedorov M I, Prokofeva L V. New Interest in Intermetallic Compound ZnSb [J]. Journal of Electronic Materials. 2014(43): 2314-2319.<br />[20] Baki N, Mecabin S, Khachai H, et al. Spin-Polarized Electronic Structure and Magnetic Properties of Ge1-xTMxTe(TM=Mn,Fe) [J]. Journal of Magnetism and Magnetic Materials, 2013,345: 222-229.<br />[21] Akabli K, Magnin Y, Oko M, etal. Theory and Simulation of Spin Transport in Antiferromagnetic Semiconductors: Application to MnTe [J]. Physical Review B, 2011, 84(2): 1-6.<br />[22] Zhang Q, Liao B L, Lan Y C, et al. High Thermoelectric Performance by Resonant Dopant Indium in Nanostructured SnTe [J]. PNAS, 2013, 110(33):13261–13266.<br />[23] Tan G J, Shi F Y, Hao S Q, etal. Codoping in SnTe: Enhancement of Thermoelectric Performance through Synergy of Resonance Levels and Band Convergence [J]. Journal of the American Chemical Society, 2015, 137,5100−5112.<br />[24] Bovornratanaraks T, Kotmool K, Yoodee K, etal. High Pressure Structural Studies of AgInTe 2 [J]. Journal of Physics: Conference Series, 2010, 215, 012008.<br />[25] Heremans J P, Wiendlocha B, Chamoire A M. Resonant Levels in Bulk Thermoelectric Semiconductors [J]. Energy Environ Sci, 2012, 5(2): 5510-5530.<br />[26] Dehkordi A M, Zebarjadi M, He J, etal. Thermoelectric Power Factor:Enhancement Mechanisms and Strategies for Higher Performance Thermoelectric Materials [J]. Materials Science and Engineering R, 2015, 97:1-22.<br />[27] Wu H J, Chang C, Feng D, et al. Synergistically Optimized Electrical and Thermal Transport Properties of SnTe via Alloying Highsolubility MnTe [J].Energy &amp; Environmental Science, 2015, 8, 3298—3312<br />[28] Galazka R R. Influence of Electron Subsystem on Magnetic-Properties of Semimagnetic of Semiconductors [J]. Journal of Magnetism and Magnetic Materials, 1995, 140:13-16.</p>]]></content>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;性质&quot;&gt;性质&lt;/h2&gt;
+&lt;p&gt;在工业和汽车应用方面，产生的废热通常在500-900K温度范围内。为此需要开发出高性能的中温（400-900K）热电材料来回收这些热量。碲化铅（PbTe）及其合金成为了主要的材料然而，与Pb相关的毒性对环境造成严重威胁，需要交替用于家庭使用。因此，与其类似的具有岩盐晶体结构的碲化锡（SnTe）成为了新的重点研究对象。主要因为SnTe具有无毒，土壤丰富，环境友好等特点，使其成为实际工业应用中PbTe的绝佳替代品。相比于PbTe，本征SnTe具有固有的Sn空位和高的空穴浓度≈1020至1021 cm-3，导致塞贝克系数很低。然而，有效的方法，包括波段工程和纳米结构，已经实现了 SnTe的显着ZT改进。使其与与大多数其他热电材料相比具有竞争力。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="笔记" scheme="https://yecl.net/categories/%E7%AC%94%E8%AE%B0/"/>
+    
+    
+    <category term="材料" scheme="https://yecl.net/tags/%E6%9D%90%E6%96%99/"/>
+    
+    <category term="金属" scheme="https://yecl.net/tags/%E9%87%91%E5%B1%9E/"/>
+    
+    <category term="碲化锡" scheme="https://yecl.net/tags/%E7%A2%B2%E5%8C%96%E9%94%A1/"/>
+    
+    <category term="SnTe" scheme="https://yecl.net/tags/SnTe/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>潮湿是最大的困扰</title>
+    <link href="https://yecl.net/nanjing-so-wet-weather/"/>
+    <id>https://yecl.net/nanjing-so-wet-weather/</id>
+    <published>2019-02-21T14:41:00.000Z</published>
+    <updated>2019-02-21T14:41:00.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>江苏省近一个月都没见过太阳。</p><p>在家里呆了25天后回到学校，从下车之后，一直都是这种感觉：</p><span id="more"></span><p><img src="https://golden-warehouse.kivotos.jp/20190221225433.gif" /><br />（虽然这图里的是广州）</p><p>虽然南京的名字里带那么一个“南”字，但在整个中国的版图来说，也不算南。有句话说得好，黑龙江人认为除了自己都是南方，广东人认为除了自己都是北方；北京人认为除了自己都是地方，上海人认为除了自己都是乡下。我一个黑龙江人真觉得南京已经非常南了。</p><p>去年我回来的比较早，大约初十二吧，天气也没这么潮湿，就是单纯的冷。冷不是问题，问题是没电。没电就没有空调，我大概23点回来的，又饿又渴，打着手机的手电筒在没擦的桌子上吃了点在30个小时的火车上没吃完的袋装秋刀鱼，没脱衣服就在正好0度的室内睡了五个小时，然后被冻醒。那可是正月十三，别人都在自己家过年呢，我出来觅食，只有开封菜营业。进去点了一份大干汉堡套餐，吃了两个钟头。下午电来了，我才终于能正常睡觉。</p><p>今年回家的时候带了几件衣服，回去后父母摸了一把，不动声色地递给我一件刚洗完甩干的衣服。我一摸，一样的。</p><p>每个见过我的家乡人都说我白了，皮肤好了，我说你长年在水汽里泡着你也白。在家乡的时候脸上又干燥又开裂，抹保湿霜，加湿器对脸喷之类的措施都是必备的，回到学校这些一样都没必要了，因为有天然加湿器，还免费。</p><p>回到学校开了空调的除湿模式，室外机出水孔那水流得和水龙头一样，直径半米的桶接了20厘米深的水。开了好几个小时的制热的宿舍被除湿模式吹的冷风又吹回了我回来前的样子，又打开了制热模式后就只能爬到高处来尽快接触到刚吹出来的热风。</p><p>这水是除了，但是屋子里的潮气依旧没觉得减少。过了几个小时，我的身体神奇般地适应了，然后就是无边的寒冷。水蒸发会带走热量嘛。这种天气，钻进被窝都不够暖和。从家里带来的干燥的衣服成为了战略物资，被装进了密封袋里以备不时之需。换睡衣的时候觉得是真他妈煎熬啊，这湿漉漉的衣服只能靠体温来将它干燥，我能做的也就是尽量紧点裹衣服了吧。</p><p>俗话说，淹死的都是会水的，冻死的都是东北的，救世啊。</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;江苏省近一个月都没见过太阳。&lt;/p&gt;
+&lt;p&gt;在家里呆了25天后回到学校，从下车之后，一直都是这种感觉：&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="随笔" scheme="https://yecl.net/categories/essay/"/>
+    
+    
+    <category term="南京" scheme="https://yecl.net/tags/nanjing/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Android上的git app：Pocket Git 使用教程</title>
+    <link href="https://yecl.net/pocket-git-usage-tutorial/"/>
+    <id>https://yecl.net/pocket-git-usage-tutorial/</id>
+    <published>2018-12-15T16:16:00.000Z</published>
+    <updated>2018-12-15T16:16:00.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>因为博客现在使用Travis-CI进行自动部署，我就没有必要每次写新博文都hexo g hexo d一下，直接把写完的.md扔进github，就会自动同步到博客上。这样虽然实现了无论何时何地都能快速方便地部署，但是<del>并没有什么卵用，我也不经常发博文，摸爆就完事了</del>用手机网页登陆github进行commit还是挺痛苦的，就想找一个Android端的git软件，但是找来找去，只有一款app能这么做，就是今天介绍的Pocket Git。</p><p>Google Play链接<a href="https://play.google.com/store/apps/details?id=com.aor.pocketgit">在这</a>，日区价格是¥260。</p><span id="more"></span><h2 id="教程"><a href="#教程" class="headerlink" title="教程"></a>教程</h2><h3 id="clone与pull"><a href="#clone与pull" class="headerlink" title="clone与pull"></a>clone与pull</h3><p>安装完毕后，先在设置里设置自己的账号。</p><p><img src="https://img.yecl.net/2018/12/Screenshot_20181216-002546.png" /></p><p>接着点击加号添加需要clone的仓库，如果是github的私有仓库，需要输入账号密码。</p><p><img src="https://img.yecl.net/2018/12/Screenshot_20181216-002658.png" /></p><p>划出左抽屉，切换Branches到remote就可进行checkout。点击右上角的云图标可以pull or fetch。</p><h3 id="commit与push"><a href="#commit与push" class="headerlink" title="commit与push"></a>commit与push</h3><p>修改过的文件会显示蓝色圈，删除的文件会显示红色问号，增加的文件会显示蓝色问号。</p><p>在需要git add的文件上长按选中，点击右上角的👍，它会变绿，即添加进了暂存区，已经加入暂存区的，再次长按文件，点击👎即可reset。</p><p><img src="https://img.yecl.net/2018/12/Screenshot_20181216-004453.png" /></p><p>这时候右下角变成了绿色圈，在将需要git add的文件都如此操作后，点击绿色圈进行commit。</p><p><img src="https://img.yecl.net/2018/12/Screenshot_20181216-004918.png" /></p><p>然后在右上角云图标处选择Push。</p><h3 id="版本回退"><a href="#版本回退" class="headerlink" title="版本回退"></a>版本回退</h3><p>点击右上角菜单-Log，可查看所有的commit，点击任意commit即可查看详情和具体的改动，点击右上角的下载图标可以checkout到此commit。</p><p>此外，在具体的文件上长按，点击右上角的Revert图标，即可checkout此文件到指定版本。</p><p><img src="https://img.yecl.net/2018/12/Screenshot_20181216-005502.png" /></p><p><img src="https://img.yecl.net/2018/12/Screenshot_20181216-005613.png" /></p><h3 id="其他功能"><a href="#其他功能" class="headerlink" title="其他功能"></a>其他功能</h3><p>其他功能都在app内置的Help里面，包括merge，diff，需要自己看啦</p><h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>本文就是在Android上的Quickedit写成，通过Pocket Git push到github的，Travis-CI会自动生成新的博客。关于Travis-CI的使用，推荐printempw的<a href="https://blessing.studio/deploy-hexo-blog-automatically-with-travis-ci/">这个教程</a>。</p>]]></content>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;起因&quot;&gt;起因&lt;/h2&gt;
+&lt;p&gt;因为博客现在使用Travis-CI进行自动部署，我就没有必要每次写新博文都hexo g hexo d一下，直接把写完的.md扔进github，就会自动同步到博客上。这样虽然实现了无论何时何地都能快速方便地部署，但是&lt;del&gt;并没有什么卵用，我也不经常发博文，摸爆就完事了&lt;/del&gt;用手机网页登陆github进行commit还是挺痛苦的，就想找一个Android端的git软件，但是找来找去，只有一款app能这么做，就是今天介绍的Pocket Git。&lt;/p&gt;
+&lt;p&gt;Google Play链接&lt;a href=&quot;https://play.google.com/store/apps/details?id=com.aor.pocketgit&quot;&gt;在这&lt;/a&gt;，日区价格是¥260。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="教程" scheme="https://yecl.net/categories/%E6%95%99%E7%A8%8B/"/>
+    
+    
+    <category term="github" scheme="https://yecl.net/tags/github/"/>
+    
+    <category term="git" scheme="https://yecl.net/tags/git/"/>
+    
+    <category term="Android" scheme="https://yecl.net/tags/Android/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>对自己可能的it类博文的感想</title>
+    <link href="https://yecl.net/i-will-not-post-it-posts/"/>
+    <id>https://yecl.net/i-will-not-post-it-posts/</id>
+    <published>2018-10-28T16:48:58.000Z</published>
+    <updated>2018-10-28T16:48:58.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>不知怎么的，我这几年已经对it啊编程啊linux啊之类的东西退热了。毕竟大学学的不是计算机，我也需要对开销精打细算，也就没有那个时刻关注it的能力了。要怎么说呢，我输一手家境，一手分数和一手眼界，惭愧。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;不知怎么的，我这几年已经对it啊编程啊linux啊之类的东西退热了。毕竟大学学的不是计算机，我也需要对开销精打细算，也就没有那个时刻关注it的能力了。要怎么说呢，我输一手家境，一手分数和一手眼界，惭愧。&lt;/p&gt;
+</summary>
+      
+    
+    
+    
+    <category term="杂谈" scheme="https://yecl.net/categories/%E6%9D%82%E8%B0%88/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>一个基于命令方块的投票重启装置</title>
+    <link href="https://yecl.net/a-vote-reboot-by-command-block/"/>
+    <id>https://yecl.net/a-vote-reboot-by-command-block/</id>
+    <published>2018-09-01T17:45:34.000Z</published>
+    <updated>2018-09-01T17:45:34.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>因为服务器有几个大户家里的机器过多，导致他们家区块被加载的时候服务器的TPS经常下降得很大，影响了正常玩家的游戏体验，故群里有人提议加个投票重启mod。 而MC1.12.2并没有能够这样做的mod，于是我拿命令方块撸了一个，用着还可以。</p><span id="more"></span><p><img src="https://golden-warehouse.kivotos.jp/2018-09-02_00.32.36.png" /></p><h1 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h1><blockquote><p>由重启提出者按按钮触发投票，创建一个类型为trigger的计分项目，并给玩家修改的权限。 通过/tellraw给玩家创建可以修改这个trigger的clickevent（同意为1，反对为0）。 规定时间后将所有玩家的分数集中到一个虚拟实体上，检查这个虚拟实体的分数，根据分数是多少来决定下一步动作。如需要全体成员都同意（即分数都为1）则将所有人分数相乘，全部同意的情况下积为1，此时的操作就是进行重启准备，只要有人反对（即分数为0）最终的积就会为0，此时不会进行重启。如需要半数成员同意，则将所有人分数相加，将和与0做比较，大于0的重启，小于等于0的不重启。 执行/stop的命令方块，使用活塞短脉冲发生器产生0.5红时刻的脉冲，防止重启后命令方块依旧被激活。 通过漏斗计时器来进行时间限制。</p></blockquote><h1 id="详细命令"><a href="#详细命令" class="headerlink" title="详细命令"></a>详细命令</h1><pre><code class="json">//在用户触发地/scoreboard players tag @p add applicant //给触发申请的人单独上tag以免@p圈错人/setblock x y z redstone_torch //每一个红石火把的放置都是为了触发下一个电路//在x y z处/tellraw @a ["",&#123;"text":"================================\n","color":"yellow"&#125;,&#123;"text":"【公告】","color":"light_purple","bold":true&#125;,&#123;"text":"玩家","color":"none","bold":false&#125;,&#123;"text":"@","color":"gold","bold":true&#125;,&#123;"selector":"@p[tag=applicant]","color":"gold","bold":true&#125;,&#123;"text":"提出重启服务器，请投票\n","color":"none","bold":false&#125;,&#123;"text":"请于30秒内做出选择，弃权视为反对\n","color":"none"&#125;,&#123;"text":"【支持重启】","color":"dark_green","bold":true,"underlined":true,"clickEvent":&#123;"action":"run_command","value":"/trigger reboot set 1"&#125;&#125;,&#123;"text":"      ","color":"none","bold":false,"underlined":false&#125;,&#123;"text":"【反对重启】","color":"dark_red","bold":true,"underlined":true,"clickEvent":&#123;"action":"run_command","value":"/trigger reboot set 0"&#125;&#125;,&#123;"text":"\n================================","color":"yellow","bold":false,"underlined":false&#125;]/scoreboard objectives add reboot trigger 重启支持情况/scoreboard players set @a reboot 0 //默认=反对/scoreboard players enable @a reboot //允许修改/setblock x1 y1 z1 minecraft:redstone_torch/scoreboard objectives setdisplay sidebar reboot/scoreboard players tag @a[tag=applicant] remove applicant//在漏斗计时器后/scoreboard players set #final_reboot reboot 1/scoreboard players operation #final_reboot reboot *= @a reboot //将所有玩家的分数乘到#final_reboot上/scoreboard players test #final_reboot reboot 1 1 //判断#final_reboot的分数是否在1到1之间/setblock x2 y2 z2 redstone_torch //条件制约的连锁命令方块，只有上面的判断通过才会触发此命令方块重启，不通过则无提示，也可以用比较器接个非门提示重启不通过。此命令方块同时激活一个漏斗计时器/scoreboard objectives remove reboot //删除投票用的计分项。由于是否重启都需要进行这步操作，我选择将此脉冲命令方块单独接在上一个漏斗计时器上//在x2 y2 z2处/tellraw @a ["",&#123;"text":"==================================\n","color":"yellow"&#125;,&#123;"text":"【公告】","color":"light_purple","bold":true&#125;,&#123;"text":"服务器将在30秒后重启，请做好准备","color":"none","bold":false&#125;,&#123;"text":"\n==================================","color":"yellow"&#125;]//在漏斗计时器后/stop //前接活塞短脉冲发生器</code></pre><h1 id="注释"><a href="#注释" class="headerlink" title="注释："></a>注释：</h1><h2 id="命令方块种类"><a href="#命令方块种类" class="headerlink" title="命令方块种类："></a>命令方块种类：</h2><p>每段电路的起始命令方块都是【红石控制，不受制约】的脉冲命令方块；所有它们后面的电路都是【保持开启，条件制约】的连锁命令方块。</p><h2 id="活塞短脉冲发生器"><a href="#活塞短脉冲发生器" class="headerlink" title="活塞短脉冲发生器："></a>活塞短脉冲发生器：</h2><p><img src="https://golden-warehouse.kivotos.jp/180902012249.png" /></p><h2 id="漏斗计时器"><a href="#漏斗计时器" class="headerlink" title="漏斗计时器："></a>漏斗计时器：</h2><p><img src="https://golden-warehouse.kivotos.jp/2018/09/2430.png" /></p><p>漏斗中的物品数量×2÷2.5=计时器的秒数</p><h2 id="红石火把的好处"><a href="#红石火把的好处" class="headerlink" title="红石火把的好处："></a>红石火把的好处：</h2><p>因为使用比较器时，直到下一次命令执行失败之前，比较器会一直保持输出状态，而不是形成脉冲。故采用能被活塞推掉的红石火把，当被放置时延迟触发活塞推掉红石火把。</p><h2 id="关于防误触"><a href="#关于防误触" class="headerlink" title="关于防误触："></a>关于防误触：</h2><p>防误触指的是防止前一个人的重启申请处理完毕前有第二个人按下提出重启的按钮。/setblock未加参数时，会先检查目标处的方块和命令里指定的方块是否一样，如果一样就会跳过，所以只需要在第一个红石火把处接一个时间足够长的延迟启动活塞即可阻止这段延时内命令方块被再次激活，但此延迟不得大于计算电路前的漏斗计时器和重启电路前的漏斗计时器的计时长度之和。</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;因为服务器有几个大户家里的机器过多，导致他们家区块被加载的时候服务器的TPS经常下降得很大，影响了正常玩家的游戏体验，故群里有人提议加个投票重启mod。 而MC1.12.2并没有能够这样做的mod，于是我拿命令方块撸了一个，用着还可以。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="minecraft" scheme="https://yecl.net/categories/minecraft/"/>
+    
+    
+    <category term="minecraft" scheme="https://yecl.net/tags/minecraft/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>我与二次元之间，隔着一个砍口垒</title>
+    <link href="https://yecl.net/kancolle-the-only-anime/"/>
+    <id>https://yecl.net/kancolle-the-only-anime/</id>
+    <published>2018-07-18T15:05:45.000Z</published>
+    <updated>2018-07-18T15:05:45.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>我已经退化为普通的宅男，即使我依然顶着一个冻鳗美少女的头像。我说我已经无限远离二次元，但细想下似乎从未接近过。</p><span id="more"></span><p>2010年我开始喜欢Vocaloid，到处搜集Vocaloid相关的图片、音乐，也结交了一个很亲密的朋友，但在2016年分开了。那之后我对Vocaloid的兴趣也如潮水般退去。</p><p>现在的我不看番，不玩galgame，不玩手游，不追偶像，不看vtuber，不关心唱见舞见，我看到其他人顶着冻鳗美少女头像却全都叫不出名字，所以我在这个圈子里其实很难和谁说上话，这也许也是我话少的一个原因。另一个原因其实是，在现实中已经够累了。</p><p>不过我之所以顶着这个头像，之所以还愿意在别人眼里以爱着纸片人的肥宅自居，和其他人一块喊着老婆！，都要归功于砍口垒。 在转服申请的时候，我在“你认为砍口垒___”处勾选了“谜之魅力”，不知道为什么，这个游戏让我无法离开。</p><p><a href="https://golden-warehouse.kivotos.jp/2018/07/v2-a6df345ceefde5f1508e48737f3c11ac_r.jpg"><img src="https://golden-warehouse.kivotos.jp/2018/07/v2-a6df345ceefde5f1508e48737f3c11ac_r.jpg" /></a></p><p>田中也通过各种出乎意料的联动和线下活动来让砍口垒变得不仅限于小圈子。如此一来，我确实已经退化成普通的游戏宅了吧。这是好事。</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;我已经退化为普通的宅男，即使我依然顶着一个冻鳗美少女的头像。我说我已经无限远离二次元，但细想下似乎从未接近过。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="舰队Collection" scheme="https://yecl.net/categories/%E8%88%B0%E9%98%9FCollection/"/>
+    
+    
+    <category term="舰队collection" scheme="https://yecl.net/tags/kancolle/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Nintendo Switch摇杆清洁小记（无拆机）</title>
+    <link href="https://yecl.net/nintendo-switch-joy-con-repair/"/>
+    <id>https://yecl.net/nintendo-switch-joy-con-repair/</id>
+    <published>2018-05-10T01:56:44.000Z</published>
+    <updated>2018-05-10T01:56:44.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>事情起因是这样。 我的笔记本和桌子的边缘相距很窄，大概只有一个5.5寸手机那么宽。因为这里离手比较近，所以我经常把手机手柄之类的东西放在这里方便拿。<br /></p><span id="more"></span><p><img src="https://golden-warehouse.kivotos.jp/Untitled.png" /></p><p>因为NS比手机宽，放在这位置显然有一部分是悬空的，而我并未在意，所以有那么一天，它就摔了。红色joy-con先着的地。 拿起来之后，右摇杆就坏了，有的时候会自动向右漂移，有的时候手动拨到右端然后松手，不是立刻回到原点而是慢慢慢慢慢慢地挪回去。</p><p>网上查了下遇到这种情况的人还不少，有的人即使没摔过joy-con也出了这毛病。 很多人说是摔的时候摇杆里掉漆了，污染了触点，并推荐了一款能清洁触点的东西，叫WD-40。好处是，不用拆开，直接在外面掀开摇杆下方的胶，喷一点就好了。我自己买了罐喷了一下，立刻生效，然后再在NS里校准摇杆，最后喷一点CRC精密仪器清洗剂来把油性的WD-40溶解。</p><p>WD-40 NB！</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;事情起因是这样。 我的笔记本和桌子的边缘相距很窄，大概只有一个5.5寸手机那么宽。因为这里离手比较近，所以我经常把手机手柄之类的东西放在这里方便拿。&lt;br /&gt;
+&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="随笔" scheme="https://yecl.net/categories/essay/"/>
+    
+    
+    <category term="Nintendo" scheme="https://yecl.net/tags/Nintendo/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>南京没有春天</title>
+    <link href="https://yecl.net/nanjing-weather-changed-a-lot-in-3-days/"/>
+    <id>https://yecl.net/nanjing-weather-changed-a-lot-in-3-days/</id>
+    <published>2018-03-29T02:23:25.000Z</published>
+    <updated>2018-03-29T02:23:25.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>这个城市的天气和它的历史一样变化多端。</p><span id="more"></span><hr /><p><img src="https://golden-warehouse.kivotos.jp/TIM截图20180328201132.jpg" /></p><p>南京市3月天气曲线图。来源：<a href="https://www.accuweather.com/zh/cn/nanjing/105570/march-weather/105570?monyr=3/1/2018&amp;view=table">Accuweather</a></p><hr /><p>南京天气多变我早有耳闻，却没想到变化这么大，前一天穿着短袖出门，后一天就裹着棉袄吹空调了。</p><p><img src="https://golden-warehouse.kivotos.jp/e16fc503gy1flopozogxwg206o05r4jx.gif" /></p><p>离开了东北才知道，南方是真冷。来的时候我幻想过这里全是25℃以上的大热天，带了很多夏天穿的T恤，遇到这冬春交接的时候却没有衣服穿。于是我只能退而求其次，以外面穿着大衣里面穿着长袖衬衫这种很别扭的穿着挺过这几天一个月。 等终于可以脱下大衣换上并没有几条的夹克衫的时候，我却发现春天已经过去了。展现在我面前的是终日25℃以上，有点夏天气息的南京。</p><p>赖床又少了一个理由，又少了一份心理斗争。在以前，从床上醒过来，把胳膊伸出被子都是很难的事，从床上下来到走到换衣服的地方的几步更是有如蜀道之难。现在，一个前仰就起来了，然后迷糊一会，随便找个理由继续倒下。等到愧疚感逐渐充满整个大脑的时候，睡在被子里已经很热了，不得不出来。</p><p>天气热起来，坏处也立刻就显现了出来。上那种200人的大课的时候，一进教室，就能闻到那种你懂得的味道，我称之为“人味”。让人很不爽的是，很快你就会习惯这个味道，并且加入产生这种“人味”的行列。</p><p>我爱暖气。</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;这个城市的天气和它的历史一样变化多端。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="随笔" scheme="https://yecl.net/categories/essay/"/>
+    
+    
+    <category term="南京" scheme="https://yecl.net/tags/nanjing/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>南京一神奇的bugpo：明发水卵子</title>
+    <link href="https://yecl.net/nanjing-mingfa-bug-portal/"/>
+    <id>https://yecl.net/nanjing-mingfa-bug-portal/</id>
+    <published>2017-05-29T15:49:31.000Z</published>
+    <updated>2017-05-29T15:49:31.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>开头先吐槽一下，这个po的名字起得真烂。</p><p>我最开始看portal介绍里的图片，以为是个什么祭坛呢，今天终于有时间了，我骑行了12公里来到了这里。（真是累死我了，从自行车上下来都不会走路了）</p><span id="more"></span><p><img src="https://golden-warehouse.kivotos.jp/Screenshot_20170529-183559.png" /></p><p><img src="https://golden-warehouse.kivotos.jp/TIM截图20170529235818.png" /></p><p><img src="https://golden-warehouse.kivotos.jp/Ingress_2017-05-29-18-47-35.png" /></p><p>到了实地我才知道这是明发广场正面的喷泉，算是地标吧。中间的那个球是铁做的地球。 图片经Google Photos自动美化过，我又一次深深地感受到自己的拍照水平真的是太差了。。。。。</p><p><img src="https://golden-warehouse.kivotos.jp/IMG_20170529_184535-EFFECTS.jpg" /></p><p>曾经有一位南京土豪蓝军，叫epizza，经常去明发广场的这个“水卵子”氪金塞Portal Fracker，塞的次数太多了，竟然出了bug，Fracker的双倍效果消失了，但是这个动态的特效颜色还存在，即使被毒或者打掉重建都不能让它变回正常，于是这个po就成了南京ingresser迎接外宾的保留节目。</p><p>PS：在我在po附近的路边想摸一张Key的时候还有几个人走过来问我是要住店吗，反正我自己觉得自己怎么看怎么不像是要住店的，不过一个人举着手机站在挺空旷的一个喷泉边上，也是挺容易让人起疑的。</p><p>PS2：在我去的时候还是绿的，回到宿舍就蓝了……残念</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;开头先吐槽一下，这个po的名字起得真烂。&lt;/p&gt;
+&lt;p&gt;我最开始看portal介绍里的图片，以为是个什么祭坛呢，今天终于有时间了，我骑行了12公里来到了这里。（真是累死我了，从自行车上下来都不会走路了）&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="随笔" scheme="https://yecl.net/categories/essay/"/>
+    
+    
+    <category term="手机游戏" scheme="https://yecl.net/tags/mobilegames/"/>
+    
+    <category term="ingress" scheme="https://yecl.net/tags/ingress/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>没有什么会根本停不下来，除了时间</title>
+    <link href="https://yecl.net/nothing-eternity-but-time/"/>
+    <id>https://yecl.net/nothing-eternity-but-time/</id>
+    <published>2017-04-03T09:20:35.000Z</published>
+    <updated>2017-04-03T09:20:35.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>这篇是在火车上为打发时间写的，多为抒发自己感情，没有什么逻辑和道理可言。 昨天愚人节，我成功地忘记了公主殿下的生日。 还在不到一年以前，信誓旦旦地说过“不会忘记你”的又是谁呢。 从小学到大学，不知有多少“就他/她/它了，这辈子不换了”的承诺或决定化为泡影。</p><span id="more"></span><blockquote><p>有个你曾经以为离不开的群，你很久没在里面说话了。某个你曾经想为他肝脑涂地的偶像，你早就没再追踪他最新动态了。一些曾经亲密无间的人，你们已经几年没有联系。天天追的美剧你打算弃了，每天玩的 LOL 你也准备戒了。多少在乎正在被稀释，多少热情渐渐被冲淡。没有什么会“根本停不下来”，除了时间。</p></blockquote><p>小学的时候喜欢MJ，当时很满足，有了MJ，其他歌手都去死吧。ipod里塞满了MJ。后来MJ和JB并存了，这是我极少有的允许两个歌手共同统治我的列表的情况。</p><p>后来机缘巧合，看了电磁炮，又为了探源看了魔禁，从此跳入二次元巨坑，从一本科学杂志中了解了初音ミク，然后，MJ和JB都从播放列表消失了，取而代之的是Vocaloid。在我整个初中阶段，Vocaloid是我唯一的信仰。那个时候最喜欢Kaito的《悲怯战队啥啥啥啥》的，每日单曲循环。用一分钱在马云秒杀了一个能插u盘的音响，天天循环自己的Vocaloid歌曲，吃饭听，睡觉听，写作业也听。</p><p>初中毕业的时候流行写同学录，我认认真真地写上这辈子只爱悲怯战队，一上高一立刻反水，转而喜欢上传统三大泪曲《虽然歌声无形》《letter song》《夕日坂》，后转而投奔40mp和gumi，初音和镜音的歌曲渐渐减少。尽管我对外仍声称是镜音双子死忠粉，但已经没办法了啊，我也不知道为什么我与它们渐行渐远。</p><p>随着nicosound的倒闭，我没有了听新Vocaloid周榜的途径，拖得久了也就忘记了。那之后很长一段时间里，Google还是个存在的网站，GAE还是最佳的翻墙方案，配合Pagespeed 4k视频随便看。那个时候niconico用GAE访问极其困难，后来Google不存在了，niconico我再也没上去过。</p><p>我以为自己真的会一辈子喜欢着Vocaloid，理由很简单：Vocaloid曲是唯一不带歌手个人感情的曲子，其思想与作曲家最为接近。</p><p>当我知道了什么是Shadowskcks有了爬niconico的能力后，我早已不太关心Vocaloid。某天打开歌单，发现，MJ的歌真他娘好听。</p><p>我与互联网的接触始于百度罪恶都市吧。罪恶都市吧是个dalao休闲的场所，chrome吧，firefox吧和bug吧的dalao累了就来吹吹水，顺便带了一些新技术来，比如云签到。于是一来二去，云签成了我接触互联网的开端。剩下的无非就是加群互捧学习姿势而已。</p><p>既然踏入了二次元，怎么会不知道三大邪教。一面是粉丝有组织有纪律有宗教般信仰的Lovelive，一面是本子刷屏玩梗无数黑枪成风的舰队Collection，我站了东方Project。我自认手残，不敢碰游戏，奈何东方庞大的世界观多建立在游戏中，我很难在不玩游戏的情况下进行了解，这可能也是我最后叛变的原因吧。</p><p>2016年元旦一高中同学拉我玩WG的《战舰世界》，这是我与舰C的第一次“所谓的”接触。我很喜欢这游戏，尽管那个时候网吧里全是撸啊撸，我还是能看见一两个开船的。在沉迷三个月后，我正式“上船了”，我当时有台IDCF，搭个ss完全能应付（现在一想去年10月份拖着账单不付导致账号被删真的是太蠢了，现在IDCF申请难度直逼Sakura，最重要的是稳，便宜，当然限制CPU频率这种欺诈消费者的事就应该往死里黑，MySQL一天死一次，发个文章死，写个评论死，优化一下还死，直接说你不卖500円的机子不就得了，我们都省心）。</p><p>话题好像跑远了。借着对战舰世界的兴趣，我背叛东方投靠了舰C，已经是高三最后一百天。纯音乐成了我不变的信仰。2016年6月27日，我（被迫）彻底斩断与公主殿下的联系，同时斩断的还有与Vocaloid的联系。 “纯音乐成为了不变的信仰”什么的也是在扯蛋啦，尼尔机械纪元的带Vocal的音乐直接把我从纯音乐的殿堂里扯了出来。</p><p>我玩的最久的游戏是l4d2。就是四个冻鳗美少女拿着AK47火神怼天线宝宝的那个游戏。这款现在来看完全是mod撑起天下的游戏，我曾经也沉迷其中，也觉得根本停不下来，但时间久了未免审美疲劳，结果现在玩彩虹六号的时间直逼l4d2。一直到对现在的我来说，彩虹六号是最满意的FPS，甚至是最满意的游戏，我想过不再买其他游戏，然而，2个月后我买了尼尔机械纪元的首发版，两天游玩24小时，彩虹六号什么的吃翔吧。</p><p>所以没有什么根本停不下来的东西啊，只有时间。时间会抹去一切。我曾经固执地反对这句话，现在觉得，真是这样。人心是会变的。</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;这篇是在火车上为打发时间写的，多为抒发自己感情，没有什么逻辑和道理可言。 昨天愚人节，我成功地忘记了公主殿下的生日。 还在不到一年以前，信誓旦旦地说过“不会忘记你”的又是谁呢。 从小学到大学，不知有多少“就他/她/它了，这辈子不换了”的承诺或决定化为泡影。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="随笔" scheme="https://yecl.net/categories/essay/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Minecraft：重力方块与Lazy Chunks</title>
+    <link href="https://yecl.net/minecraft-gravity-affected-blocks-lazy-chunks/"/>
+    <id>https://yecl.net/minecraft-gravity-affected-blocks-lazy-chunks/</id>
+    <published>2017-02-09T13:40:25.000Z</published>
+    <updated>2017-02-09T13:40:25.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>Minecraft中，已经被加载的Chunks有两种状态：Entities-processing Chunks 与 Lazy Chunks。本文将讲解受重力影响的方块在Lazy Chunks中的表现，从而用它做一些诸如修复铁砧，破坏基岩的小把戏。</p><span id="more"></span><p>Entities-processing Chunks是大家最为熟悉的Chunks类型，就是我们在Minecraft中经常看见的Chunks，这些Chunks里面实体与方块遵循它正常应该遵循的形式运动；Lazy Chunks则处于Entities-processing Chunks的边缘，其中的实体表现与前者有些不同：在Lazy Chunks里，实体活动会停止——这意味着生物会停止活动，落沙不会形成。</p><p>需要说明的是，“落沙”一词不仅仅指“掉落的沙子”，它可以指“掉落的任何方块”，用“沙”来代指全体是因为在Minecraft中有一种实体类型叫FallingSand，这种实体的nbt可以设置为任何方块来使本来不受重力影响的方块变得受重力影响（即和沙子的表现相同）。尽管FallingSand在1.11被移除并使用Falling_Blocks代替，但约定俗成的东西也不是那么容易就改的。</p><p>百度Minecraft吧的defanive在他的末地里做了一个“手动防止末地主岛刷末影人”的装置，使用一条超级长的红石线路去激活16Chunks以外的有着79只末影人的刷怪塔，使整个世界刷怪数量达到上限，使主岛不再生成末影人。这个装置是对Lazy Chunks的一次有效运用，不过本文讨论的重点不在这里，举这个例子的作用是帮助看官们记起对Lazy Chunks的了解。</p><p>Lazy Chunks对待落沙的方式与Entities-processing Chunks不同，接下来博主会讲解不同在何处。</p><p>在Entities-processing Chunks中，沙子落到地上的过程分为三个阶段：</p><ol type="1"><li>沙子删除自身<br /></li><li>创造一个FallingSand类型，包含原方块nbt的实体，并按照实体应该遵守和的物理规律掉落，直到碰到固体方块<br /></li><li>碰到固体方块后，删除自身，使用自身nbt在原地创造和原来一样的方块</li></ol><p>在Lazy Chunks中，这个过程只有两个阶段：</p><ol type="1"><li>沙子向下探测固体方块<br /></li><li>探测到固体方块后，删除自身，在所探测到的固体方块上创造和原来<strong>几乎</strong>一样的方块。因为没有掉落阶段，所以没有掉落动画</li></ol><p>注意这里加粗的字，之所以说“几乎一样”，是因为后者与前者相比，少了掉落阶段，从而少了“存储nbt”这一关键因素，导致创造新方块后nbt丢失，所以游戏使用了默认的nbt代替。利用这个特性，我们可以玩这些把戏：红沙褪色、铁砧修复</p><p>Entities-processing Chunks的大小取决于游戏的可视距离（Render Distance），在Entities-processing Chunks周围两个Chunks宽的环形区域则为Lazy Chunks。</p><blockquote><p>红沙的方块数据值为1，在Lazy Chunks里掉落后，数据值恢复为默认的0，变成了常见的黄沙子；</p></blockquote><p><img src="https://golden-warehouse.kivotos.jp/2017-02-09_22.36.25.png" /></p><p><img src="https://golden-warehouse.kivotos.jp/2017-02-09_22.37.34.png" /></p><p>铁砧的方块数据值如表： &gt; &gt; * * <em> &gt; &gt; 0 &gt; &gt; 铁砧（北/南） &gt; &gt; 1 &gt; &gt; 铁砧（东/西） &gt; &gt; 2 &gt; &gt; 铁砧（西/东） &gt; &gt; 3 &gt; &gt; 铁砧（南/北） &gt; &gt; 4 &gt; &gt; 轻微受损的铁砧 （北/南） &gt; &gt; 5 &gt; &gt; 轻微受损的铁砧 （东/西） &gt; &gt; 6 &gt; &gt; 轻微受损的铁砧 （西/东） &gt; &gt; 7 &gt; &gt; 轻微受损的铁砧 （南/北） &gt; &gt; 8 &gt; &gt; 严重受损的铁砧（北/南） &gt; &gt; 9 &gt; &gt; 严重受损的铁砧（东/西） &gt; &gt; 10 &gt; &gt; 严重受损的铁砧（西/东） &gt; &gt; 11 &gt; &gt; 严重受损的铁砧（南/北） &gt; &gt; </em> * * &gt; &gt; 铁砧在Lazy Chunks里掉落后，数据值恢复默认的0，变成没有损伤的样子，并朝向南/北。</p><p><img src="https://golden-warehouse.kivotos.jp/2017-02-09_22.38.42.png" /></p><p><img src="https://golden-warehouse.kivotos.jp/2017-02-09_22.39.13.png" /></p><p>然而，同样作为重力方块的龙蛋和它们不同，在Lazy Chunks中的掉落方式是这样的：</p><p><img src="https://golden-warehouse.kivotos.jp/2017-02-09_22.40.14.png" /> <img src="https://golden-warehouse.kivotos.jp/2017-02-09_22.40.34.png" /></p><p>可以看到龙蛋并不是在探测到的方块上创造本身，而是将探测到的方块直接替换成本身，无论那个是什么方块——这意味着用这种方法可以从上到下地破坏基岩。</p><p>在需要破坏的基岩上方做这个装置，放上龙蛋。打开设置将可视距离调到2，这样能节约时间。</p><p><img src="https://golden-warehouse.kivotos.jp/2017-02-09_22.54.29.png" /></p><p>按F3+G显示区块边缘，使用红石线+中继器延伸两个区块，直到这个装置<strong>正好</strong>从视野内消失。</p><p><img src="https://golden-warehouse.kivotos.jp/2017-02-09_23.02.36.png" /></p><p>给它一个信号，再慢慢走回去查看装置，会发现变成了这样：</p><p><img src="https://golden-warehouse.kivotos.jp/2017-02-09_23.04.28.png" /></p><p>可以看到龙蛋已经取代了基岩的位置，重复这个过程，就可以快速破坏基岩。 下图为三种方块在Lazy Chunks掉落后的状态</p><p><img src="https://golden-warehouse.kivotos.jp/2017-02-09_23.12.58.png" /></p><p><img src="https://golden-warehouse.kivotos.jp/2017-02-09_23.15.46.png" /></p><p>可以看到只有龙蛋替换了沙石，红沙和东西朝向的损坏的铁砧分别还原成黄沙和修复的南北朝向的铁砧。</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;Minecraft中，已经被加载的Chunks有两种状态：Entities-processing Chunks 与 Lazy Chunks。本文将讲解受重力影响的方块在Lazy Chunks中的表现，从而用它做一些诸如修复铁砧，破坏基岩的小把戏。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="minecraft" scheme="https://yecl.net/categories/minecraft/"/>
+    
+    
+    <category term="minecraft" scheme="https://yecl.net/tags/minecraft/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>跨越半个中国的春运</title>
+    <link href="https://yecl.net/span-half-china-during-the-spring-rush/"/>
+    <id>https://yecl.net/span-half-china-during-the-spring-rush/</id>
+    <published>2017-01-24T14:44:43.000Z</published>
+    <updated>2017-01-24T14:44:43.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>中国的南北距离是5000公里，而我的回家旅程正好跨越了半个中国。</p><p>我们这辣鸡学校特意把放假时间拖到小年这天。其他高中同学都回家吃饱喝足该上哪玩玩完了，我们才回来。</p><span id="more"></span><p>数不胜数的人为了在这个月回家过年而拼命地挤火车。尽管坐的火车已经加了很多节车厢，也还有很多人没有座位，这些人买的票便宜，名曰“站票”。买了站票的人把两节车厢的连接处堵住了，上个厕所还要当心不要踩到人。</p><p>北京到哈尔滨的车21点开，开9个小时，我不得不在车上（硬座）度过一晚上。熬到3:30终于忍不住困的我睡了一个半小时，感觉和在学校一觉睡到中午没什么不一样。 虽说南京现在的温度不过1℃，哈尔滨是-22℃，但是在体感上来讲二者没什么不同。无论在哪我的手都不能伸出袖子外，只能用一只手拿着手机，另一只手伸进兜里取暖，再换手。</p><p>家乡还是那么熟悉，去年过年贴的红对联依旧像新的一样，我还以为是新贴的。我奋战过六年的书桌也还在，上面没有灰尘，看来是父母擦掉了。我掏出电脑摆在上面，它立刻恢复了往日的杂乱，让我的心情轻松了许多。</p><p>扎眼的堆成山的高考练习册终于从我眼前里消失了，这让我感受到了一种解脱。我曾经以为高考是天大的一个坎，实际上，参加高考的我并没有什么特殊的感觉。相比之下，大学的期末考试更容易让我紧张，毕竟什么都不会嘛，高考起码肚子里是有干货的，还能比划比划。</p><p>回到家之后给老妈的电脑和手机安上了Google Photos，她成天喊照片没地方放，一删除就找不到，Google相册的自动备份和同步还是很方便的。</p><p>总算是能“完全”闲下来了。CF前两天搞了个什么活动，送了我一把金AK47，这是我以前想都不敢想的事。于是我趁着这闲工夫玩了几把CF，也算是弥补了小时候从来没碰过豪枪的遗憾。顺带，CF真的没人玩了。我选择彩虹六号。</p><p>我就读的高中又涌现了一批新的学霸，而且大有超越我们这一届的趋势。不过从南京回来，我明白了一个道理：东北边远地区的小城市的孩子的发展注定要比北上广深晚，因为在我们家乡这种小地方，接触到的世界实在是太小，99%的学生在考入大学走出家门前，对九门文化课之外的领域一无所知。他们未来的计划和理想和也无法延伸得更远。这大概就是人们（包括我）向南跑的原因吧。</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;中国的南北距离是5000公里，而我的回家旅程正好跨越了半个中国。&lt;/p&gt;
+&lt;p&gt;我们这辣鸡学校特意把放假时间拖到小年这天。其他高中同学都回家吃饱喝足该上哪玩玩完了，我们才回来。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="随笔" scheme="https://yecl.net/categories/essay/"/>
+    
+    
+    <category term="南京" scheme="https://yecl.net/tags/nanjing/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>这是一款垃圾游戏，因为你根本无法透过泪水看见屏幕</title>
+    <link href="https://yecl.net/the-game-undertale/"/>
+    <id>https://yecl.net/the-game-undertale/</id>
+    <published>2017-01-03T15:33:40.000Z</published>
+    <updated>2017-01-03T15:33:40.000Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p>It might not be pretty, but Undertale is absolutely a work of art.</p></blockquote><p>Undertale（中文非官方译名为传说之下），2015年发布的一款像素游戏，却是steam拥有最高好评率的游戏之一。IGN给了它满分10分的评价。</p><span id="more"></span><p><img src="https://golden-warehouse.kivotos.jp/20170103204948.png" /></p><p>对于Undertale多么的神作，已经不需要博主细说，博主就说说这个游戏里那些惊艳的地方。</p><p><strong>========剧透注意========</strong></p><p>放眼目前绝大多数游戏，叙事和游戏的割裂都是非常严重的。身着神装的你轻易捏爆了boss，但在剧情中变成了你与boss进行了艰苦激烈的战斗（和声泪俱下的嘴炮），亦或是开放世界中各条支线任务时间线和氛围的冲突（来盘昆特牌吗？），自体意识较强的游戏往往会被贴上游戏性不足的标签，而拟真画面与游戏玩法的不匹配又会陷入游戏机制的恐怖谷。Undertale做到了游戏和剧情的完美平衡，让每一次“战斗”的选择都发自玩家内心，就好像面对这些的不是屏幕里的Frisk，而是屏幕前的玩家。每一次的战斗结果又与剧情发展和最终结局环环相扣，使游戏的真实性上升到新的层次。</p><p>区别于其他RPG游戏，玩家和怪物之间的互动不止有打杀，还有语言交流和行动。当自己和怪物有足够多的了解，或者是用某种行动使得怪物对战斗失去兴趣，就可以选择mercy来表示“我不想打了”，和平解决战斗。玩家杀或不杀死怪物的结果，会在后来的剧情中得到体现。一路和平下去，主角会受到怪物们的欢迎和鼓励；一路杀戮下去，所有的怪物都会害怕、逃离主角。</p><p>在其他RPG游戏中，小怪只是没有感情的，由一堆代码组成的机器，它们不会有自己的思想，不知道和谁战斗，为什么战斗。在玩家的眼里，它们只是升级用的经验值和购买神装的金币罢了。但Undertale完全颠覆了这个世界观。在Undertale中，所有生物都有自己的感情，有自己的思想和梦想。</p><p>Froggit乐于学习知识；Whimsun生性怕人；Snowdrake是个为了当笑星刻苦练习的鸟；狗狗们被抚摸就会丧失攻击性；Undyne是个女汉子，在私下性格豪爽；Mettaton为继续做怪物们的偶像而奋斗；Papyrus和Sans拥有最强的攻击力但甘愿过着平凡且逗比的生活……在传说之下，每个人都充满了决心。</p><p>对，决心。决心这个词在每一次主角存档的时候出现。令主角充满决心的原因也千奇百怪：</p><blockquote><p>雪总是能够打掉重新做成其他更加有用的东西。如此简单的道理使你充满了决心。<br />知道老鼠总有一天会从神秘的水晶中抽取出起司……这使你充满了决心。<br />成为无用垃圾中的一员，你充满了决心。<br />看到如此奇怪的实验室位在这样的地方……使你充满了决心。<br />知道老鼠总有一天会骇进保险箱拿到裡面的起司……使你充满了决心。</p></blockquote><p>在玩家死亡后，游戏也会告诫玩家“不要失去决心！”决心是什么呢？是改变地底世界的意念还是想回家的热切希望？对Asgore的决战中他击碎了玩家的mercy选项，因为两人必须要决出胜负。“决心”在此超越了mercy,正是决心让主角来到了Asgore面前，也正是（双方的）决心要求这最终战斗不能再有宽恕（mercy）。</p><p>游戏的另一大有趣之处是，如果你试图卖东西给商店，店主会说“我要是买了那破缎带和没用的树枝，还怎么赚钱啊！”，讽刺了多数RPG游戏玩家视NPC商店为垃圾桶，而商店对垃圾也照单全收的游戏设计；如果你在杀了某个怪物后感到后悔并选择读档重来，有两个怪物会记住你的这个行为，并嘲讽你悔不当初；如果你走了屠杀路线，存档会上传steam云端，永远无法走回和平路线；屠杀路线Sans的“特殊攻击”是将玩家永远困在他的回合之中，要知道控制回合一直以来都是玩家的能力，这是对习惯了对自己拥有上帝能力而为所欲为的玩家的讽刺。</p><p>游戏中层出不穷的谜团，有趣又不难的谜题，充满人物情感又不像东方雷电那样坑手残玩家的弹幕，让这个游戏变得生动起来。最重要的，是作者Toby Fox（同时也是游戏音乐制作人）制作的绝赞的音乐。如果没有了音乐的配合，这款游戏的乐趣会降低一半以上。</p><p>这款游戏留给人们的是无限回忆和思考。在游戏中，亲情、友情始终围绕在主角周围，主角的一举一动都会影响到这两种感情。当你费尽周折地终于达到了旅途的终点，熟悉的bgm响起，你恍惚间回到了故事开始的地方，听着最初遇见的怪物诉说它们的故事。它们在最后的爆发也是触动了人们的泪点。玩完这个游戏，你会重新认识游戏中每一个被设定为不值一提的小卒，认真地思索着它们的过往，重新重视那些在作者或生活的有意或无意安排而忽略的事物。</p><p><img src="https://golden-warehouse.kivotos.jp/0200fb399b504fc262eadcd7e2dde71191ef6d5e.jpg" /></p><p>相关链接：<a href="http://www.u-acg.com/archives/7972">《UNDERTALE》：一款重新定義玩家與角色扮演內涵的偉大作品</a></p>]]></content>
+    
+    
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;It might not be pretty, but Undertale is absolutely a work of art.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Undertale（中文非官方译名为传说之下），2015年发布的一款像素游戏，却是steam拥有最高好评率的游戏之一。IGN给了它满分10分的评价。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="随笔" scheme="https://yecl.net/categories/essay/"/>
+    
+    
+    <category term="游戏" scheme="https://yecl.net/tags/games/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>【本文已废，辣鸡Rage4】DNS切换到Rage4,我终于抛弃了dnsimple</title>
+    <link href="https://yecl.net/dnsimple-to-rage4/"/>
+    <id>https://yecl.net/dnsimple-to-rage4/</id>
+    <published>2016-12-28T09:09:30.000Z</published>
+    <updated>2016-12-28T09:09:30.000Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p>如果说我今年之内有什么不舍的地方，就是把DNS从还有半年使用期的dnsimple搬到了Rage4。浪费半年哪</p></blockquote><p><a href="https://bismarck.moe">雨宫千鹤</a>在我的<a href="https://yecl.net/after-nemt.html">高考之后</a>评论中建议我换用Rage4的DNS，并且指出dnsimple的dns放在CF上。我确实没怎么在意这个事情，毕竟dnsimple两年的优惠摆在那不用有点可惜，但是近来发生的事情让我觉得有必要撤出来了。</p><p><strong>一是国内解析速度相当不理想。</strong></p><p>尽管我的主域名yecl.net被DNS污染，但是其子域名包括www.yecl.net都逃过了这一劫，只是受到普通的关键字封锁而已。</p><p>（插句题外话，既然党国搞我的博客，而博客正好是裸域名，那么假如我当时用www.yecl.net做博客的话，关键字干掉www，其他子域名包括裸域名都能幸存下来。反正现在说啥都已经晚了）然而我的yecl.net下的其他子域名，包括我注册的新域名挂在dnsimple上时，中国电信的第一次dns查询几乎都是失败，chrome显示“找不到DNS地址”过一段时间才能解析到正确的IP并成功访问。我试着将yecl.net迁移到国内的cloudxns，情况得到了很大改观。但是我这么干就失去了dnsimple的API访问，而cloudxns的API复杂得多，不会用。另一方面cloudxns强制实名，我很反感。</p><p><strong>二是dnsimple跟自己吹嘘的“simple”背道而驰。</strong></p><p>dnsimple以前卖Comodo家的证书，而且可以选择泛域名或者单域名。但是价格死贵（单域名一年$20泛域名一年$100），我估计都没人买。好歹是letsencrypt出来，引领了一波免费ssl证书的风潮，dnsimple这自诩“simple”和“fast”的dns也迅速上线了和letsencrypt合作的快速签发/更新letsencrypt证书的服务。在对新事物的支持上dnsimple总是跑得比西方dns都快，这一点算是对得起普通人$5/月的收费。</p><p><a href="https://img.yecl.net/2016/12/FireShot-Screen-Capture-012-DNSimple-dnsimple_com_a_42848_domains_yecl_net_certificates_new.png"><img src="https://img.yecl.net/2016/12/FireShot-Screen-Capture-012-DNSimple-dnsimple_com_a_42848_domains_yecl_net_certificates_new.png" /></a></p><p>在我被certbot只能验证80端口而我把80重定向到443导致不能用certbot签证书的问题困扰的时候dnsimple搞的这一手大新闻让我感到空前欢喜，但是我点进去之后，我感觉自己的智商被侮辱了。</p><p><a href="https://img.yecl.net/2016/12/FireShot-Screen-Capture-013-New-Lets-Encrypt-Certificate-DNSimple-dnsimple_com_a_42848_domains_yecl_net_certificates_letsencrypt_new.png"><img src="https://img.yecl.net/2016/12/FireShot-Screen-Capture-013-New-Lets-Encrypt-Certificate-DNSimple-dnsimple_com_a_42848_domains_yecl_net_certificates_letsencrypt_new.png" /></a></p><p>凭啥不能搞子域名啊？要升级plan？Business可是比现在的Personal贵10倍！$500/年！淦。</p><p><strong>三是dnsimple去年放的卫星现在还没落地。</strong></p><p>隔壁Rage4和CF都把dnssec搞好了，dnsimple去年11月放了<a href="https://blog.dnsimple.com/2015/11/ds-records-for-dnssec/">此卫星</a>说自己要支持dnssec，且不说这“dnssec只为注册在dnsimple且托管在别处的域名提供”这个奇葩设定，一年过去了，新dashboard上线了，API V2上线了，letsencrypt支持做好了，dnssec还是没有落地。</p><p>由于国内dns对dnssec的普遍不支持，我对dnssec的需求不是很迫切，一如两年前对https的需求。但也就是从两年前，网址前面的小绿锁，渐渐地从个人网站装逼的手段，变成了追求安全的商业化互联网的主流趋势。在几年之前，人们会说出“https普及面太窄，各cdn都没有做出支持，而且https会拖慢速度”云云，一如现在的人们对dnssec的态度。随着互联网安全受重视程度的提高，dnssec普及只是时间问题。</p><p>于是我屁颠屁颠去了Rage4，不知道这是不是癖好，我尽量选择小众的dns。Rage4在国内的知名度很低，只在V2上有个帖子比较cloudxns、cloudflare、route53、rage4的异同。<a href="https://bismarck.moe">雨宫千鹤</a>提醒我的时候我立刻去注册了一个Rage4的free plan，只能添加一个zone，每月50w次解析，支持dnssec，然后就放那吃灰。今年8月rage4取消了free plan，但是我的号还继续保留着，“暂时”没有收费。我从对解析问题大伤脑筋的dnsimple撤出来之后，首先选择了Rage4并打开了dnssec功能，聊胜于无。ping其dns服务器，延迟比dnsimple低很多，江苏电信在100ms左右。</p><p>刚才看了一眼inbox，看来Rage4要对free plan用户动刀了，yecl.net这个zone到2017-01-15过期，先观望一下，顺带求推荐墙外dns。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;如果说我今年之内有什么不舍的地方，就是把DNS从还有半年使用期的dnsimple搬到了Rage4。浪费半年哪&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;a href=&quot;https://bismarck.moe&quot;&gt;雨宫千鹤&lt;/a&gt;在我的&lt;a hre</summary>
+      
+    
+    
+    
+    <category term="云服务" scheme="https://yecl.net/categories/%E4%BA%91%E6%9C%8D%E5%8A%A1/"/>
+    
+    
+    <category term="DNS" scheme="https://yecl.net/tags/DNS/"/>
+    
+    <category term="DNSimple" scheme="https://yecl.net/tags/DNSimple/"/>
+    
+    <category term="He DNS" scheme="https://yecl.net/tags/He-DNS/"/>
+    
+    <category term="Rage4" scheme="https://yecl.net/tags/Rage4/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>2016，南京的第一场雪</title>
+    <link href="https://yecl.net/2016-first-snow-in-nanjing/"/>
+    <id>https://yecl.net/2016-first-snow-in-nanjing/</id>
+    <published>2016-11-23T09:00:23.000Z</published>
+    <updated>2016-11-23T09:00:23.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="https://golden-warehouse.kivotos.jp/default.jpeg" /></p><p>南京迎来了一次大降温。昨天明明还是15度，今天一下子就接近了0度。如此剧烈降温的结果就是，南京下雪了。</p><p>南方的雪花没有东北的大，下得也没有东北的猛烈。可能是因为南方的地面还比较热，雪落地即化，像下了一场雨一样。在雪花中偶尔还夹带着一点点雨滴，它们聚集在路边树的叶子上（我仍未知道那种树的名字），然后向下面路过的行人发起空袭。</p><span id="more"></span><p>南方人在下雪天是打伞的。雪天打伞在一个东北人眼中看来很滑稽。我本着“老子是东北人，见过的雪不知道比你们大到哪里去了”的理念坚持不打伞。而事实也证明不用打伞，可能南方的雪花容易化，不像东北的雪花粘在衣服上用手一拍就掉。况且，东北的雪靠伞来挡还是naive，东北的雪不仅能竖着下，还能横着下；不仅能从上往下下，还能从下往上下。 刚才在扣扣空间上看到一条说说：</p><p>淹死的都是会水的，冻死的都是东北的。</p><p>被我们高中同学疯狂转发。看来我们这些考到长江一带的同学都有同样的感受。在只有不到10摄氏度的寝室里待着简直度日如年，更不用提上课的教室里的3度了。上完大英回来的我双腿都僵了，在寝室里开着空调吹了一会才缓过来。 在无边的寒冷中，我终于理解了什么叫“南方人过冬靠正气，东北人过冬靠暖气”。在东北，这种0度左右的“高温”，人们丝毫不会感觉到冷，即使在户外也是如此。而东北人到了南方，就饱受室内外一样温度的折磨。难道是东北人去了南方就“入乡随俗”了？倒是真正的南方人，面对这气温表现得从容淡定。</p><p>不过，南方的这种小雪看起来别有一番滋味。那种雪覆在叶子上，白绿相间的温柔感觉是东北这种能把大树压塌的雪不能比的。当然，东北的这种压塌大树的雪在南方人看来也极为震撼。不知道是否东北人和南方人的性格与情调与当地下的雪有关呢？</p>]]></content>
+    
+    
+    <summary type="html">&lt;p&gt;&lt;img src=&quot;https://golden-warehouse.kivotos.jp/default.jpeg&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;南京迎来了一次大降温。昨天明明还是15度，今天一下子就接近了0度。如此剧烈降温的结果就是，南京下雪了。&lt;/p&gt;
+&lt;p&gt;南方的雪花没有东北的大，下得也没有东北的猛烈。可能是因为南方的地面还比较热，雪落地即化，像下了一场雨一样。在雪花中偶尔还夹带着一点点雨滴，它们聚集在路边树的叶子上（我仍未知道那种树的名字），然后向下面路过的行人发起空袭。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="随笔" scheme="https://yecl.net/categories/essay/"/>
+    
+    
+    <category term="南京" scheme="https://yecl.net/tags/nanjing/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>利用dnsimple的api做一个Dynamic DNS</title>
+    <link href="https://yecl.net/dnsimple-api-dynamic-dns/"/>
+    <id>https://yecl.net/dnsimple-api-dynamic-dns/</id>
+    <published>2016-10-18T16:45:22.000Z</published>
+    <updated>2016-10-18T16:45:22.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>有那么一天，博主买了一个树莓派用来挂远程下载和剪辑视频，但是它干活的时候我一直窝在宿舍里守着它也不行啊，于是我开始研究如何能在公网访问它。</p><p>很久以前我听说过“动态DNS”和“花生壳”两个名词，也知道花生壳好像被许多在家里建站的人所使用。但是有人说它的体验不好，有人说它需要收费才能用得爽，而另一个有名的dyndns给的二级域名太辣鸡。</p><p>&lt;!—more—&gt;</p><p>直到我想起来我用的dnsimple似乎有这样的api，去研究了一下才发现dnsimple早就已经准备好了dynamic dns实现的全部条件。</p><p>思路：在树莓派上写个脚本，每分钟把自己的公网ip通过api实时更新到dnsimple上，dnsimple设置1分钟的TTL来保证下级dns及时更新缓存。</p><p>首先先在dnsimple的网页端创建好需要使用的域名或二级域名记录，A记录随便写如2.3.3.3。 然后在树莓派上创建脚本：</p><p>$ sudo touch dns_update.sh $ sudo chmod +x dns_update.sh</p><p>编辑dns_update.sh：</p><p>#! /bin/bash</p><p>ip=$(curl -s https://api.ipify.org/)</p><p>curl -s -H ‘X-DNSimple-Token: :’<br />-H ‘Accept: application/json’<br />-H ‘Content-Type: application/json’<br />-X PUT<br />-d “{\”record\” : {\“content\”:\“$ip\” }}”<br />https://api.dnsimple.com/v1/domains//records/ &gt; /dev/null</p><p>其中，<code>为dnsimple注册邮箱，</code> 为api token（从[这里](https://dnsimple.com/user)获取），<code>为域名，</code> 为记录的id（在Record Editor中编辑记录时地址栏上的一串数字就是），自行填好保存。 测试一下有没有问题：</p><p>$ ./update_dns.sh</p><p>接着用crontab让其自动执行。</p><p>$ crontab -e</p><p>在最下面加入这样一行：</p><p>* * * * * /dns_update.sh</p><p>等待1分钟，就能看见dnsimple上的解析已经更新了。在openwrt路由器的【防火墙】－【端口转发】里把公网80端口转发给树莓派的80端口，就可以在外面随时用域名访问树莓派上的网站了。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;有那么一天，博主买了一个树莓派用来挂远程下载和剪辑视频，但是它干活的时候我一直窝在宿舍里守着它也不行啊，于是我开始研究如何能在公网访问它。&lt;/p&gt;
+&lt;p&gt;很久以前我听说过“动态DNS”和“花生壳”两个名词，也知道花生壳好像被许多在家里建站的人所使用。但是有人说它的体验不好，</summary>
+      
+    
+    
+    
+    <category term="技术" scheme="https://yecl.net/categories/%E6%8A%80%E6%9C%AF/"/>
+    
+    
+    <category term="DNS" scheme="https://yecl.net/tags/DNS/"/>
+    
+    <category term="DNSimple" scheme="https://yecl.net/tags/DNSimple/"/>
+    
+    <category term="linux" scheme="https://yecl.net/tags/linux/"/>
+    
+    <category term="openwrt" scheme="https://yecl.net/tags/openwrt/"/>
+    
+    <category term="树莓派" scheme="https://yecl.net/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>艦隊これくしょん 1/7 瑞鶴改二 手办</title>
+    <link href="https://yecl.net/kancolle-zuihou-kai-ni-figure/"/>
+    <id>https://yecl.net/kancolle-zuihou-kai-ni-figure/</id>
+    <published>2016-10-15T15:15:58.000Z</published>
+    <updated>2016-10-15T15:15:58.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="https://golden-warehouse.kivotos.jp/dsc_11242.jpg" /></p><p>这个小姨子是10月4日从日亚购买的，因为在砍口垒里造出了小姨子，就想着祝贺一下自己。</p><p>图是托楼上宿舍擅长摄影的同学拍的，因为时间不够没有拍到细节。大光圈真是不错，能拍出很美的效果。</p><p><img src="https://golden-warehouse.kivotos.jp/dsc_1141.jpg" /></p><p><img src="https://golden-warehouse.kivotos.jp/dsc_11292.jpg" /></p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;&lt;img src=&quot;https://golden-warehouse.kivotos.jp/dsc_11242.jpg&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;这个小姨子是10月4日从日亚购买的，因为在砍口垒里造出了小姨子，就想着祝贺一下自己。&lt;/p&gt;
+&lt;p&gt;图是托楼上宿舍擅长摄影的同学拍的</summary>
+      
+    
+    
+    
+    <category term="随笔" scheme="https://yecl.net/categories/essay/"/>
+    
+    
+    <category term="舰队collection" scheme="https://yecl.net/tags/kancolle/"/>
+    
+  </entry>
+  
+</feed>
