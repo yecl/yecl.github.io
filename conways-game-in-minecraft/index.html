@@ -21,14 +21,14 @@
 <meta property="og:site_name" content="Yoruka&#39;s Blog">
 <meta property="og:description" content="联动Cancergary， Tyanboot 康威生命游戏是啥大伙可以在上面的链接中了解，本文以Accidental Games的作品为例详细讲解mc中的Conway’s Game。游戏展示和存档视频里都有。">
 <meta property="og:locale">
-<meta property="og:image" content="https://golden-warehouse.kivotos.jp/2015-11-08_15.16.22.png">
-<meta property="og:image" content="https://golden-warehouse.kivotos.jp/2015-11-08_15.16.26.png">
+<meta property="og:image" content="https://golden-warehouse.yecl.net/2015-11-08_15.16.22.png">
+<meta property="og:image" content="https://golden-warehouse.yecl.net/2015-11-08_15.16.26.png">
 <meta property="article:published_time" content="2015-12-27T14:23:57.000Z">
 <meta property="article:modified_time" content="2015-12-27T14:23:57.000Z">
 <meta property="article:author" content="Yoruka">
 <meta property="article:tag" content="minecraft">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://golden-warehouse.kivotos.jp/2015-11-08_15.16.22.png">
+<meta name="twitter:image" content="https://golden-warehouse.yecl.net/2015-11-08_15.16.22.png">
 
 <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/han-css@3.3.0/dist/han.min.css">
 <link rel="stylesheet" href="https://fonts.loli.net/css?family=Fira+Mono|Roboto+Slab:400,600|Noto+Serif+SC:600&display=swap">
@@ -110,7 +110,7 @@
 <p>ICB：Impulse Command Block，即1.8及以前版本里的黄色命令方块<br />
 RCB：Repeat Command Block，即自带脉冲的命令方块，紫色，每t运行一次。<br />
 CCB：Chain Command Block，即指向它的命令方块被激活时会连锁激活的绿色命令方块，本文的CCB全是Unconditional模式，不需要红石激活。</p>
-<p><img src="https://golden-warehouse.kivotos.jp/2015-11-08_15.16.22.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.kivotos.jp/2015-11-08_15.16.22.png" alt="2015-11-08_15.16.22" /></p>
+<p><img src="https://golden-warehouse.yecl.net/2015-11-08_15.16.22.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.yecl.net/2015-11-08_15.16.22.png" alt="2015-11-08_15.16.22" /></p>
 <p>首先，ICB用来创建一个名叫life的无判据计分板。它是基础。当然，它只需要运行一次，直接用按钮开启即可。</p>
 <p>/scoreboard objectives add life dummy</p>
 <p>接下来这段非——常——长的一串CCB就是Run Life，它控制整个游戏的运行。 首先用一个RCB testfor玩家手中的绿宝石块，如果检测到，就会触发它指着的那个CCB。</p>
@@ -154,7 +154,7 @@ CCB：Chain Command Block，即指向它的命令方块被激活时会连锁激�
 <p>/execute <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,name=check,score_life=3,score_life_min=3] ~ ~ ~ summon AreaEffectCloud ~ ~ ~ {Duration:2147483647,CustomName:tile}</p>
 <p>/kill <span class="citation" data-cites="e">@e</span>[type=AreaEffectCloud,name=check]</p>
 <p>此时玩家手中还有绿宝石块，第一个RCB就会再次loop一次刚才的过程。</p>
-<p><img src="https://golden-warehouse.kivotos.jp/2015-11-08_15.16.26.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.kivotos.jp/2015-11-08_15.16.26.png" alt="2015-11-08_15.16.26" /></p>
+<p><img src="https://golden-warehouse.yecl.net/2015-11-08_15.16.26.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.yecl.net/2015-11-08_15.16.26.png" alt="2015-11-08_15.16.26" /></p>
 <p>接下来就是玩家生产生命的时候到了，在代表死亡的煤块上用羊蛋生成羊的同时放置代表居民的石英块，触发CCB生成名为tile的药水云供前面的CCB判定（现在知道为什么刚才要用tile药水云了吧），把羊tp到虚空里杀死。</p>
 <p>//RCB Here</p>
 <p>/execute <span class="citation" data-cites="e">@e</span>[type=Sheep] ~ ~ ~ setblock ~ ~-1 ~ quartz_block</p>
@@ -291,7 +291,7 @@ CCB：Chain Command Block，即指向它的命令方块被激活时会连锁激�
     
       <span style='display: inline-block; text-align: right; margin: 0px; -moz-transform: scaleX(-1); -o-transform: scaleX(-1); -webkit-transform: scaleX(-1); transform: scaleX(-1); filter: FlipH; -ms-filter: “FlipH”;'>&copy;</span>
     
-       2025 <a href="https://yecl.net">Yoruka's Blog</a>. Proudly published with
+       2026 <a href="https://yecl.net">Yoruka's Blog</a>. Proudly published with
       <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/printempw/hexo-theme-murasaki/" target="_blank">Murasaki</a> & <a href="https://www.sakura.ad.jp" target="_blank">SakuraInternet</a>.
     </p>
   </div>

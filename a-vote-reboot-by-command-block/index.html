@@ -21,15 +21,15 @@
 <meta property="og:site_name" content="Yoruka&#39;s Blog">
 <meta property="og:description" content="因为服务器有几个大户家里的机器过多，导致他们家区块被加载的时候服务器的TPS经常下降得很大，影响了正常玩家的游戏体验，故群里有人提议加个投票重启mod。 而MC1.12.2并没有能够这样做的mod，于是我拿命令方块撸了一个，用着还可以。">
 <meta property="og:locale">
-<meta property="og:image" content="https://golden-warehouse.kivotos.jp/2018-09-02_00.32.36.png">
-<meta property="og:image" content="https://golden-warehouse.kivotos.jp/180902012249.png">
-<meta property="og:image" content="https://golden-warehouse.kivotos.jp/2018/09/2430.png">
+<meta property="og:image" content="https://golden-warehouse.yecl.net/2018-09-02_00.32.36.png">
+<meta property="og:image" content="https://golden-warehouse.yecl.net/180902012249.png">
+<meta property="og:image" content="https://golden-warehouse.yecl.net/2018/09/2430.png">
 <meta property="article:published_time" content="2018-09-01T17:45:34.000Z">
 <meta property="article:modified_time" content="2018-09-01T17:45:34.000Z">
 <meta property="article:author" content="Yoruka">
 <meta property="article:tag" content="minecraft">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://golden-warehouse.kivotos.jp/2018-09-02_00.32.36.png">
+<meta name="twitter:image" content="https://golden-warehouse.yecl.net/2018-09-02_00.32.36.png">
 
 <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/han-css@3.3.0/dist/han.min.css">
 <link rel="stylesheet" href="https://fonts.loli.net/css?family=Fira+Mono|Roboto+Slab:400,600|Noto+Serif+SC:600&display=swap">
@@ -108,7 +108,7 @@
 
     <div class="post-content"><p>因为服务器有几个大户家里的机器过多，导致他们家区块被加载的时候服务器的TPS经常下降得很大，影响了正常玩家的游戏体验，故群里有人提议加个投票重启mod。 而MC1.12.2并没有能够这样做的mod，于是我拿命令方块撸了一个，用着还可以。</p>
 <span id="more"></span>
-<p><img src="https://golden-warehouse.kivotos.jp/2018-09-02_00.32.36.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.kivotos.jp/2018-09-02_00.32.36.png" /></p>
+<p><img src="https://golden-warehouse.yecl.net/2018-09-02_00.32.36.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.yecl.net/2018-09-02_00.32.36.png" /></p>
 <h1 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h1>
 <blockquote>
 <p>由重启提出者按按钮触发投票，创建一个类型为trigger的计分项目，并给玩家修改的权限。 通过/tellraw给玩家创建可以修改这个trigger的clickevent（同意为1，反对为0）。 规定时间后将所有玩家的分数集中到一个虚拟实体上，检查这个虚拟实体的分数，根据分数是多少来决定下一步动作。如需要全体成员都同意（即分数都为1）则将所有人分数相乘，全部同意的情况下积为1，此时的操作就是进行重启准备，只要有人反对（即分数为0）最终的积就会为0，此时不会进行重启。如需要半数成员同意，则将所有人分数相加，将和与0做比较，大于0的重启，小于等于0的不重启。 执行/stop的命令方块，使用活塞短脉冲发生器产生0.5红时刻的脉冲，防止重启后命令方块依旧被激活。 通过漏斗计时器来进行时间限制。</p>
@@ -163,9 +163,9 @@
 <h2 id="命令方块种类"><a href="#命令方块种类" class="headerlink" title="命令方块种类："></a>命令方块种类：</h2>
 <p>每段电路的起始命令方块都是【红石控制，不受制约】的脉冲命令方块；所有它们后面的电路都是【保持开启，条件制约】的连锁命令方块。</p>
 <h2 id="活塞短脉冲发生器"><a href="#活塞短脉冲发生器" class="headerlink" title="活塞短脉冲发生器："></a>活塞短脉冲发生器：</h2>
-<p><img src="https://golden-warehouse.kivotos.jp/180902012249.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.kivotos.jp/180902012249.png" /></p>
+<p><img src="https://golden-warehouse.yecl.net/180902012249.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.yecl.net/180902012249.png" /></p>
 <h2 id="漏斗计时器"><a href="#漏斗计时器" class="headerlink" title="漏斗计时器："></a>漏斗计时器：</h2>
-<p><img src="https://golden-warehouse.kivotos.jp/2018/09/2430.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.kivotos.jp/2018/09/2430.png" /></p>
+<p><img src="https://golden-warehouse.yecl.net/2018/09/2430.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.yecl.net/2018/09/2430.png" /></p>
 <p>漏斗中的物品数量×2÷2.5=计时器的秒数</p>
 <h2 id="红石火把的好处"><a href="#红石火把的好处" class="headerlink" title="红石火把的好处："></a>红石火把的好处：</h2>
 <p>因为使用比较器时，直到下一次命令执行失败之前，比较器会一直保持输出状态，而不是形成脉冲。故采用能被活塞推掉的红石火把，当被放置时延迟触发活塞推掉红石火把。</p>
@@ -293,7 +293,7 @@
     
       <span style='display: inline-block; text-align: right; margin: 0px; -moz-transform: scaleX(-1); -o-transform: scaleX(-1); -webkit-transform: scaleX(-1); transform: scaleX(-1); filter: FlipH; -ms-filter: “FlipH”;'>&copy;</span>
     
-       2025 <a href="https://yecl.net">Yoruka's Blog</a>. Proudly published with
+       2026 <a href="https://yecl.net">Yoruka's Blog</a>. Proudly published with
       <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/printempw/hexo-theme-murasaki/" target="_blank">Murasaki</a> & <a href="https://www.sakura.ad.jp" target="_blank">SakuraInternet</a>.
     </p>
   </div>

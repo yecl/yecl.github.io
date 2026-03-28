@@ -21,18 +21,18 @@
 <meta property="og:site_name" content="Yoruka&#39;s Blog">
 <meta property="og:description" content="IPv6 Ready Logo IPv6 Ready Logo是一项国际认证计划，提供一个全球通用的规范，验证IPv6产品的可部署和应用性，为遵守这些规范的厂商颁发IPv6 Ready Logo证书，为企业采购硬件设备提供参考。 IPv6 Ready Logo共有5个分类：Core Protocols、CE Router、DHCPv6、IPSecv6、SNMP。其中Core Protocols是最">
 <meta property="og:locale">
-<meta property="og:image" content="https://golden-warehouse.kivotos.jp/image-20241007222633850.jpg">
-<meta property="og:image" content="https://golden-warehouse.kivotos.jp/image-20241007231146308.jpg">
-<meta property="og:image" content="https://golden-warehouse.kivotos.jp/image-20241007231327256.jpg">
-<meta property="og:image" content="https://golden-warehouse.kivotos.jp/image-20241007231453622.jpg">
-<meta property="og:image" content="https://golden-warehouse.kivotos.jp/image-20241007231833664.jpg">
-<meta property="og:image" content="https://golden-warehouse.kivotos.jp/image-20241007231918420.jpg">
+<meta property="og:image" content="https://golden-warehouse.yecl.net/image-20241007222633850.jpg">
+<meta property="og:image" content="https://golden-warehouse.yecl.net/image-20241007231146308.jpg">
+<meta property="og:image" content="https://golden-warehouse.yecl.net/image-20241007231327256.jpg">
+<meta property="og:image" content="https://golden-warehouse.yecl.net/image-20241007231453622.jpg">
+<meta property="og:image" content="https://golden-warehouse.yecl.net/image-20241007231833664.jpg">
+<meta property="og:image" content="https://golden-warehouse.yecl.net/image-20241007231918420.jpg">
 <meta property="article:published_time" content="2024-10-07T12:44:27.000Z">
 <meta property="article:modified_time" content="2024-10-07T12:44:27.000Z">
 <meta property="article:author" content="Yoruka">
 <meta property="article:tag" content="IPv6">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://golden-warehouse.kivotos.jp/image-20241007222633850.jpg">
+<meta name="twitter:image" content="https://golden-warehouse.yecl.net/image-20241007222633850.jpg">
 
 <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/han-css@3.3.0/dist/han.min.css">
 <link rel="stylesheet" href="https://fonts.loli.net/css?family=Fira+Mono|Roboto+Slab:400,600|Noto+Serif+SC:600&display=swap">
@@ -144,7 +144,7 @@
 </blockquote>
 <h2 id="测试步骤"><a href="#测试步骤" class="headerlink" title="测试步骤"></a>测试步骤</h2>
 <h3 id="拓扑"><a href="#拓扑" class="headerlink" title="1.拓扑"></a>1.拓扑</h3>
-<p><img src="https://golden-warehouse.kivotos.jp/image-20241007222633850.jpg" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.kivotos.jp/image-20241007222633850.jpg" alt="image-20241007222633850" /></p>
+<p><img src="https://golden-warehouse.yecl.net/image-20241007222633850.jpg" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.yecl.net/image-20241007222633850.jpg" alt="image-20241007222633850" /></p>
 <p>TN为测试设备，NUT为被测设备。TN和NUT通过2个网口互连。TN可选使用console连接NUT来实现自动输入命令。</p>
 <p>从<a target="_blank" rel="noopener" href="https://www.ipv6ready.org.cn/home/views/default/resource/logo/phase2-core/index.htm">官方教程</a>中下载最新的Self_Test_5-?-?.tar.gz，解压到/usr/local/ipv6ready/ 目录下。</p>
 <h3 id="预配置"><a href="#预配置" class="headerlink" title="2.预配置"></a>2.预配置</h3>
@@ -313,20 +313,20 @@ $HAS_MULTIPLE_INTERFACES = 1;
 <p>如果是手动测试，要在途中按照脚本指示操作设备。比如提示Set AdvSendAdvertisements Flag to True，就需要操作设备的接口，变为可发送RA的接口。</p>
 <h3 id="结果分析"><a href="#结果分析" class="headerlink" title="5.结果分析"></a>5.结果分析</h3>
 <p>打开Self_Test_5-?-?/index.html可以看到测试结果的总览。</p>
-<p><img src="https://golden-warehouse.kivotos.jp/image-20241007231146308.jpg" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.kivotos.jp/image-20241007231146308.jpg" alt="image-20241007231146308" /></p>
+<p><img src="https://golden-warehouse.yecl.net/image-20241007231146308.jpg" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.yecl.net/image-20241007231146308.jpg" alt="image-20241007231146308" /></p>
 <p>点击某个section进入测试项页面。测试结果以 html 格式显示，也可打开单独的测试结果，如 16.html，如下图所示</p>
-<p><img src="https://golden-warehouse.kivotos.jp/image-20241007231327256.jpg" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.kivotos.jp/image-20241007231327256.jpg" alt="image-20241007231327256" /></p>
+<p><img src="https://golden-warehouse.yecl.net/image-20241007231327256.jpg" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.yecl.net/image-20241007231327256.jpg" alt="image-20241007231327256" /></p>
 <p>每个测试结果单元中包含 7 列，分别是 No.、Title、Result、Log、Script、Packet、Dump(bin)。</p>
 <p>title 列中有具体的测试项名称，点击测试项名称进入详细的测试例用例。<br />
 Result 列为该测试项测试结果，一般黑色为通过，红色字体为测试结果有问题，需要修改；<br />
 Log 列为测试过程，点击“X”就可以进入测试 Log 页；<br />
 Script 列和 Packet 列为测试例设计的脚本和报文格式。<br />
 Dump(bin)列为测试过程中链路上的抓包，使用 wireshark 等软件打开。</p>
-<p><img src="https://golden-warehouse.kivotos.jp/image-20241007231453622.jpg" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.kivotos.jp/image-20241007231453622.jpg" alt="image-20241007231453622" /></p>
+<p><img src="https://golden-warehouse.yecl.net/image-20241007231453622.jpg" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.yecl.net/image-20241007231453622.jpg" alt="image-20241007231453622" /></p>
 <p>点击Log下面的X可以查看项目的日志，用于排错。</p>
-<p><img src="https://golden-warehouse.kivotos.jp/image-20241007231833664.jpg" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.kivotos.jp/image-20241007231833664.jpg" alt="image-20241007231833664" /></p>
+<p><img src="https://golden-warehouse.yecl.net/image-20241007231833664.jpg" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.yecl.net/image-20241007231833664.jpg" alt="image-20241007231833664" /></p>
 <p>也有交互的报文的详细展示。</p>
-<p><img src="https://golden-warehouse.kivotos.jp/image-20241007231918420.jpg" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.kivotos.jp/image-20241007231918420.jpg" alt="image-20241007231918420" /></p>
+<p><img src="https://golden-warehouse.yecl.net/image-20241007231918420.jpg" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.yecl.net/image-20241007231918420.jpg" alt="image-20241007231918420" /></p>
 <p>出现<span style="color:red">NG</span>字样代表失败，需要对照Log来检查哪一步出错了，本应收到却未收到、本不应收到却收到、收到的包内容错误等问题都会详细记录下来。</p>
 </div>
     <br />
@@ -446,7 +446,7 @@ Dump(bin)列为测试过程中链路上的抓包，使用 wireshark 等软件打
     
       <span style='display: inline-block; text-align: right; margin: 0px; -moz-transform: scaleX(-1); -o-transform: scaleX(-1); -webkit-transform: scaleX(-1); transform: scaleX(-1); filter: FlipH; -ms-filter: “FlipH”;'>&copy;</span>
     
-       2025 <a href="https://yecl.net">Yoruka's Blog</a>. Proudly published with
+       2026 <a href="https://yecl.net">Yoruka's Blog</a>. Proudly published with
       <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/printempw/hexo-theme-murasaki/" target="_blank">Murasaki</a> & <a href="https://www.sakura.ad.jp" target="_blank">SakuraInternet</a>.
     </p>
   </div>

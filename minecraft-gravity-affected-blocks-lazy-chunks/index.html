@@ -21,23 +21,23 @@
 <meta property="og:site_name" content="Yoruka&#39;s Blog">
 <meta property="og:description" content="Minecraft中，已经被加载的Chunks有两种状态：Entities-processing Chunks 与 Lazy Chunks。本文将讲解受重力影响的方块在Lazy Chunks中的表现，从而用它做一些诸如修复铁砧，破坏基岩的小把戏。">
 <meta property="og:locale">
-<meta property="og:image" content="https://golden-warehouse.kivotos.jp/2017-02-09_22.36.25.png">
-<meta property="og:image" content="https://golden-warehouse.kivotos.jp/2017-02-09_22.37.34.png">
-<meta property="og:image" content="https://golden-warehouse.kivotos.jp/2017-02-09_22.38.42.png">
-<meta property="og:image" content="https://golden-warehouse.kivotos.jp/2017-02-09_22.39.13.png">
-<meta property="og:image" content="https://golden-warehouse.kivotos.jp/2017-02-09_22.40.14.png">
-<meta property="og:image" content="https://golden-warehouse.kivotos.jp/2017-02-09_22.40.34.png">
-<meta property="og:image" content="https://golden-warehouse.kivotos.jp/2017-02-09_22.54.29.png">
-<meta property="og:image" content="https://golden-warehouse.kivotos.jp/2017-02-09_23.02.36.png">
-<meta property="og:image" content="https://golden-warehouse.kivotos.jp/2017-02-09_23.04.28.png">
-<meta property="og:image" content="https://golden-warehouse.kivotos.jp/2017-02-09_23.12.58.png">
-<meta property="og:image" content="https://golden-warehouse.kivotos.jp/2017-02-09_23.15.46.png">
+<meta property="og:image" content="https://golden-warehouse.yecl.net/2017-02-09_22.36.25.png">
+<meta property="og:image" content="https://golden-warehouse.yecl.net/2017-02-09_22.37.34.png">
+<meta property="og:image" content="https://golden-warehouse.yecl.net/2017-02-09_22.38.42.png">
+<meta property="og:image" content="https://golden-warehouse.yecl.net/2017-02-09_22.39.13.png">
+<meta property="og:image" content="https://golden-warehouse.yecl.net/2017-02-09_22.40.14.png">
+<meta property="og:image" content="https://golden-warehouse.yecl.net/2017-02-09_22.40.34.png">
+<meta property="og:image" content="https://golden-warehouse.yecl.net/2017-02-09_22.54.29.png">
+<meta property="og:image" content="https://golden-warehouse.yecl.net/2017-02-09_23.02.36.png">
+<meta property="og:image" content="https://golden-warehouse.yecl.net/2017-02-09_23.04.28.png">
+<meta property="og:image" content="https://golden-warehouse.yecl.net/2017-02-09_23.12.58.png">
+<meta property="og:image" content="https://golden-warehouse.yecl.net/2017-02-09_23.15.46.png">
 <meta property="article:published_time" content="2017-02-09T13:40:25.000Z">
 <meta property="article:modified_time" content="2017-02-09T13:40:25.000Z">
 <meta property="article:author" content="Yoruka">
 <meta property="article:tag" content="minecraft">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://golden-warehouse.kivotos.jp/2017-02-09_22.36.25.png">
+<meta name="twitter:image" content="https://golden-warehouse.yecl.net/2017-02-09_22.36.25.png">
 
 <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/han-css@3.3.0/dist/han.min.css">
 <link rel="stylesheet" href="https://fonts.loli.net/css?family=Fira+Mono|Roboto+Slab:400,600|Noto+Serif+SC:600&display=swap">
@@ -137,23 +137,23 @@
 <blockquote>
 <p>红沙的方块数据值为1，在Lazy Chunks里掉落后，数据值恢复为默认的0，变成了常见的黄沙子；</p>
 </blockquote>
-<p><img src="https://golden-warehouse.kivotos.jp/2017-02-09_22.36.25.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.kivotos.jp/2017-02-09_22.36.25.png" /></p>
-<p><img src="https://golden-warehouse.kivotos.jp/2017-02-09_22.37.34.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.kivotos.jp/2017-02-09_22.37.34.png" /></p>
+<p><img src="https://golden-warehouse.yecl.net/2017-02-09_22.36.25.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.yecl.net/2017-02-09_22.36.25.png" /></p>
+<p><img src="https://golden-warehouse.yecl.net/2017-02-09_22.37.34.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.yecl.net/2017-02-09_22.37.34.png" /></p>
 <p>铁砧的方块数据值如表： &gt; &gt; * * <em> &gt; &gt; 0 &gt; &gt; 铁砧（北/南） &gt; &gt; 1 &gt; &gt; 铁砧（东/西） &gt; &gt; 2 &gt; &gt; 铁砧（西/东） &gt; &gt; 3 &gt; &gt; 铁砧（南/北） &gt; &gt; 4 &gt; &gt; 轻微受损的铁砧 （北/南） &gt; &gt; 5 &gt; &gt; 轻微受损的铁砧 （东/西） &gt; &gt; 6 &gt; &gt; 轻微受损的铁砧 （西/东） &gt; &gt; 7 &gt; &gt; 轻微受损的铁砧 （南/北） &gt; &gt; 8 &gt; &gt; 严重受损的铁砧（北/南） &gt; &gt; 9 &gt; &gt; 严重受损的铁砧（东/西） &gt; &gt; 10 &gt; &gt; 严重受损的铁砧（西/东） &gt; &gt; 11 &gt; &gt; 严重受损的铁砧（南/北） &gt; &gt; </em> * * &gt; &gt; 铁砧在Lazy Chunks里掉落后，数据值恢复默认的0，变成没有损伤的样子，并朝向南/北。</p>
-<p><img src="https://golden-warehouse.kivotos.jp/2017-02-09_22.38.42.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.kivotos.jp/2017-02-09_22.38.42.png" /></p>
-<p><img src="https://golden-warehouse.kivotos.jp/2017-02-09_22.39.13.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.kivotos.jp/2017-02-09_22.39.13.png" /></p>
+<p><img src="https://golden-warehouse.yecl.net/2017-02-09_22.38.42.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.yecl.net/2017-02-09_22.38.42.png" /></p>
+<p><img src="https://golden-warehouse.yecl.net/2017-02-09_22.39.13.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.yecl.net/2017-02-09_22.39.13.png" /></p>
 <p>然而，同样作为重力方块的龙蛋和它们不同，在Lazy Chunks中的掉落方式是这样的：</p>
-<p><img src="https://golden-warehouse.kivotos.jp/2017-02-09_22.40.14.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.kivotos.jp/2017-02-09_22.40.14.png" /> <img src="https://golden-warehouse.kivotos.jp/2017-02-09_22.40.34.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.kivotos.jp/2017-02-09_22.40.34.png" /></p>
+<p><img src="https://golden-warehouse.yecl.net/2017-02-09_22.40.14.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.yecl.net/2017-02-09_22.40.14.png" /> <img src="https://golden-warehouse.yecl.net/2017-02-09_22.40.34.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.yecl.net/2017-02-09_22.40.34.png" /></p>
 <p>可以看到龙蛋并不是在探测到的方块上创造本身，而是将探测到的方块直接替换成本身，无论那个是什么方块——这意味着用这种方法可以从上到下地破坏基岩。</p>
 <p>在需要破坏的基岩上方做这个装置，放上龙蛋。打开设置将可视距离调到2，这样能节约时间。</p>
-<p><img src="https://golden-warehouse.kivotos.jp/2017-02-09_22.54.29.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.kivotos.jp/2017-02-09_22.54.29.png" /></p>
+<p><img src="https://golden-warehouse.yecl.net/2017-02-09_22.54.29.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.yecl.net/2017-02-09_22.54.29.png" /></p>
 <p>按F3+G显示区块边缘，使用红石线+中继器延伸两个区块，直到这个装置<strong>正好</strong>从视野内消失。</p>
-<p><img src="https://golden-warehouse.kivotos.jp/2017-02-09_23.02.36.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.kivotos.jp/2017-02-09_23.02.36.png" /></p>
+<p><img src="https://golden-warehouse.yecl.net/2017-02-09_23.02.36.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.yecl.net/2017-02-09_23.02.36.png" /></p>
 <p>给它一个信号，再慢慢走回去查看装置，会发现变成了这样：</p>
-<p><img src="https://golden-warehouse.kivotos.jp/2017-02-09_23.04.28.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.kivotos.jp/2017-02-09_23.04.28.png" /></p>
+<p><img src="https://golden-warehouse.yecl.net/2017-02-09_23.04.28.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.yecl.net/2017-02-09_23.04.28.png" /></p>
 <p>可以看到龙蛋已经取代了基岩的位置，重复这个过程，就可以快速破坏基岩。 下图为三种方块在Lazy Chunks掉落后的状态</p>
-<p><img src="https://golden-warehouse.kivotos.jp/2017-02-09_23.12.58.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.kivotos.jp/2017-02-09_23.12.58.png" /></p>
-<p><img src="https://golden-warehouse.kivotos.jp/2017-02-09_23.15.46.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.kivotos.jp/2017-02-09_23.15.46.png" /></p>
+<p><img src="https://golden-warehouse.yecl.net/2017-02-09_23.12.58.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.yecl.net/2017-02-09_23.12.58.png" /></p>
+<p><img src="https://golden-warehouse.yecl.net/2017-02-09_23.15.46.png" srcset="/images/loading.jpg" data-srcset="https://golden-warehouse.yecl.net/2017-02-09_23.15.46.png" /></p>
 <p>可以看到只有龙蛋替换了沙石，红沙和东西朝向的损坏的铁砧分别还原成黄沙和修复的南北朝向的铁砧。</p>
 </div>
     <br />
@@ -272,7 +272,7 @@
     
       <span style='display: inline-block; text-align: right; margin: 0px; -moz-transform: scaleX(-1); -o-transform: scaleX(-1); -webkit-transform: scaleX(-1); transform: scaleX(-1); filter: FlipH; -ms-filter: “FlipH”;'>&copy;</span>
     
-       2025 <a href="https://yecl.net">Yoruka's Blog</a>. Proudly published with
+       2026 <a href="https://yecl.net">Yoruka's Blog</a>. Proudly published with
       <a href="https://hexo.io/" target="_blank">Hexo</a> & <a href="https://github.com/printempw/hexo-theme-murasaki/" target="_blank">Murasaki</a> & <a href="https://www.sakura.ad.jp" target="_blank">SakuraInternet</a>.
     </p>
   </div>
